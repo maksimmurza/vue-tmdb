@@ -1,12 +1,13 @@
 <template>
   <n-card
+    hoverable
     :title="movie.title"
     :style="{
       position: 'relative',
     }"
   >
     <template #cover>
-      <img :src="cardImage" />
+      <img :src="movieCoverSrc" class="movie-cover" />
     </template>
     <div
       class="rating-label"
@@ -31,11 +32,12 @@ import { NCard, NIcon } from 'naive-ui';
 import { Star } from '@vicons/fa';
 
 export default defineComponent({
+  name: 'MovieCard',
   setup(props) {
-    const cardImage = process.env.VUE_APP_IMG_URL + props.movie.poster_path;
+    const movieCoverSrc = process.env.VUE_APP_IMG_URL + props.movie.poster_path;
     const ratingLabelIsHover = ref(false);
 
-    return { ...toRefs(props), cardImage, ratingLabelIsHover };
+    return { ...toRefs(props), movieCoverSrc, ratingLabelIsHover };
   },
   components: { NCard, NIcon, Star },
   props: {
@@ -53,12 +55,10 @@ export default defineComponent({
   box-shadow: 0 0 5px 0px black;
   border-radius: 25px;
   height: 25px;
-  /* min-width: 70px; */
   display: flex;
   flex-wrap: nowrap;
   width: fit-content;
   align-items: center;
-  /* justify-content: center; */
   padding: 3px 10px;
   cursor: pointer;
 }
@@ -73,8 +73,12 @@ export default defineComponent({
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   min-height: 5em;
+}
+
+.movie-cover {
+  cursor: pointer;
 }
 </style>

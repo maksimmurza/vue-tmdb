@@ -2,11 +2,9 @@ import { PopularMoviesResponse, UpcomingMoviesResponse, TopRatedMoviesResponse }
 import axios, { AxiosResponse } from 'axios';
 import axiosClient from '../utils/axiosClient';
 
-const fetchPopularMovies = async (
-  pageNumber = 1
-): Promise<AxiosResponse<PopularMoviesResponse>> => {
+const fetchMovies = async (link: string) => {
   try {
-    const response = await axiosClient.get(`/movie/popular?page=${pageNumber}`);
+    const response = await axiosClient.get(link);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -16,32 +14,18 @@ const fetchPopularMovies = async (
   }
 };
 
-const fetchUpcomingMovies = async (
-  pageNumber = 1
-): Promise<AxiosResponse<UpcomingMoviesResponse>> => {
-  try {
-    const response = await axiosClient.get(`/movie/upcoming?page=${pageNumber}`);
-    return response;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.status_message);
-    }
-    throw new Error('Server is unavailable');
-  }
+type FetchingFunction<T> = (pageNumber?: number) => Promise<AxiosResponse<T>>;
+
+type MovieFetchingService = {
+  popular: FetchingFunction<PopularMoviesResponse>;
+  upcoming: FetchingFunction<UpcomingMoviesResponse>;
+  topRated: FetchingFunction<TopRatedMoviesResponse>;
 };
 
-const fetchTopRatedMovies = async (
-  pageNumber = 1
-): Promise<AxiosResponse<TopRatedMoviesResponse>> => {
-  try {
-    const response = await axiosClient.get(`/movie/top_rated?page=${pageNumber}`);
-    return response;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.status_message);
-    }
-    throw new Error('Server is unavailable');
-  }
+const movieFetchingService: MovieFetchingService = {
+  popular: (pageNumber = 1) => fetchMovies(`/movie/popular?page=${pageNumber}`),
+  upcoming: (pageNumber = 1) => fetchMovies(`/movie/upcoming?page=${pageNumber}`),
+  topRated: (pageNumber = 1) => fetchMovies(`/movie/top_rated?page=${pageNumber}`),
 };
 
-export { fetchPopularMovies, fetchUpcomingMovies, fetchTopRatedMovies };
+export { movieFetchingService, MovieFetchingService };

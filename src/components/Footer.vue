@@ -21,6 +21,8 @@ export default defineComponent({
 
 <style lang="scss">
 .footer {
+  z-index: 5;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;

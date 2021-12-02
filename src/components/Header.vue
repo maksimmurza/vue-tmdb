@@ -58,6 +58,8 @@ export default defineComponent({
 
 <style lang="scss">
 .header {
+  z-index: 5;
+  position: relative;
   background-color: #032541;
   color: white;
   display: flex;

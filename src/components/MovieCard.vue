@@ -7,7 +7,9 @@
     }"
   >
     <template #cover>
-      <img :src="movieCoverSrc" class="movie-cover" />
+      <router-link :to="'/movie/' + movie.id">
+        <img :src="movieCoverSrc" class="movie-cover" />
+      </router-link>
     </template>
     <div
       class="rating-label"

@@ -1,15 +1,7 @@
 <template>
-  <n-layout>
-    <n-layout-header>
-      <Header></Header>
-    </n-layout-header>
-    <n-layout-content>
-      <router-view />
-    </n-layout-content>
-    <n-layout-footer>
-      <Footer></Footer>
-    </n-layout-footer>
-  </n-layout>
+  <Header></Header>
+  <router-view />
+  <Footer></Footer>
 </template>
 
 <script>
@@ -20,11 +12,17 @@ import Footer from './components/Footer.vue';
 
 export default defineComponent({
   components: {
-    NLayout,
+    // NLayout,
     Header,
     Footer,
   },
 });
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+#app {
+  /* display: flex; */
+  /* flex-direction: column; */
+  height: 100vh;
+}
+</style>

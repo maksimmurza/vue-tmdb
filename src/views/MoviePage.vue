@@ -1,8 +1,8 @@
 <template>
   <div class="details-header">
     <div class="details-foreground">
-      <div class="movie-cover">
-        <img :src="movieCoverSrc" class="movie-cover" />
+      <div>
+        <img :src="movieCoverSrc" />
       </div>
       <div class="movie-description">
         <div class="movie-title-container">
@@ -20,15 +20,33 @@
             >{{ genre.name }}
           </n-button>
         </div>
-        <div class="rating-block">
-          <div class="rating-label" v-if="movie">
+        <div class="movie-page-rating-block">
+          <div class="movie-page-rating-label" v-if="movie">
             <n-progress
               type="circle"
+              :indicator-text-color="'white'"
               :percentage="movie.vote_average * 10"
               :color="movie.vote_average < 5 ? 'red' : movie.vote_average < 8 ? 'orange' : 'green'"
             ></n-progress>
           </div>
-          <div class="personal-lists"></div>
+          <div class="personal-lists">
+            <n-button strong size="large" circle type="info"
+              ><n-icon><list-ul /></n-icon
+            ></n-button>
+            <n-button strong size="large" circle type="info"
+              ><n-icon><heart /></n-icon
+            ></n-button>
+            <n-button strong size="large" circle type="info"
+              ><n-icon><bookmark /></n-icon
+            ></n-button>
+            <n-button strong size="large" circle type="info"
+              ><n-icon><star /></n-icon
+            ></n-button>
+          </div>
+        </div>
+        <div class="movie-overview" v-if="movie">
+          <h3>Overview</h3>
+          <p>{{ movie.overview }}</p>
         </div>
       </div>
     </div>
@@ -39,13 +57,15 @@
       }"
     ></div>
   </div>
+  <div class="movie-page-cast"></div>
 </template>
 
 <script>
 import useMovie from '@/composables/useMovie';
 import { defineComponent, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { NButton, NProgress } from 'naive-ui';
+import { NButton, NProgress, NIcon } from 'naive-ui';
+import { Heart, Star, Bookmark, ListUl } from '@vicons/fa';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -63,7 +83,7 @@ export default defineComponent({
 
     return { loading, movie, error, getMovie, movieCoverSrc, backgroundImageUrl };
   },
-  components: { NButton, NProgress },
+  components: { NButton, NProgress, NIcon, Heart, Star, Bookmark, ListUl },
 });
 </script>
 
@@ -81,7 +101,6 @@ export default defineComponent({
   right: 0;
   filter: blur(2px);
   -webkit-filter: blur(2px);
-  transform: scale(1.1);
 }
 
 .details-foreground {
@@ -89,8 +108,7 @@ export default defineComponent({
   z-index: 3;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 1.5rem 0;
+  padding: 1.5rem 10vw;
   color: white;
   background-color: rgba(0, 0, 0, 0.75);
 }
@@ -111,5 +129,30 @@ export default defineComponent({
 
 .genre-button {
   margin-right: 10px;
+}
+
+.personal-lists {
+  & > * {
+    margin-right: 1rem;
+  }
+}
+
+.movie-page-rating-block {
+  margin: 2rem 0;
+  display: flex;
+  align-items: center;
+
+  & > * {
+    margin-right: 2rem;
+  }
+}
+
+.movie-page-rating-label {
+  background-color: transparent;
+}
+
+.personal-list-button {
+  border-radius: 50%;
+  background-color: rgb(88, 112, 143);
 }
 </style>

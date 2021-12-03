@@ -28,5 +28,6 @@ export default defineComponent({
   align-items: center;
   color: white;
   background-color: #032541;
+  margin-top: auto;
 }
 </style>

@@ -1,6 +1,8 @@
 <template>
   <div class="header">
-    <h1>Vue TMDB</h1>
+    <h1 class="header-home-link">
+      <router-link :to="'/'"> Vue TMDB </router-link>
+    </h1>
     <n-dropdown
       @select="handleSelect"
       trigger="hover"

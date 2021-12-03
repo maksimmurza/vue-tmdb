@@ -21,13 +21,22 @@
           </n-button>
         </div>
         <div class="movie-page-rating-block">
-          <div class="movie-page-rating-label" v-if="movie">
+          <div class="movie-page-rating-label" v-if="movie && movie.vote_count > 0">
             <n-progress
               type="circle"
               :indicator-text-color="'white'"
               :percentage="movie.vote_average * 10"
               :color="movie.vote_average < 5 ? 'red' : movie.vote_average < 8 ? 'orange' : 'green'"
             ></n-progress>
+          </div>
+          <div v-else>
+            <n-empty description="No rating yet">
+              <template #icon>
+                <n-icon>
+                  <star-regular />
+                </n-icon>
+              </template>
+            </n-empty>
           </div>
           <div class="personal-lists">
             <n-button strong size="large" circle type="info"
@@ -63,18 +72,22 @@
 <script>
 import useMovie from '@/composables/useMovie';
 import { defineComponent, onMounted, computed } from 'vue';
+import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
-import { NButton, NProgress, NIcon } from 'naive-ui';
-import { Heart, Star, Bookmark, ListUl } from '@vicons/fa';
+import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
+import { Heart, Star, StarRegular, Bookmark, ListUl } from '@vicons/fa';
 
 export default defineComponent({
   name: 'MoviePage',
   setup() {
     const route = useRoute();
+    const store = useStore();
     const { loading, movie, error, getMovie } = useMovie(route.params.id);
+
     const backgroundImageUrl = computed(
       () => process.env.VUE_APP_BACKGROUND_IMG_URL + movie.value?.backdrop_path
     );
+
     const movieCoverSrc = computed(() => process.env.VUE_APP_IMG_URL + movie.value?.poster_path);
 
     onMounted(() => {
@@ -83,7 +96,7 @@ export default defineComponent({
 
     return { loading, movie, error, getMovie, movieCoverSrc, backgroundImageUrl };
   },
-  components: { NButton, NProgress, NIcon, Heart, Star, Bookmark, ListUl },
+  components: { NButton, NProgress, NIcon, Heart, Star, StarRegular, Bookmark, ListUl, NEmpty },
 });
 </script>
 

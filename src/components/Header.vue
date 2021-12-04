@@ -37,7 +37,8 @@
         placement="bottom-end"
       >
         <div class="user-button">
-          <n-avatar :style="{ color: 'gray', backgroundColor: 'white' }">
+          <n-avatar v-if="store.state.user.userInfo.avatar" :src="userAvatarBaseUrl + store.state.user.userInfo.avatar" :style="{minWidth: 'fit-content'}" />
+          <n-avatar v-else :style="{ color: 'gray', backgroundColor: 'white' }">
             <n-icon size="30">
               <user-astronaut />
             </n-icon>
@@ -71,11 +72,14 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
+    const userAvatarBaseUrl = process.env.VUE_APP_AVATAR_IMG_URL;
+
     return {
       moviesDropdownOptions,
       tvShowsDropdownOptions,
       moreShowsDropdownOptions,
       profileDropdownOptions,
+      userAvatarBaseUrl,
       store,
     };
   },
@@ -85,6 +89,7 @@ export default defineComponent({
 
 <style lang="scss">
 .header {
+  box-sizing: border-box;
   z-index: 5;
   position: relative;
   background-color: #032541;

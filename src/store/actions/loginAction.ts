@@ -5,11 +5,12 @@ import { AppState } from "..";
 async function loginAction({ commit, dispatch }: ActionContext<AppState, AppState>, { username, password }: { username: string, password: string }): Promise<void> {
   commit('loginLoading');
   try {
-    const sessionId = await login(username, password);
+    const response = await login(username, password);
+    const { session_id: sessionId } = response.data;
     await dispatch('accountDetails', { sessionId });
     commit('loginSuccess', {sessionId});
   } catch (error) {
-    commit('loginFail', {errorMessage: error.message});
+    commit('loginFail', error.message);
   }
 }
 

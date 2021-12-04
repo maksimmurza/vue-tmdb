@@ -31,6 +31,7 @@ export interface UpcomingMoviesResponse extends MoviesResponse {
 
 export interface UserInfo {
   name: string;
-  username?: string;
-  sessionId?: string;
+  username: string;
+  sessionId: string;
+  avatar: string | null;
 }

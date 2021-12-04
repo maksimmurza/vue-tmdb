@@ -1,5 +1,6 @@
 <template lang="">
-  <n-form :model="model" ref="formRef" :rules="rules">
+<n-spin :show="store.state.user.loading">
+  <n-form :model="model" ref="formRef" :rules="rules" class="login-form" @keyup.enter="login">
     <n-form-item path="username" label="User name">
       <n-input v-model:value="model.username" @keydown.enter.prevent />
     </n-form-item>
@@ -11,33 +12,41 @@
         @keydown.enter.prevent
       />
     </n-form-item>
+  <n-button type="primary" @click="login" :disabled="model.username === '' || model.password ===''">Sign In</n-button>
   </n-form>
-  <n-button @click="login">Sign Up</n-button>
+</n-spin>
 </template>
 <script>
 import { defineComponent } from '@vue/runtime-core';
 import { useStore } from 'vuex';
-import { NForm, NFormItem, NInput, NButton } from 'naive-ui';
+import { NForm, NFormItem, NInput, NButton, NSpin } from 'naive-ui';
 import { ref } from 'vue';
 
 export default defineComponent({
   name: 'Login',
-  setup(props) {
+  setup() {
     const store = useStore();
     const model = ref({ username: '', password: '' });
 
-    const login = (username, password) => {
+    const login = () => {
       store.dispatch('login', { username: model.value.username, password: model.value.password });
     };
 
-    return { model, login };
+    return { model, login, store };
   },
   components: {
     NForm,
     NFormItem,
     NInput,
     NButton,
+    NSpin
   },
 });
 </script>
-<style lang=""></style>
+
+<style lang="scss">
+  .login-form {
+    padding: 0 10vw;
+    margin-top: 2rem;
+  }
+</style>

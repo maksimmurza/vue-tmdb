@@ -28,3 +28,9 @@ export type TopRatedMoviesResponse = MoviesResponse;
 export interface UpcomingMoviesResponse extends MoviesResponse {
   dates: { maximum: string; minimum: string };
 }
+
+export interface UserInfo {
+  name: string;
+  username?: string;
+  sessionId?: string;
+}

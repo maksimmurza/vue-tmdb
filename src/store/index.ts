@@ -1,26 +1,33 @@
 import { createStore } from 'vuex';
+import { UserInfo } from '@/types'
+import * as loginMutations from './mutations/loginMutations'
+import * as accountDetailsMutations from './mutations/accountDetailsMutations'
+import loginAction from './actions/loginAction';
+import accountDetailsAction from './actions/accountDetailsAction';
 
-interface User {
-  name: string;
-  username?: string;
-  request_token?: string;
-}
-
-interface AppState {
-  user: User | null;
+export interface AppState {
+  user: {
+    loading: boolean;
+    errorMessage: string | null;
+    userInfo: UserInfo | null;
+  };
 }
 
 export default createStore<AppState>({
   state: {
-    user: null,
-  },
-  mutations: {
-    login(state, { username, password }) {
-      state.user = { name: 'Name' };
-      console.log(username);
-      console.log(password);
+    user: {
+      loading: false,
+      errorMessage: null,
+      userInfo: null,
     },
   },
-  actions: {},
+  mutations: {
+    ...loginMutations,
+    ...accountDetailsMutations,
+  },
+  actions: {
+    login: loginAction,
+    accountDetails: accountDetailsAction,
+  },
   modules: {},
 });

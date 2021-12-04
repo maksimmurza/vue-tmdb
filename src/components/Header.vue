@@ -29,7 +29,7 @@
     >
       <n-button text color="white"> <h3>More</h3> </n-button>
     </n-dropdown>
-    <div class="user-button-container" v-if="store.state.user">
+    <div v-if="store.state.user.userInfo" class="user-button-container">
       <n-dropdown
         trigger="click"
         @select="handleSelect"
@@ -42,7 +42,7 @@
               <user-astronaut />
             </n-icon>
           </n-avatar>
-          <h3 class="user-name">{{ store.state.user.name }}</h3>
+          <h3 class="user-name">{{ store.state.user.userInfo.name }}</h3>
         </div>
       </n-dropdown>
     </div>

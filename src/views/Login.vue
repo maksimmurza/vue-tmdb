@@ -27,7 +27,7 @@ export default defineComponent({
     const model = ref({ username: '', password: '' });
 
     const login = (username, password) => {
-      store.commit('login', { username: model.value.username, password: model.value.password });
+      store.dispatch('login', { username: model.value.username, password: model.value.password });
     };
 
     return { model, login };

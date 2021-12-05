@@ -1,46 +1,36 @@
 <template>
   <div class="header">
-    <h1 class="header-home-link">
+    <h1 class="header__home-link">
       <router-link :to="'/'"> Vue TMDB </router-link>
     </h1>
     <n-dropdown
       @select="handleSelect"
+      :options="item.options"
+      :key="item.id"
       trigger="hover"
-      :options="moviesDropdownOptions"
       placement="bottom-start"
+      v-for="item in [
+        { id: 0, title: 'Movies', options: moviesDropdownOptions },
+        { id: 1, title: 'TV Shows', options: tvShowsDropdownOptions },
+        { id: 2, title: 'More', options: moreShowsDropdownOptions },
+      ]"
     >
       <n-button text color="white">
-        <h3>Movies</h3>
+        <h3>{{ item.title }}</h3>
       </n-button>
     </n-dropdown>
-    <n-dropdown
-      @select="handleSelect"
-      trigger="hover"
-      :options="tvShowsDropdownOptions"
-      placement="bottom-start"
-    >
-      <n-button text color="white"> <h3>TV Shows</h3> </n-button>
-    </n-dropdown>
-    <n-dropdown
-      @select="handleSelect"
-      trigger="hover"
-      :options="moreShowsDropdownOptions"
-      placement="bottom-start"
-    >
-      <n-button text color="white"> <h3>More</h3> </n-button>
-    </n-dropdown>
-    <div v-if="store.state.user.userInfo" class="user-button-container">
-      <n-spin :show="store.state.user.loading">
+    <div v-if="user.userInfo">
+      <n-spin :show="user.loading">
         <n-dropdown
           trigger="click"
           @select="handleSelect"
           :options="profileDropdownOptions"
           placement="bottom-end"
         >
-          <div class="user-button">
+          <div class="header__user-button user-button">
             <n-avatar
-              v-if="store.state.user.userInfo.avatar"
-              :src="userAvatarBaseUrl + store.state.user.userInfo.avatar"
+              v-if="user.userInfo.avatar"
+              :src="userAvatarBaseUrl + user.userInfo.avatar"
               :style="{ minWidth: 'fit-content' }"
             />
             <n-avatar v-else :style="{ color: 'gray', backgroundColor: 'white' }">
@@ -48,12 +38,12 @@
                 <user-astronaut />
               </n-icon>
             </n-avatar>
-            <h3 class="user-name">{{ store.state.user.userInfo.name }}</h3>
+            <h3 class="user-button__user-name">{{ user.userInfo.name }}</h3>
           </div>
         </n-dropdown>
       </n-spin>
     </div>
-    <div v-else class="login-button">
+    <div v-else>
       <router-link :to="'/login'" style="text-decoration: none; color: inherit">
         <h3>Login</h3>
       </router-link>
@@ -62,7 +52,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 import { NDropdown, NButton, NIcon, NAvatar, NSpin } from 'naive-ui';
 import { UserAstronaut } from '@vicons/fa';
@@ -86,7 +76,7 @@ export default defineComponent({
       moreShowsDropdownOptions,
       profileDropdownOptions,
       userAvatarBaseUrl,
-      store,
+      user: computed(() => store.state.user),
     };
   },
   components: { NDropdown, NButton, NIcon, NAvatar, UserAstronaut, NSpin },
@@ -102,41 +92,35 @@ export default defineComponent({
   color: white;
   display: flex;
   align-items: center;
-  padding: 0 10vw 0 10vw;
-}
+  padding: 0 10vw;
 
-.header > * {
-  color: white;
-  margin-right: 2rem;
-}
+  & > * {
+    color: white;
+    margin-right: 2rem;
+  }
 
-.header > h1 {
-  background: -webkit-linear-gradient(rgb(153, 219, 208), rgb(206, 193, 228));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 800;
-  margin-right: calc(2rem + 3vh);
-}
+  & > *:last-child {
+    margin-right: 0;
+    margin-left: auto;
+    cursor: pointer;
+  }
 
-.user-button-container {
-  margin-right: 0;
-  margin-left: auto;
-  cursor: pointer;
+  &__home-link {
+    background: -webkit-linear-gradient(rgb(153, 219, 208), rgb(206, 193, 228));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    margin-right: calc(2rem + 3vh);
+  }
 }
 
 .user-button {
   display: flex;
   align-items: center;
 
-  & > .user-name {
+  &__user-name {
     margin-left: 1rem;
   }
-}
-
-.login-button {
-  margin-right: 0;
-  margin-left: auto;
-  cursor: pointer;
 }
 </style>

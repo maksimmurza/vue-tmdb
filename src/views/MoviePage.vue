@@ -1,5 +1,5 @@
 <template>
-  <div class="details-header">
+  <div v-if="movie" class="details-header">
     <div class="details-foreground">
       <div>
         <img :src="movieCoverSrc" />
@@ -21,7 +21,7 @@
           </n-button>
         </div>
         <div class="movie-page-rating-block">
-          <div class="movie-page-rating-label" v-if="movie && movie.vote_count > 0">
+          <div v-if="movie.vote_count > 0" class="movie-page-rating-label">
             <n-progress
               type="circle"
               :indicator-text-color="'white'"
@@ -66,6 +66,7 @@
       }"
     ></div>
   </div>
+  <loader v-else />
   <div v-if="movie && movie.credits" class="movie-page-content">
     <h1>Cast</h1>
     <n-scrollbar x-scrollable>
@@ -79,17 +80,16 @@
 <script>
 import useMovie from '@/composables/useMovie';
 import { defineComponent, onMounted, computed } from 'vue';
-import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
-import { NButton, NProgress, NIcon, NEmpty, NScrollbar } from 'naive-ui';
+import { NButton, NProgress, NIcon, NEmpty, NScrollbar, NSpin } from 'naive-ui';
 import { Heart, Star, StarRegular, Bookmark, ListUl } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
+import Loader from '../components/Loader.vue';
 
 export default defineComponent({
   name: 'MoviePage',
   setup() {
     const route = useRoute();
-    const store = useStore();
     const { loading, movie, error, getMovie } = useMovie(route.params.id);
 
     const backgroundImageUrl = computed(
@@ -102,13 +102,14 @@ export default defineComponent({
       getMovie();
     });
 
-    return { loading, movie, error, getMovie, movieCoverSrc, backgroundImageUrl };
+    return { loading, movie, error, movieCoverSrc, backgroundImageUrl };
   },
   components: {
     NButton,
     NProgress,
     NIcon,
     NScrollbar,
+    Loader,
     Heart,
     Star,
     StarRegular,

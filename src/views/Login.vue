@@ -16,8 +16,9 @@
         type="primary"
         @click="login"
         :disabled="model.username === '' || model.password === ''"
-        >Sign In</n-button
       >
+        Sign In
+      </n-button>
     </n-form>
   </n-spin>
 </template>

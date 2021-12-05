@@ -2,18 +2,22 @@
   <div class="content">
     <search class="search" />
     <h1>What's popular</h1>
-    <n-scrollbar x-scrollable>
-      <div class="movies-container">
-        <movie-card v-for="movie in popularMovies" :key="movie.id" :movie="movie"></movie-card>
-      </div>
-    </n-scrollbar>
+    <n-spin :show="popularLoading">
+      <n-scrollbar x-scrollable>
+        <div class="movies-container">
+          <movie-card v-for="movie in popularMovies" :key="movie.id" :movie="movie"></movie-card>
+        </div>
+      </n-scrollbar>
+    </n-spin>
     <n-divider />
     <h1>Top rated movies</h1>
-    <n-scrollbar x-scrollable>
-      <div class="movies-container">
-        <movie-card v-for="movie in topRatedMovies" :key="movie.id" :movie="movie"></movie-card>
-      </div>
-    </n-scrollbar>
+    <n-spin :show="topRatedLoading">
+      <n-scrollbar x-scrollable>
+        <div class="movies-container">
+          <movie-card v-for="movie in topRatedMovies" :key="movie.id" :movie="movie"></movie-card>
+        </div>
+      </n-scrollbar>
+    </n-spin>
     <h3 v-if="error">
       {{ error }}
     </h3>
@@ -22,7 +26,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
-import { NScrollbar, NDivider } from 'naive-ui';
+import { NScrollbar, NDivider, NSpin } from 'naive-ui';
 import MovieCard from '../components/MovieCard.vue';
 import Search from '../components/Search.vue';
 import useMovies from '../composables/useMovies';
@@ -64,6 +68,7 @@ export default defineComponent({
     Search,
     NDivider,
     NScrollbar,
+    NSpin,
   },
 });
 </script>
@@ -80,6 +85,7 @@ export default defineComponent({
   display: flex;
   flex-wrap: nowrap;
   background-color: #e2e8dd;
+  min-height: 300px;
 }
 
 .movies-container > * {

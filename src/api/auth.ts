@@ -5,8 +5,14 @@ const login = async (username: string, password: string): Promise<AxiosResponse>
   try {
     const createRequestTokenResponse = await axiosClient.get(`/authentication/token/new`);
     const { request_token } = createRequestTokenResponse.data;
-    await axiosClient.post(`/authentication/token/validate_with_login`, {username, password, request_token});
-    const createNewSessionResponse = await axiosClient.post(`/authentication/session/new`, {request_token});
+    await axiosClient.post(`/authentication/token/validate_with_login`, {
+      username,
+      password,
+      request_token,
+    });
+    const createNewSessionResponse = await axiosClient.post(`/authentication/session/new`, {
+      request_token,
+    });
     return createNewSessionResponse;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -16,4 +22,20 @@ const login = async (username: string, password: string): Promise<AxiosResponse>
   }
 };
 
-export { login };
+const logout = async (sessionId: string): Promise<AxiosResponse> => {
+  try {
+    const deleteSessionResponse = await axiosClient.delete(`/authentication/session`, {
+      data: {
+        session_id: sessionId,
+      },
+    });
+    return deleteSessionResponse;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+export { login, logout };

@@ -1,20 +1,25 @@
 <template lang="">
-<n-spin :show="store.state.user.loading">
-  <n-form :model="model" ref="formRef" :rules="rules" class="login-form" @keyup.enter="login">
-    <n-form-item path="username" label="User name">
-      <n-input v-model:value="model.username" @keydown.enter.prevent />
-    </n-form-item>
-    <n-form-item path="password" label="Password">
-      <n-input
-        v-model:value="model.password"
-        @input="handlePasswordInput"
-        type="password"
-        @keydown.enter.prevent
-      />
-    </n-form-item>
-  <n-button type="primary" @click="login" :disabled="model.username === '' || model.password ===''">Sign In</n-button>
-  </n-form>
-</n-spin>
+  <n-spin :show="store.state.user.loading">
+    <n-form :model="model" ref="formRef" :rules="rules" class="login-form" @keyup.enter="login">
+      <n-form-item path="username" label="User name">
+        <n-input type="text" v-model:value="model.username" @keydown.enter.prevent />
+      </n-form-item>
+      <n-form-item path="password" label="Password">
+        <n-input
+          v-model:value="model.password"
+          @input="handlePasswordInput"
+          type="password"
+          @keydown.enter.prevent
+        />
+      </n-form-item>
+      <n-button
+        type="primary"
+        @click="login"
+        :disabled="model.username === '' || model.password === ''"
+        >Sign In</n-button
+      >
+    </n-form>
+  </n-spin>
 </template>
 <script>
 import { defineComponent } from '@vue/runtime-core';
@@ -39,14 +44,14 @@ export default defineComponent({
     NFormItem,
     NInput,
     NButton,
-    NSpin
+    NSpin,
   },
 });
 </script>
 
 <style lang="scss">
-  .login-form {
-    padding: 0 10vw;
-    margin-top: 2rem;
-  }
+.login-form {
+  padding: 0 10vw;
+  margin-top: 2rem;
+}
 </style>

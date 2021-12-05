@@ -30,22 +30,28 @@
       <n-button text color="white"> <h3>More</h3> </n-button>
     </n-dropdown>
     <div v-if="store.state.user.userInfo" class="user-button-container">
-      <n-dropdown
-        trigger="click"
-        @select="handleSelect"
-        :options="profileDropdownOptions"
-        placement="bottom-end"
-      >
-        <div class="user-button">
-          <n-avatar v-if="store.state.user.userInfo.avatar" :src="userAvatarBaseUrl + store.state.user.userInfo.avatar" :style="{minWidth: 'fit-content'}" />
-          <n-avatar v-else :style="{ color: 'gray', backgroundColor: 'white' }">
-            <n-icon size="30">
-              <user-astronaut />
-            </n-icon>
-          </n-avatar>
-          <h3 class="user-name">{{ store.state.user.userInfo.name }}</h3>
-        </div>
-      </n-dropdown>
+      <n-spin :show="store.state.user.loading">
+        <n-dropdown
+          trigger="click"
+          @select="handleSelect"
+          :options="profileDropdownOptions"
+          placement="bottom-end"
+        >
+          <div class="user-button">
+            <n-avatar
+              v-if="store.state.user.userInfo.avatar"
+              :src="userAvatarBaseUrl + store.state.user.userInfo.avatar"
+              :style="{ minWidth: 'fit-content' }"
+            />
+            <n-avatar v-else :style="{ color: 'gray', backgroundColor: 'white' }">
+              <n-icon size="30">
+                <user-astronaut />
+              </n-icon>
+            </n-avatar>
+            <h3 class="user-name">{{ store.state.user.userInfo.name }}</h3>
+          </div>
+        </n-dropdown>
+      </n-spin>
     </div>
     <div v-else class="login-button">
       <router-link :to="'/login'" style="text-decoration: none; color: inherit">
@@ -58,7 +64,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { useStore } from 'vuex';
-import { NDropdown, NButton, NIcon, NAvatar } from 'naive-ui';
+import { NDropdown, NButton, NIcon, NAvatar, NSpin } from 'naive-ui';
 import { UserAstronaut } from '@vicons/fa';
 import {
   moviesDropdownOptions,
@@ -83,7 +89,7 @@ export default defineComponent({
       store,
     };
   },
-  components: { NDropdown, NButton, NIcon, NAvatar, UserAstronaut },
+  components: { NDropdown, NButton, NIcon, NAvatar, UserAstronaut, NSpin },
 });
 </script>
 

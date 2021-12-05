@@ -1,3 +1,5 @@
+import store from './store';
+
 export const moviesDropdownOptions = [
   { label: 'Popular', key: 'popular' },
   { label: 'Now playing', key: 'now playing' },
@@ -23,5 +25,13 @@ export const profileDropdownOptions = [
   { label: 'Ratings', key: 'ratings' },
   { label: 'Watchlist', key: 'watchlist' },
   { label: 'Edit profile', key: 'edit profile' },
-  { label: 'Logout', key: 'logout' },
+  {
+    label: 'Logout',
+    key: 'logout',
+    props: {
+      onClick: (): void => {
+        store.dispatch('logout', store.state.user.userInfo?.sessionId);
+      },
+    },
+  },
 ];

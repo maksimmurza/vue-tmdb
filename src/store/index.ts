@@ -1,8 +1,10 @@
 import { createStore } from 'vuex';
-import { UserInfo } from '@/types'
-import * as loginMutations from './mutations/loginMutations'
-import * as accountDetailsMutations from './mutations/accountDetailsMutations'
+import { UserInfo } from '@/types';
+import * as loginMutations from './mutations/loginMutations';
+import * as logoutMutations from './mutations/logoutMutations';
+import * as accountDetailsMutations from './mutations/accountDetailsMutations';
 import loginAction from './actions/loginAction';
+import logoutAction from './actions/logoutAction';
 import accountDetailsAction from './actions/accountDetailsAction';
 
 export interface AppState {
@@ -23,10 +25,12 @@ export default createStore<AppState>({
   },
   mutations: {
     ...loginMutations,
+    ...logoutMutations,
     ...accountDetailsMutations,
   },
   actions: {
     login: loginAction,
+    logout: logoutAction,
     accountDetails: accountDetailsAction,
   },
   modules: {},

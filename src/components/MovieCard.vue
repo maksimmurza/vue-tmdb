@@ -1,7 +1,6 @@
 <template>
   <n-card
     hoverable
-    :title="movie.title"
     :style="{
       position: 'relative',
     }"
@@ -22,8 +21,10 @@
       <span class="rating-text">{{ movie.vote_average }}</span>
       <span class="rating-text" v-show="ratingLabelIsHover">- {{ movie.vote_count }} votes</span>
     </div>
-    <div class="card-overview">
-      {{ movie.overview }}
+    <div class="card-text">
+      <h3 :style="{ marginBottom: '0' }">
+        {{ movie.title }}
+      </h3>
     </div>
   </n-card>
 </template>
@@ -62,7 +63,6 @@ export default defineComponent({
   width: fit-content;
   align-items: center;
   padding: 3px 10px;
-  cursor: pointer;
 }
 
 .rating-text {
@@ -71,13 +71,13 @@ export default defineComponent({
   margin-left: 5px;
 }
 
-.card-overview {
+.card-text {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-  min-height: 5em;
+  min-height: 3em;
 }
 
 .movie-cover {

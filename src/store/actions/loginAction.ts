@@ -13,7 +13,7 @@ async function loginAction(
     const { session_id: sessionId } = response.data;
     await dispatch('accountDetails', { sessionId });
     commit('loginSuccess', { sessionId });
-    router.push('/');
+    router.go(-1);
   } catch (error) {
     commit('loginFail', error.message);
   }

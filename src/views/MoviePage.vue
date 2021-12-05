@@ -66,7 +66,14 @@
       }"
     ></div>
   </div>
-  <div class="movie-page-cast"></div>
+  <div v-if="movie && movie.credits" class="movie-page-content">
+    <h1>Cast</h1>
+    <n-scrollbar x-scrollable>
+      <div class="movie-page-cast">
+        <actor-card v-for="actor in movie.credits.cast" :key="actor.id" :actor="actor"></actor-card>
+      </div>
+    </n-scrollbar>
+  </div>
 </template>
 
 <script>
@@ -74,8 +81,9 @@ import useMovie from '@/composables/useMovie';
 import { defineComponent, onMounted, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
-import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
+import { NButton, NProgress, NIcon, NEmpty, NScrollbar } from 'naive-ui';
 import { Heart, Star, StarRegular, Bookmark, ListUl } from '@vicons/fa';
+import ActorCard from '../components/ActorCard.vue';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -96,7 +104,19 @@ export default defineComponent({
 
     return { loading, movie, error, getMovie, movieCoverSrc, backgroundImageUrl };
   },
-  components: { NButton, NProgress, NIcon, Heart, Star, StarRegular, Bookmark, ListUl, NEmpty },
+  components: {
+    NButton,
+    NProgress,
+    NIcon,
+    NScrollbar,
+    Heart,
+    Star,
+    StarRegular,
+    Bookmark,
+    ListUl,
+    NEmpty,
+    ActorCard,
+  },
 });
 </script>
 
@@ -164,8 +184,26 @@ export default defineComponent({
   background-color: transparent;
 }
 
+.movie-page-content {
+  padding: 0 10vw;
+}
+
 .personal-list-button {
   border-radius: 50%;
   background-color: rgb(88, 112, 143);
+}
+
+.movie-page-cast {
+  position: relative;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: #e2e8dd;
+}
+
+.movie-page-cast > * {
+  min-width: 130px;
+  margin-right: 1rem;
 }
 </style>

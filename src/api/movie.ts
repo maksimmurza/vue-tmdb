@@ -13,4 +13,16 @@ const fetchMovie = async (movieId: number): Promise<AxiosResponse> => {
   }
 };
 
-export { fetchMovie };
+const movieCredits = async (movieId: number): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClient.get(`/movie/${movieId}/credits`);
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+export { fetchMovie, movieCredits };

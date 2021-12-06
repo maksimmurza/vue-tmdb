@@ -1,55 +1,85 @@
-import { fetchMovie, movieCredits } from '../api/movie';
+import { fetchMovie, movieCredits, movieVideos } from '../api/movie';
 import { Movie } from '@/types';
 import { ref, Ref } from 'vue';
 
 const useMovie = (
   movieId: number
 ): {
-  loading: Ref<boolean>;
+  movieDetailsLoading: Ref<boolean>;
+  movieCreditsLoading: Ref<boolean>;
+  movieVideosLoading: Ref<boolean>;
   movie: Ref<Movie | null>;
-  error: Ref<Error | null>;
+  movieDetailsError: Ref<Error | null>;
+  movieCreditsError: Ref<Error | null>;
+  movieVideosError: Ref<Error | null>;
   getMovie: () => Promise<void>;
   getMovieCredits: () => Promise<void>;
+  getMovieVideo: () => Promise<void>;
 } => {
   const movie = ref<Movie | null>(null);
-  const error = ref<Error | null>(null);
-  const loading = ref<boolean>(false);
+  const movieDetailsError = ref<Error | null>(null);
+  const movieCreditsError = ref<Error | null>(null);
+  const movieVideosError = ref<Error | null>(null);
+  const movieDetailsLoading = ref<boolean>(false);
+  const movieCreditsLoading = ref<boolean>(false);
+  const movieVideosLoading = ref<boolean>(false);
 
   const getMovie = async () => {
-    loading.value = true;
+    movieDetailsLoading.value = true;
     try {
       const response = await fetchMovie(movieId);
       movie.value = response.data;
-      error.value = null;
+      movieDetailsError.value = null;
       getMovieCredits();
+      getMovieVideo();
     } catch (err) {
-      error.value = err as Error;
+      movieDetailsError.value = err as Error;
     } finally {
-      loading.value = false;
+      movieDetailsLoading.value = false;
     }
   };
 
   const getMovieCredits = async () => {
-    loading.value = true;
+    movieCreditsLoading.value = true;
     try {
       const response = await movieCredits(movieId);
       if (movie.value) {
         movie.value.credits = response.data;
       }
-      error.value = null;
+      movieCreditsError.value = null;
     } catch (err) {
-      error.value = err as Error;
+      movieCreditsError.value = err as Error;
     } finally {
-      loading.value = false;
+      movieCreditsLoading.value = false;
+    }
+  };
+
+  const getMovieVideo = async () => {
+    movieVideosLoading.value = true;
+    try {
+      const response = await movieVideos(movieId);
+      if (movie.value) {
+        movie.value.videos = response.data;
+      }
+      movieVideosError.value = null;
+    } catch (err) {
+      movieVideosError.value = err as Error;
+    } finally {
+      movieVideosLoading.value = false;
     }
   };
 
   return {
-    loading,
+    movieDetailsLoading,
+    movieCreditsLoading,
+    movieVideosLoading,
     movie,
-    error,
+    movieDetailsError,
+    movieCreditsError,
+    movieVideosError,
     getMovie,
     getMovieCredits,
+    getMovieVideo,
   };
 };
 

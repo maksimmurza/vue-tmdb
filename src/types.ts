@@ -28,6 +28,19 @@ export interface MovieCredits {
   crew: Array<CrewMember>;
 }
 
+export interface MovieVideo {
+  iso_639_1: string;
+  iso_3166_1: string;
+  name: string;
+  key: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+  published_at: string;
+  id: string;
+}
+
 export interface Movie {
   adult: boolean;
   backdrop_path: string;
@@ -44,6 +57,7 @@ export interface Movie {
   vote_average: number;
   vote_count: number;
   credits?: MovieCredits;
+  videos?: { id: number; results: Array<MovieVideo> };
 }
 
 export interface MoviesResponse {

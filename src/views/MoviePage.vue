@@ -72,13 +72,17 @@
   <loader v-else />
   <div v-if="movieDetails && movieDetails.credits" class="movie-page-content">
     <h1>Cast</h1>
-    <cards-list :loading="movieDetailsLoading" :error="movieDetailsError">
+    <cards-list :loading="movieCreditsLoading" :error="movieDetailsError">
       <actor-card
         v-for="actor in movieDetails.credits.cast"
         :key="actor.id"
         :actor="actor"
       ></actor-card>
     </cards-list>
+    <h1>Trailer</h1>
+    <iframe :src="movieTrailerLink" width="700" height="500" frameborder="0">
+      {{ movieTrailerLink }}
+    </iframe>
   </div>
 </template>
 
@@ -97,10 +101,16 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const {
-      loading: movieDetailsLoading,
+      movieDetailsLoading,
+      movieCreditsLoading,
+      // movieVideosLoading,
       movie: movieDetails,
-      error: movieDetailsError,
+      movieDetailsError,
+      // movieCreditsError,
+      // movieVideosError,
       getMovie,
+      // getMovieCredits,
+      // getMovieVideo,
     } = useMovie(route.params.id);
 
     const backgroundImageUrl = computed(
@@ -115,15 +125,31 @@ export default defineComponent({
       () => process.env.VUE_APP_IMG_URL + movieDetails.value?.poster_path
     );
 
+    const movieTrailerLink = computed(() => {
+      const officialTrailer = movieDetails.value?.videos?.results.find(
+        video => video.name === 'Official Trailer'
+      );
+
+      if (officialTrailer) {
+        return `https://www.youtube.com/embed/${officialTrailer.key}`;
+      }
+
+      return `https://www.youtube.com/embed/${
+        movieDetails.value?.videos?.results.find(video => video.type === 'Trailer').key
+      }`;
+    });
+
     onMounted(() => {
       getMovie();
     });
 
     return {
       movieDetailsLoading,
+      movieCreditsLoading,
       movieDetails,
       movieDetailsError,
       movieCoverSrc,
+      movieTrailerLink,
       backgroundImageStyle,
     };
   },

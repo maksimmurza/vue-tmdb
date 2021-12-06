@@ -1,5 +1,5 @@
 <template>
-  <n-card :title="actor.name">
+  <n-card :title="actor.name" class="actor-card">
     <template #cover>
       <img :src="actorPhotoSrc" />
     </template>
@@ -24,4 +24,8 @@ export default defineComponent({
 });
 </script>
 
-<style lang=""></style>
+<style lang="scss">
+.actor-card {
+  min-width: 140px;
+}
+</style>

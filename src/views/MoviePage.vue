@@ -1,34 +1,40 @@
 <template>
-  <div v-if="movie" class="movie-page-header">
+  <div v-if="movieDetails" class="movie-page-header">
     <div class="movie-page-header__foreground">
       <div>
         <img :src="movieCoverSrc" />
       </div>
       <div class="movie-description">
         <div>
-          <h1 class="movie-description__title">{{ movie && movie.title }}</h1>
+          <h1 class="movie-description__title">{{ movieDetails && movieDetails.title }}</h1>
           <span class="movie-description__release-year"
-            >({{ movie && movie.release_date.slice(0, 4) }})</span
+            >({{ movieDetails && movieDetails.release_date.slice(0, 4) }})</span
           >
         </div>
-        <div v-if="movie">
+        <div v-if="movieDetails">
           <n-button
             round
             type="tertiary"
             class="movie-description__genre-button"
             size="tiny"
-            v-for="genre in movie.genres"
+            v-for="genre in movieDetails.genres"
             :key="genre.id"
             >{{ genre.name }}
           </n-button>
         </div>
         <div class="rating-block">
-          <div v-if="movie.vote_count > 0" class="rating-block__infographic">
+          <div v-if="movieDetails.vote_count > 0" class="rating-block__infographic">
             <n-progress
               type="circle"
               :indicator-text-color="'white'"
-              :percentage="movie.vote_average * 10"
-              :color="movie.vote_average < 5 ? 'red' : movie.vote_average < 8 ? 'orange' : 'green'"
+              :percentage="movieDetails.vote_average * 10"
+              :color="
+                movieDetails.vote_average < 5
+                  ? 'red'
+                  : movieDetails.vote_average < 8
+                  ? 'orange'
+                  : 'green'
+              "
             ></n-progress>
           </div>
           <div v-else>
@@ -55,22 +61,24 @@
             ></n-button>
           </div>
         </div>
-        <div v-if="movie" class="movie-description__overview">
+        <div v-if="movieDetails" class="movie-description__overview">
           <h3>Overview</h3>
-          <p>{{ movie.overview }}</p>
+          <p>{{ movieDetails.overview }}</p>
         </div>
       </div>
     </div>
     <div class="movie-page-header__background" :style="backgroundImageStyle"></div>
   </div>
   <loader v-else />
-  <div v-if="movie && movie.credits" class="movie-page-content">
+  <div v-if="movieDetails && movieDetails.credits" class="movie-page-content">
     <h1>Cast</h1>
-    <n-scrollbar x-scrollable>
-      <div class="movie-page-cast">
-        <actor-card v-for="actor in movie.credits.cast" :key="actor.id" :actor="actor"></actor-card>
-      </div>
-    </n-scrollbar>
+    <cards-list :loading="movieDetailsLoading" :error="movieDetailsError">
+      <actor-card
+        v-for="actor in movieDetails.credits.cast"
+        :key="actor.id"
+        :actor="actor"
+      ></actor-card>
+    </cards-list>
   </div>
 </template>
 
@@ -78,38 +86,51 @@
 import useMovie from '@/composables/useMovie';
 import { defineComponent, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { NButton, NProgress, NIcon, NEmpty, NScrollbar } from 'naive-ui';
+import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
 import { Heart, Star, StarRegular, Bookmark, ListUl } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
+import CardsList from '../components/CardsList.vue';
 
 export default defineComponent({
   name: 'MoviePage',
   setup() {
     const route = useRoute();
-    const { loading, movie, error, getMovie } = useMovie(route.params.id);
+    const {
+      loading: movieDetailsLoading,
+      movie: movieDetails,
+      error: movieDetailsError,
+      getMovie,
+    } = useMovie(route.params.id);
 
     const backgroundImageUrl = computed(
-      () => process.env.VUE_APP_BACKGROUND_IMG_URL + movie.value?.backdrop_path
+      () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
     );
 
     const backgroundImageStyle = computed(() => ({
       backgroundImage: `url(${backgroundImageUrl.value})`,
     }));
 
-    const movieCoverSrc = computed(() => process.env.VUE_APP_IMG_URL + movie.value?.poster_path);
+    const movieCoverSrc = computed(
+      () => process.env.VUE_APP_IMG_URL + movieDetails.value?.poster_path
+    );
 
     onMounted(() => {
       getMovie();
     });
 
-    return { loading, movie, error, movieCoverSrc, backgroundImageStyle };
+    return {
+      movieDetailsLoading,
+      movieDetails,
+      movieDetailsError,
+      movieCoverSrc,
+      backgroundImageStyle,
+    };
   },
   components: {
     NButton,
     NProgress,
     NIcon,
-    NScrollbar,
     Loader,
     Heart,
     Star,
@@ -118,6 +139,7 @@ export default defineComponent({
     ListUl,
     NEmpty,
     ActorCard,
+    CardsList,
   },
 });
 </script>

@@ -52,20 +52,26 @@ export default defineComponent({
 
 <style lang="scss">
 .movie-card {
+  $cardWidth: 200px;
+
+  box-sizing: content-box;
   position: relative;
+  min-width: $cardWidth;
 
   &__cover {
     cursor: pointer;
   }
 
   &__rating {
-    position: absolute;
-    top: 280px;
-    left: 10px;
+    $ratingHeight: 25px;
+
+    position: relative;
+    top: -$ratingHeight / 2 - 1;
+    margin-bottom: -1rem;
     background-color: white;
     box-shadow: 0 0 5px 0px black;
-    border-radius: 25px;
-    height: 25px;
+    border-radius: $ratingHeight;
+    height: $ratingHeight;
     display: flex;
     flex-wrap: nowrap;
     width: fit-content;

@@ -1,6 +1,6 @@
 <template>
   <Header></Header>
-  <router-view />
+  <router-view :key="$route.path" />
   <Footer></Footer>
 </template>
 
@@ -19,8 +19,8 @@ export default defineComponent({
 
 <style lang="scss">
 #app {
- min-height: 100vh;
- display: flex;
- flex-direction: column;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 </style>

@@ -41,38 +41,58 @@ export interface MovieVideo {
   id: string;
 }
 
-export interface Movie {
-  adult: boolean;
+export interface Video {
   backdrop_path: string;
   genre_ids: Array<number>;
   id: number;
   original_language: string;
-  original_title: string;
   overview: string;
   popularity: number;
   poster_path: string;
+  vote_average: number;
+  vote_count: number;
+}
+
+export interface Movie extends Video {
+  adult: boolean;
+  original_title: string;
   release_date: string;
   title: string;
   video: boolean;
-  vote_average: number;
-  vote_count: number;
   credits?: MovieCredits;
   videos?: { id: number; results: Array<MovieVideo> };
 }
 
-export interface MoviesResponse {
+export interface TVShow extends Video {
+  first_air_date: string;
+  name: string;
+  origin_country: Array<string>;
+  original_name: string;
+}
+
+interface VideosResponse<T> {
   page: number;
-  results: Array<Movie>;
+  results: Array<T>;
   total_pages: number;
   total_results: number;
 }
 
-export type PopularMoviesResponse = MoviesResponse;
-export type TopRatedMoviesResponse = MoviesResponse;
+export type MoviesResponse = VideosResponse<Movie>;
+export type TVShowsResponse = VideosResponse<TVShow>;
 
-export interface UpcomingMoviesResponse extends MoviesResponse {
+export interface DatedVideosResponse<T> extends VideosResponse<T> {
   dates: { maximum: string; minimum: string };
 }
+
+export type PopularMoviesResponse = MoviesResponse;
+export type NowPlayingMoviesResponse = DatedVideosResponse<Movie>;
+export type UpcomingMoviesResponse = DatedVideosResponse<Movie>;
+export type TopRatedMoviesResponse = MoviesResponse;
+
+export type PopularTVShowsResponse = TVShowsResponse;
+export type AiringTodayTVShowsResponse = TVShowsResponse;
+export type OnTVShowsResponse = TVShowsResponse;
+export type TopRatedTVShowsResponse = TVShowsResponse;
 
 export interface UserInfo {
   name: string;

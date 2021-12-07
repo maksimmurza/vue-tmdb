@@ -1,18 +1,29 @@
+import router from './router';
 import store from './store';
 
-export const moviesDropdownOptions = [
-  { label: 'Popular', key: 'popular' },
-  { label: 'Now playing', key: 'now playing' },
-  { label: 'Upcoming', key: 'upcoming' },
-  { label: 'Top Rated', key: 'top rated' },
-];
+export const moviesDropdownOptions = ['Popular', 'Now playing', 'Upcoming', 'Top Rated'].map(
+  label => ({
+    label,
+    key: label.toLowerCase(),
+    props: {
+      onClick: () => {
+        router.push(`/movies/${label.toLowerCase().replaceAll(' ', '-')}`);
+      },
+    },
+  })
+);
 
-export const tvShowsDropdownOptions = [
-  { label: 'Popular', key: 'popular' },
-  { label: 'Airing Today', key: 'airing today' },
-  { label: 'On TV', key: 'on tv' },
-  { label: 'Top Rated', key: 'top rated' },
-];
+export const tvShowsDropdownOptions = ['Popular', 'Airing Today', 'On TV', 'Top Rated'].map(
+  label => ({
+    label,
+    key: label.toLowerCase(),
+    props: {
+      onClick: () => {
+        router.push(`/tv/${label.toLowerCase().replaceAll(' ', '-')}`);
+      },
+    },
+  })
+);
 
 export const moreShowsDropdownOptions = [
   { label: 'About', key: 'about' },

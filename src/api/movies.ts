@@ -11,18 +11,6 @@ import {
 import axios, { AxiosResponse } from 'axios';
 import axiosClient from '../utils/axiosClient';
 
-const fetchMovies = async (link: string) => {
-  try {
-    const response = await axiosClient.get(link);
-    return response;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.status_message);
-    }
-    throw new Error('Server is unavailable');
-  }
-};
-
 type FetchingFunction<T> = (pageNumber?: number) => Promise<AxiosResponse<T>>;
 
 type MoviesFetchingService = {
@@ -37,6 +25,18 @@ type TVShowsFetchingService = {
   airingToday: FetchingFunction<AiringTodayTVShowsResponse>;
   onTv: FetchingFunction<OnTVShowsResponse>;
   topRated: FetchingFunction<TopRatedTVShowsResponse>;
+};
+
+const fetchMovies = async (link: string) => {
+  try {
+    const response = await axiosClient.get(link);
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
 };
 
 const moviesFetchingService: MoviesFetchingService = {

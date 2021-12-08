@@ -3,12 +3,20 @@
     <search class="search" />
     <h1>What's popular</h1>
     <cards-list :loading="popularLoading" :error="popularError">
-      <movie-card v-for="movie in popularMovies" :key="movie.id" :movie="movie"></movie-card>
+      <movie-card
+        v-for="movie in popularMovies.results"
+        :key="movie.id"
+        :movie="movie"
+      ></movie-card>
     </cards-list>
     <n-divider />
     <h1>Top rated movies</h1>
     <cards-list :loading="topRatedLoading" :error="topRatedError">
-      <movie-card v-for="movie in topRatedMovies" :key="movie.id" :movie="movie"></movie-card>
+      <movie-card
+        v-for="movie in topRatedMovies.results"
+        :key="movie.id"
+        :movie="movie"
+      ></movie-card>
     </cards-list>
     <h3 v-if="error">
       {{ error }}

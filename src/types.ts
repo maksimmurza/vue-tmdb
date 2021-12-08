@@ -100,3 +100,8 @@ export interface UserInfo {
   sessionId: string;
   avatar: string | null;
 }
+
+export interface Genre {
+  id: number;
+  name: string;
+}

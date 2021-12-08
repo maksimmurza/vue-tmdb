@@ -49,3 +49,49 @@ export const profileDropdownOptions = [
     },
   },
 ];
+
+export const sortingOptions = [
+  {
+    label: 'Popularity Descending',
+    value: 'popularity.desc',
+  },
+  {
+    label: 'Popularity Ascending',
+    value: 'popularity.asc',
+  },
+  {
+    label: 'Rating Descending',
+    value: 'vote_average.desc',
+  },
+  {
+    label: 'Rating Ascending',
+    value: 'vote_average.asc',
+  },
+  {
+    label: 'Release Date Descending',
+    value: 'release_date.desc',
+  },
+  {
+    label: 'Release Date Ascending',
+    value: 'release_date.asc',
+  },
+  {
+    label: 'Title (A-Z)',
+    value: 'original_title.asc',
+  },
+  {
+    label: 'Title (Z-A)',
+    value: 'original_title.desc',
+  },
+];
+
+// release_date.gte
+// release_date.lte
+
+// vote_average.gte
+// vote_average.lte
+
+// vote_count.gte
+// vote_average.lte
+
+// with_genres

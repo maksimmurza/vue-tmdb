@@ -1,24 +1,29 @@
 import { tvShowsFetchingService, TVShowsFetchingService } from '../api/movies';
-import { TVShow } from '@/types';
+import { TVShowsResponse } from '@/types';
 import { ref, Ref } from 'vue';
 
 const useTVShows = (
   type: keyof TVShowsFetchingService
 ): {
   loading: Ref<boolean>;
-  movies: Ref<Array<TVShow>>;
-  getMovies: () => Promise<void>;
+  movies: Ref<TVShowsResponse>;
+  getMovies: (page?: number) => Promise<void>;
   error: Ref<Error | null>;
 } => {
-  const movies = ref<Array<TVShow>>([]);
+  const movies = ref<TVShowsResponse>({
+    page: 0,
+    total_pages: 0,
+    total_results: 0,
+    results: [],
+  });
   const error = ref<Error | null>(null);
   const loading = ref<boolean>(false);
 
-  const getMovies = async () => {
+  const getMovies = async (page = 1) => {
     loading.value = true;
     try {
-      const response = await tvShowsFetchingService[type]();
-      movies.value = response.data.results;
+      const response = await tvShowsFetchingService[type](page);
+      movies.value = response.data;
       error.value = null;
     } catch (err) {
       error.value = err as Error;

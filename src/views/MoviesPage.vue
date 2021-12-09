@@ -41,17 +41,17 @@
         >
       </div>
       <n-space vertical justify="center">
-        <div v-if="motionPictures" class="movies-block">
+        <div v-if="movies" class="movies-block">
           <movie-card
-            v-for="motionPicture in motionPictures.results"
-            :key="motionPicture.id"
-            :movie="motionPicture"
+            v-for="movie in movies.results"
+            :key="movie.id"
+            :movie="movie"
             :type="typeRef"
           ></movie-card>
         </div>
         <n-pagination
           v-model:page="page"
-          :page-count="motionPictures.total_pages"
+          :page-count="movies.total_pages"
           class="pagination"
         ></n-pagination>
       </n-space>
@@ -76,9 +76,9 @@ import {
 } from 'naive-ui';
 import { sortingOptions } from '../constants';
 import useGenres from '../composables/useGenres';
-import useMotionPicturesList from '../composables/useMotionPicturesList';
-import { Movie, TVShow } from '@/types/motionPictures';
-import { MotionPicturesFetchingService } from '@/types/fetching';
+import useMovies from '../composables/useMovies';
+import { Movie, TVShow } from '@/types/movie';
+import { MoviesFetchingService } from '@/types/fetching';
 
 export default defineComponent({
   name: 'MoviesPage',
@@ -87,19 +87,13 @@ export default defineComponent({
     const { path } = useRoute();
     const type = path.slice(path.indexOf('/') + 1, path.lastIndexOf('/')) as any;
     const typeRef = ref(type);
-    console.log(type);
     const key = path
       .slice(path.lastIndexOf('/') + 1, path.length)
       .replace(/-./g, x => x[1].toUpperCase()) as
-      | keyof MotionPicturesFetchingService<Movie>
-      | keyof MotionPicturesFetchingService<TVShow>;
+      | keyof MoviesFetchingService<Movie>
+      | keyof MoviesFetchingService<TVShow>;
 
-    const {
-      loading: motionPictureLoading,
-      motionPictures,
-      error: motionPictureError,
-      getMotionPictures,
-    } = useMotionPicturesList(type, key);
+    const { loading: moviesLoading, movies, error: moviesError, getMovies } = useMovies(type, key);
 
     const {
       loading: genresLoading,
@@ -109,22 +103,25 @@ export default defineComponent({
     } = useGenres(type as 'movie' | 'tv');
 
     watch(page, newPage => {
-      getMotionPictures(newPage);
+      getMovies(newPage);
     });
 
     onMounted(() => {
-      getMotionPictures();
+      getMovies();
       getGenres();
     });
 
     return {
       ...toRefs(props),
+      genresLoading,
+      moviesLoading,
+      genresError,
+      moviesError,
       page,
-      // movies,
+      movies,
       genres,
       typeRef,
-      // discoverMovies,
-      motionPictures,
+
       sortingOptions,
       genresInput: ref(null),
     };

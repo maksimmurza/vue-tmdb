@@ -14,7 +14,7 @@ async function logoutAction(
       commit('logoutSuccess');
     }
   } catch (error) {
-    commit('logoutFail', error.message);
+    commit('logoutFail', (error as Error).message);
   }
 }
 

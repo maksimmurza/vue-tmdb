@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
-import Home from '../views/Home.vue';
+import Home from '../views/HomePage.vue';
 import MoviePage from '../views/MoviePage.vue';
-import Login from '../views/Login.vue';
+import Login from '../views/LoginPage.vue';
 import { movieRoutes } from './movieRoutes';
 import { tvRoutes } from './tvRoutes';
 

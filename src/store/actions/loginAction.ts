@@ -15,7 +15,7 @@ async function loginAction(
     commit('loginSuccess', { sessionId });
     router.go(-1);
   } catch (error) {
-    commit('loginFail', error.message);
+    commit('loginFail', (error as Error).message);
   }
 }
 

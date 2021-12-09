@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-export interface MotionPicturesListResponse<T> {
+export interface MoviesListResponse<T> {
   page: number;
   results: Array<T>;
   total_pages: number;
@@ -8,13 +8,13 @@ export interface MotionPicturesListResponse<T> {
   dates?: { maximum: string; minimum: string };
 }
 
-export type FetchingMotionPicturesFunction<T> = (pageNumber?: number) => Promise<AxiosResponse<T>>;
+export type FetchingMoviesFunction<T> = (pageNumber?: number) => Promise<AxiosResponse<T>>;
 
-export interface MotionPicturesFetchingService<Type> {
-  popular: FetchingMotionPicturesFunction<MotionPicturesListResponse<Type>>;
-  nowPlaying?: FetchingMotionPicturesFunction<MotionPicturesListResponse<Type>>;
-  upcoming?: FetchingMotionPicturesFunction<MotionPicturesListResponse<Type>>;
-  airingToday?: FetchingMotionPicturesFunction<MotionPicturesListResponse<Type>>;
-  onTv?: FetchingMotionPicturesFunction<MotionPicturesListResponse<Type>>;
-  topRated: FetchingMotionPicturesFunction<MotionPicturesListResponse<Type>>;
+export interface MoviesFetchingService<Type> {
+  popular: FetchingMoviesFunction<MoviesListResponse<Type>>;
+  nowPlaying?: FetchingMoviesFunction<MoviesListResponse<Type>>;
+  upcoming?: FetchingMoviesFunction<MoviesListResponse<Type>>;
+  airingToday?: FetchingMoviesFunction<MoviesListResponse<Type>>;
+  onTv?: FetchingMoviesFunction<MoviesListResponse<Type>>;
+  topRated: FetchingMoviesFunction<MoviesListResponse<Type>>;
 }

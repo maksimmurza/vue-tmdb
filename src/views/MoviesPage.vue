@@ -46,6 +46,7 @@
             v-for="motionPicture in motionPictures.results"
             :key="motionPicture.id"
             :movie="motionPicture"
+            :type="typeRef"
           ></movie-card>
         </div>
         <n-pagination
@@ -85,6 +86,7 @@ export default defineComponent({
     const page = ref(1);
     const { path } = useRoute();
     const type = path.slice(path.indexOf('/') + 1, path.lastIndexOf('/')) as any;
+    const typeRef = ref(type);
     console.log(type);
     const key = path
       .slice(path.lastIndexOf('/') + 1, path.length)
@@ -120,6 +122,7 @@ export default defineComponent({
       page,
       // movies,
       genres,
+      typeRef,
       // discoverMovies,
       motionPictures,
       sortingOptions,

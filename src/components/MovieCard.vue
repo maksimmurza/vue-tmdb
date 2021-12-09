@@ -1,7 +1,7 @@
 <template>
   <n-card hoverable class="movie-card">
     <template #cover>
-      <router-link :to="'/movie/' + movie.id">
+      <router-link :to="'/' + type + '/' + movie.id">
         <img :src="movieCoverSrc" class="movie-card__cover" />
       </router-link>
     </template>
@@ -20,14 +20,14 @@
     </div>
     <div class="movie-card__text">
       <h3 :style="{ marginBottom: '0' }">
-        {{ movie.title }}
+        {{ movie[titleProperty] }}
       </h3>
     </div>
   </n-card>
 </template>
 
 <script>
-import { defineComponent, toRefs, ref } from 'vue';
+import { defineComponent, toRefs, ref, computed } from 'vue';
 import { NCard, NIcon } from 'naive-ui';
 import { Star } from '@vicons/fa';
 
@@ -37,15 +37,19 @@ export default defineComponent({
     const movieCoverSrc = process.env.VUE_APP_IMG_URL + props.movie.poster_path;
     const ratingLabelIsHover = ref(false);
 
+    const titleProperty = computed(() => (props.type === 'movie' ? 'title' : 'name'));
+
     return {
       ...toRefs(props),
       movieCoverSrc,
+      titleProperty,
       ratingLabelIsHover,
     };
   },
   components: { NCard, NIcon, Star },
   props: {
     movie: Object,
+    type: String,
   },
 });
 </script>

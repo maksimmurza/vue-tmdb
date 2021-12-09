@@ -7,6 +7,7 @@
         v-for="movie in popularMovies.results"
         :key="movie.id"
         :movie="movie"
+        :type="'movie'"
       ></movie-card>
     </cards-list>
     <n-divider />
@@ -16,6 +17,7 @@
         v-for="movie in topRatedMovies.results"
         :key="movie.id"
         :movie="movie"
+        :type="'movie'"
       ></movie-card>
     </cards-list>
     <h3 v-if="error">

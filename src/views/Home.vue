@@ -30,23 +30,23 @@ import { NDivider } from 'naive-ui';
 import MovieCard from '../components/MovieCard.vue';
 import Search from '../components/Search.vue';
 import CardsList from '../components/CardsList.vue';
-import useMovies from '../composables/useMovies';
+import useMotionPicturesList from '../composables/useMotionPicturesList';
 
 export default defineComponent({
   name: 'Home',
   setup() {
     const {
       loading: topRatedLoading,
-      movies: topRatedMovies,
+      motionPictures: topRatedMovies,
       error: topRatedError,
-      getMovies: getTopRatedMovies,
-    } = useMovies('topRated');
+      getMotionPictures: getTopRatedMovies,
+    } = useMotionPicturesList('movie', 'topRated');
     const {
       loading: popularLoading,
-      movies: popularMovies,
+      motionPictures: popularMovies,
       error: popularError,
-      getMovies: getPopularMovies,
-    } = useMovies('popular');
+      getMotionPictures: getPopularMovies,
+    } = useMotionPicturesList('movie', 'popular');
 
     onMounted(() => {
       getPopularMovies();

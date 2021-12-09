@@ -1,5 +1,5 @@
 import { fetchGenres } from '../api/genres';
-import { Genre } from '@/types';
+import { Genre } from '@/types/motionPictures';
 import { ref, Ref } from 'vue';
 
 const useGenres = (

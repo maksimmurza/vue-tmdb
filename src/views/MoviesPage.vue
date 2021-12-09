@@ -10,18 +10,19 @@
           </n-collapse-item>
           <n-collapse-item title="Filters">
             <div>Release Dates</div>
+            <n-date-picker v-model:value="releaseDateGte" type="date" />
+            <n-date-picker v-model:value="releaseDateLte" type="date" />
             <n-divider></n-divider>
             <div>Genres</div>
             <n-checkbox-group v-if="genres" v-model:value="genresInput">
-              <n-space vertical>
-                <n-checkbox
-                  v-for="genre in genres"
-                  :genre="genre"
-                  :key="genre.id"
-                  :value="genre.id"
-                  :label="genre.name"
-                />
-              </n-space>
+              <n-checkbox
+                v-for="genre in genres"
+                :genre="genre"
+                :key="genre.id"
+                :value="genre.id"
+                :label="genre.name"
+                class="genre"
+              />
             </n-checkbox-group>
             <n-divider></n-divider>
           </n-collapse-item>
@@ -40,12 +41,16 @@
         >
       </div>
       <n-space vertical justify="center">
-        <div v-if="movies" class="movies-block">
-          <movie-card v-for="movie in movies.results" :key="movie.id" :movie="movie"></movie-card>
+        <div v-if="motionPictures" class="movies-block">
+          <movie-card
+            v-for="motionPicture in motionPictures.results"
+            :key="motionPicture.id"
+            :movie="motionPicture"
+          ></movie-card>
         </div>
         <n-pagination
           v-model:page="page"
-          :page-count="movies.total_pages"
+          :page-count="motionPictures.total_pages"
           class="pagination"
         ></n-pagination>
       </n-space>
@@ -56,10 +61,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, toRefs, ref, watch } from 'vue';
 import MovieCard from '../components/MovieCard.vue';
-import { useRouter, useRoute } from 'vue-router';
-import useMovies from '../composables/useMovies';
-import useTVShows from '../composables/useTVShows';
-import { TVShowsFetchingService, MoviesFetchingService } from '../api/movies';
+import { useRoute } from 'vue-router';
 import {
   NButton,
   NCollapse,
@@ -69,26 +71,33 @@ import {
   NCheckbox,
   NSpace,
   NDatePicker,
-  NRadio,
-  NRadioGroup,
   NPagination,
 } from 'naive-ui';
 import { sortingOptions } from '../constants';
 import useGenres from '../composables/useGenres';
+import useMotionPicturesList from '../composables/useMotionPicturesList';
+import { Movie, TVShow } from '@/types/motionPictures';
+import { MotionPicturesFetchingService } from '@/types/fetching';
 
 export default defineComponent({
   name: 'MoviesPage',
   setup(props) {
     const page = ref(1);
     const { path } = useRoute();
-    const type = path.slice(0, path.indexOf('/'));
-    const searchKey = path
+    const type = path.slice(path.indexOf('/') + 1, path.lastIndexOf('/')) as any;
+    console.log(type);
+    const key = path
       .slice(path.lastIndexOf('/') + 1, path.length)
-      .replace(/-./g, x => x[1].toUpperCase()) as any;
+      .replace(/-./g, x => x[1].toUpperCase()) as
+      | keyof MotionPicturesFetchingService<Movie>
+      | keyof MotionPicturesFetchingService<TVShow>;
 
-    const { loading, movies, error, getMovies } = (
-      path.includes('movies') ? useMovies : useTVShows
-    )(searchKey);
+    const {
+      loading: motionPictureLoading,
+      motionPictures,
+      error: motionPictureError,
+      getMotionPictures,
+    } = useMotionPicturesList(type, key);
 
     const {
       loading: genresLoading,
@@ -98,19 +107,21 @@ export default defineComponent({
     } = useGenres(type as 'movie' | 'tv');
 
     watch(page, newPage => {
-      getMovies(newPage);
+      getMotionPictures(newPage);
     });
 
     onMounted(() => {
-      getMovies();
+      getMotionPictures();
       getGenres();
     });
 
     return {
       ...toRefs(props),
       page,
-      movies,
+      // movies,
       genres,
+      // discoverMovies,
+      motionPictures,
       sortingOptions,
       genresInput: ref(null),
     };
@@ -128,7 +139,7 @@ export default defineComponent({
     NDivider,
     NSelect,
     NPagination,
-    // NDatePicker,
+    NDatePicker,
   },
 });
 </script>
@@ -144,7 +155,8 @@ export default defineComponent({
 }
 
 .movies-query {
-  min-width: 300px;
+  width: 200px;
+  min-width: 250px;
   margin-right: 2rem;
 }
 
@@ -162,5 +174,10 @@ export default defineComponent({
 
 .pagination {
   justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.genre {
+  margin: 0 10px 10px 0;
 }
 </style>

@@ -7,7 +7,7 @@ export const moviesDropdownOptions = ['Popular', 'Now playing', 'Upcoming', 'Top
     key: label.toLowerCase(),
     props: {
       onClick: () => {
-        router.push(`/movies/${label.toLowerCase().replaceAll(' ', '-')}`);
+        router.push(`/movie/${label.toLowerCase().replaceAll(' ', '-')}`);
       },
     },
   })

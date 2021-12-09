@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Home from '../views/Home.vue';
 import MoviePage from '../views/MoviePage.vue';
 import Login from '../views/Login.vue';
-import { moviesRoutes } from './moviesRoutes';
+import { movieRoutes } from './movieRoutes';
 import { tvRoutes } from './tvRoutes';
 
 const routes: Array<RouteRecordRaw> = [
@@ -21,7 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Login',
     component: Login,
   },
-  ...moviesRoutes,
+  ...movieRoutes,
   ...tvRoutes,
 ];
 

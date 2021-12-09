@@ -1,5 +1,5 @@
 import { createStore } from 'vuex';
-import { UserInfo } from '@/types';
+import { UserInfo } from '@/types/user';
 import * as loginMutations from './mutations/loginMutations';
 import * as logoutMutations from './mutations/logoutMutations';
 import * as accountDetailsMutations from './mutations/accountDetailsMutations';

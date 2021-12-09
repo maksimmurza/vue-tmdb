@@ -1,5 +1,5 @@
 import { fetchMovie, movieCredits, movieVideos } from '../api/movie';
-import { Movie } from '@/types';
+import { Movie } from '@/types/motionPictures';
 import { ref, Ref } from 'vue';
 
 const useMovie = (

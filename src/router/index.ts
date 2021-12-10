@@ -12,7 +12,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
   },
   {
-    path: '/movie/:id',
+    path: '/:type/:id',
     name: 'Movie Page',
     component: MoviePage,
   },

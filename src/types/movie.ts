@@ -10,6 +10,8 @@ export interface MotionPicture {
   poster_path: string;
   vote_average: number;
   vote_count: number;
+  credits?: MotionPictureCredits;
+  videos?: { id: number; results: Array<MotionPictureVideo> };
 }
 
 export interface MotionPictureVideo {
@@ -31,8 +33,6 @@ export interface Movie extends MotionPicture {
   release_date: string;
   title: string;
   video: boolean;
-  credits?: MotionPictureCredits;
-  videos?: { id: number; results: Array<MotionPictureVideo> };
 }
 
 export interface TVShow extends MotionPicture {

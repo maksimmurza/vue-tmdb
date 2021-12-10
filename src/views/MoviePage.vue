@@ -6,9 +6,11 @@
       </div>
       <div class="movie-description">
         <div>
-          <h1 class="movie-description__title">{{ movieDetails && movieDetails.title }}</h1>
-          <span class="movie-description__release-year"
-            >({{ movieDetails && movieDetails.release_date.slice(0, 4) }})</span
+          <h1 class="movie-description__title">
+            {{ movieDetails.title ? movieDetails.title : movieDetails.name }}
+          </h1>
+          <span v-if="movieDetails.release_date" class="movie-description__release-year"
+            >({{ movieDetails.release_date.slice(0, 4) }})</span
           >
         </div>
         <div v-if="movieDetails">
@@ -100,18 +102,20 @@ export default defineComponent({
   name: 'MoviePage',
   setup() {
     const route = useRoute();
+    const id = route.params.id;
+    const type = route.params.type;
     const {
       movieDetailsLoading,
       movieCreditsLoading,
-      // movieVideosLoading,
+      movieVideosLoading,
       movie: movieDetails,
       movieDetailsError,
-      // movieCreditsError,
-      // movieVideosError,
+      movieCreditsError,
+      movieVideosError,
       getMovie,
-      // getMovieCredits,
-      // getMovieVideo,
-    } = useMovie(route.params.id);
+      getMovieCredits,
+      getMovieVideo,
+    } = useMovie(type, id);
 
     const backgroundImageUrl = computed(
       () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path

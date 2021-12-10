@@ -79,6 +79,7 @@ import useGenres from '../composables/useGenres';
 import useMovies from '../composables/useMovies';
 import { Movie, TVShow } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
+import toCamelCase from '../utils/toCamelCase';
 
 export default defineComponent({
   name: 'MoviesPage',
@@ -88,8 +89,7 @@ export default defineComponent({
     const type = route.params.type as 'movie' | 'tv';
     const pathKey = route.params.key as string;
     const typeRef = ref(type);
-    let key = pathKey.replace(/-./g, x => x[1].toUpperCase()) as
-      | keyof MoviesFetchingService<Movie | TVShow>;
+    const key = toCamelCase(pathKey) as keyof MoviesFetchingService<Movie | TVShow>;
 
     const { loading: moviesLoading, movies, error: moviesError, getMovies } = useMovies(type, key);
 

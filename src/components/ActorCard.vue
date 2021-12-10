@@ -20,9 +20,6 @@ export default defineComponent({
   name: 'ActorCard',
   setup(props) {
     const actorPhotoSrc = process.env.VUE_APP_IMG_URL + props.actor.profile_path;
-    if (props.actor.name === 'Sian Webber') {
-      console.log(props.actor.profile_path);
-    }
 
     return { ...toRefs(props), actorPhotoSrc };
   },
@@ -35,7 +32,8 @@ export default defineComponent({
 
 <style lang="scss">
 .actor-card {
-  min-width: 140px;
+  min-width: 150px;
+  max-width: 150px;
   position: relative;
 
   &__avatar-icon {

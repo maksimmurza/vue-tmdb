@@ -9,21 +9,51 @@
             <n-select v-model:value="sortingValue" :options="sortingOptions" />
           </n-collapse-item>
           <n-collapse-item title="Filters">
-            <div>Release Dates</div>
-            <n-date-picker v-model:value="releaseDateGte" type="date" />
-            <n-date-picker v-model:value="releaseDateLte" type="date" />
+            <div class="filter">
+              <div>Release Dates</div>
+              <n-date-picker v-model:value="releaseDateGte" type="date" />
+              <n-date-picker v-model:value="releaseDateLte" type="date" />
+            </div>
             <n-divider></n-divider>
-            <div>Genres</div>
-            <n-checkbox-group v-if="genres" v-model:value="genresInput">
-              <n-checkbox
-                v-for="genre in genres"
-                :genre="genre"
-                :key="genre.id"
-                :value="genre.id"
-                :label="genre.name"
-                class="genre"
+            <div class="filter">
+              <div>Genres</div>
+              <n-checkbox-group v-if="genres" v-model:value="genresInput">
+                <n-checkbox
+                  v-for="genre in genres"
+                  :genre="genre"
+                  :key="genre.id"
+                  :value="genre.id"
+                  :label="genre.name"
+                  class="genre"
+                />
+              </n-checkbox-group>
+            </div>
+            <n-divider></n-divider>
+            <div class="filter">
+              <div>User Score</div>
+              <n-slider
+                v-model:value="scoreValue"
+                range
+                :marks="{
+                  0: '0',
+                  10: '1',
+                  20: '2',
+                  30: '3',
+                  40: '4',
+                  50: '5',
+                  60: '6',
+                  70: '7',
+                  80: '8',
+                  90: '9',
+                  100: ' 10',
+                }"
               />
-            </n-checkbox-group>
+            </div>
+            <n-divider></n-divider>
+            <div class="filter">
+              <div>Minimum User Votes</div>
+              <n-slider v-model:value="votesValue" max="500" />
+            </div>
             <n-divider></n-divider>
           </n-collapse-item>
         </n-collapse>
@@ -73,6 +103,7 @@ import {
   NSpace,
   NDatePicker,
   NPagination,
+  NSlider,
 } from 'naive-ui';
 import { sortingOptions } from '../constants';
 import useGenres from '../composables/useGenres';
@@ -119,8 +150,10 @@ export default defineComponent({
       movies,
       genres,
       typeRef,
-
       sortingOptions,
+      sortingValue: ref(null),
+      scoreValue: ref([0, 100]),
+      votesValue: ref(0),
       genresInput: ref(null),
     };
   },
@@ -138,6 +171,7 @@ export default defineComponent({
     NSelect,
     NPagination,
     NDatePicker,
+    NSlider,
   },
 });
 </script>
@@ -177,5 +211,11 @@ export default defineComponent({
 
 .genre {
   margin: 0 10px 10px 0;
+}
+
+.filter {
+  & > *:not(:last-child) {
+    margin-bottom: 5px;
+  }
 }
 </style>

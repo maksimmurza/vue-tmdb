@@ -84,14 +84,12 @@ export default defineComponent({
   name: 'MoviesPage',
   setup(props) {
     const page = ref(1);
-    const { path } = useRoute();
-    const type = path.slice(path.indexOf('/') + 1, path.lastIndexOf('/')) as any;
+    const route = useRoute();
+    const type = route.params.type as 'movie' | 'tv';
+    const pathKey = route.params.key as string;
     const typeRef = ref(type);
-    const key = path
-      .slice(path.lastIndexOf('/') + 1, path.length)
-      .replace(/-./g, x => x[1].toUpperCase()) as
-      | keyof MoviesFetchingService<Movie>
-      | keyof MoviesFetchingService<TVShow>;
+    let key = pathKey.replace(/-./g, x => x[1].toUpperCase()) as
+      | keyof MoviesFetchingService<Movie | TVShow>;
 
     const { loading: moviesLoading, movies, error: moviesError, getMovies } = useMovies(type, key);
 

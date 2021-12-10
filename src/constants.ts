@@ -19,10 +19,7 @@ export const tvShowsDropdownOptions = ['Popular', 'Airing Today', 'On TV', 'Top 
     key: label.toLowerCase(),
     props: {
       onClick: () => {
-        router.push({
-          name: `TV Shows - ${label}`,
-          params: { title: 'Popular Movies' },
-        });
+        router.push(`/tv/${label.toLowerCase().replaceAll(' ', '-')}`);
       },
     },
   })

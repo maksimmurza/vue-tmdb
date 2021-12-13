@@ -1,9 +1,10 @@
 import { motionPicturesFetchingService } from '../api/movies';
 import { MoviesListResponse, MoviesFetchingService } from '@/types/fetching';
 import { ref, Ref } from 'vue';
+import { Movie, TVShow, VideoType } from '@/types/movie';
 
-const useMovies = <Type>(
-  type: 'movie' | 'tv',
+const useMovies = <Type extends Movie | TVShow>(
+  type: VideoType,
   key: keyof MoviesFetchingService<Type>
 ): {
   loading: Ref<boolean>;
@@ -27,7 +28,7 @@ const useMovies = <Type>(
       const fetchingFunction = fetchingService[key];
       if (fetchingFunction) {
         const response = await fetchingFunction(page);
-        movies.value = response.data as unknown as MoviesListResponse<Type>;
+        movies.value = response.data as MoviesListResponse<Type>;
         error.value = null;
       }
     } catch (err) {

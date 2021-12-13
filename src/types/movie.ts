@@ -1,5 +1,9 @@
 import { MotionPictureCredits } from './credits';
 
+export type MovieType = 'movie';
+export type TVShowType = 'tv';
+export type VideoType = MovieType | TVShowType;
+
 export interface MotionPicture {
   backdrop_path: string;
   genre_ids: Array<number>;

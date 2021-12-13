@@ -104,11 +104,13 @@ import {
   NDatePicker,
   NPagination,
   NSlider,
+  NCheckboxGroup,
 } from 'naive-ui';
 import { sortingOptions } from '../constants';
 import useGenres from '../composables/useGenres';
 import useMovies from '../composables/useMovies';
-import { Movie, TVShow } from '@/types/movie';
+import useAirDates from '../composables/useAirDates';
+import { Movie, MovieType, TVShow, VideoType } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
 import toCamelCase from '../utils/toCamelCase';
 
@@ -117,19 +119,28 @@ export default defineComponent({
   setup(props) {
     const page = ref(1);
     const route = useRoute();
-    const type = route.params.type as 'movie' | 'tv';
+    const type = route.params.type as VideoType;
     const pathKey = route.params.key as string;
     const typeRef = ref(type);
     const key = toCamelCase(pathKey) as keyof MoviesFetchingService<Movie | TVShow>;
 
-    const { loading: moviesLoading, movies, error: moviesError, getMovies } = useMovies(type, key);
+    const {
+      loading: moviesLoading,
+      movies,
+      error: moviesError,
+      getMovies,
+    } = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
+
+    const { begin: releaseDateGte, end: releaseDateLte } = useAirDates<
+      typeof type extends MovieType ? Movie : TVShow
+    >(movies, type, key);
 
     const {
       loading: genresLoading,
       genres,
       error: genresError,
       getGenres,
-    } = useGenres(type as 'movie' | 'tv');
+    } = useGenres(type as VideoType);
 
     watch(page, newPage => {
       getMovies(newPage);
@@ -151,10 +162,12 @@ export default defineComponent({
       genres,
       typeRef,
       sortingOptions,
-      sortingValue: ref(null),
+      releaseDateGte,
+      releaseDateLte,
+      sortingValue: ref(pathKey === 'top-rated' ? 'vote_average.desc' : 'popularity.desc'),
+      genresInput: ref(null),
       scoreValue: ref([0, 100]),
       votesValue: ref(0),
-      genresInput: ref(null),
     };
   },
   props: {
@@ -166,6 +179,7 @@ export default defineComponent({
     NCollapse,
     NCollapseItem,
     NCheckbox,
+    NCheckboxGroup,
     NSpace,
     NDivider,
     NSelect,

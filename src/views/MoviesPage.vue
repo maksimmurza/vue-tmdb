@@ -6,18 +6,18 @@
         <n-collapse>
           <n-collapse-item title="Sort">
             <div>Sort results By</div>
-            <n-select v-model:value="sortingValue" :options="sortingOptions" />
+            <n-select v-model:value="filters.sortValue" :options="sortingOptions" />
           </n-collapse-item>
           <n-collapse-item title="Filters">
             <div class="filter">
               <div>Release Dates</div>
-              <n-date-picker v-model:value="releaseDateGte" type="date" />
-              <n-date-picker v-model:value="releaseDateLte" type="date" />
+              <n-date-picker v-model:value="filters.releaseDateGte" type="date" />
+              <n-date-picker v-model:value="filters.releaseDateLte" type="date" />
             </div>
             <n-divider></n-divider>
             <div class="filter">
               <div>Genres</div>
-              <n-checkbox-group v-if="genres" v-model:value="genresInput">
+              <n-checkbox-group v-if="genres" v-model:value="filters.genresInput">
                 <n-checkbox
                   v-for="genre in genres"
                   :genre="genre"
@@ -32,7 +32,7 @@
             <div class="filter">
               <div>User Score</div>
               <n-slider
-                v-model:value="scoreValue"
+                v-model:value="filters.scoreValue"
                 range
                 :marks="{
                   0: '0',
@@ -52,13 +52,13 @@
             <n-divider></n-divider>
             <div class="filter">
               <div>Minimum User Votes</div>
-              <n-slider v-model:value="votesValue" max="500" />
+              <n-slider v-model:value="filters.votesValue" max="500" />
             </div>
             <n-divider></n-divider>
           </n-collapse-item>
         </n-collapse>
         <n-button
-          @click="discoverMovies"
+          @click="getMovies(page, filters)"
           strong
           round
           type="info"
@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, toRefs, ref, watch } from 'vue';
+import { defineComponent, onMounted, toRefs, ref, watch, reactive } from 'vue';
 import MovieCard from '../components/MovieCard.vue';
 import { useRoute } from 'vue-router';
 import {
@@ -123,6 +123,10 @@ export default defineComponent({
     const pathKey = route.params.key as string;
     const typeRef = ref(type);
     const key = toCamelCase(pathKey) as keyof MoviesFetchingService<Movie | TVShow>;
+    // const sortValue = ref(pathKey === 'top-rated' ? 'vote_average.desc' : 'popularity.desc');
+    // const genresInput = ref(null);
+    // const scoreValue = ref([0, 100]);
+    // const votesValue = ref(0);
 
     const {
       loading: moviesLoading,
@@ -135,15 +139,19 @@ export default defineComponent({
       typeof type extends MovieType ? Movie : TVShow
     >(movies, type, key);
 
-    const {
-      loading: genresLoading,
-      genres,
-      error: genresError,
-      getGenres,
-    } = useGenres(type as VideoType);
+    const { loading: genresLoading, genres, error: genresError, getGenres } = useGenres(type);
+
+    const filters = reactive({
+      sortValue: pathKey === 'top-rated' ? 'vote_average.desc' : 'popularity.desc',
+      genresInput: null,
+      scoreValue: [0, 100],
+      votesValue: 0,
+      releaseDateGte,
+      releaseDateLte,
+    });
 
     watch(page, newPage => {
-      getMovies(newPage);
+      getMovies(newPage, filters);
     });
 
     onMounted(() => {
@@ -162,12 +170,7 @@ export default defineComponent({
       genres,
       typeRef,
       sortingOptions,
-      releaseDateGte,
-      releaseDateLte,
-      sortingValue: ref(pathKey === 'top-rated' ? 'vote_average.desc' : 'popularity.desc'),
-      genresInput: ref(null),
-      scoreValue: ref([0, 100]),
-      votesValue: ref(0),
+      filters,
     };
   },
   props: {

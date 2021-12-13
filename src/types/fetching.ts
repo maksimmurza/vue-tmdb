@@ -17,4 +17,8 @@ export interface MoviesFetchingService<Type> {
   airingToday?: FetchingMoviesFunction<MoviesListResponse<Type>>;
   onTv?: FetchingMoviesFunction<MoviesListResponse<Type>>;
   topRated: FetchingMoviesFunction<MoviesListResponse<Type>>;
+  discover: (
+    pageNumber?: number,
+    filters?: any
+  ) => Promise<AxiosResponse<MoviesListResponse<Type>>>;
 }

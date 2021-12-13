@@ -24,12 +24,22 @@ const motionPicturesFetchingService: {
     nowPlaying: (pageNumber = 1) => fetchMovies(`/movie/now_playing?page=${pageNumber}`),
     upcoming: (pageNumber = 1) => fetchMovies(`/movie/upcoming?page=${pageNumber}`),
     topRated: (pageNumber = 1) => fetchMovies(`/movie/top_rated?page=${pageNumber}`),
+    discover: (pageNumber = 1, filters) => {
+      const query = filters;
+      console.log(query);
+      return fetchMovies(`/discover/movie?${query}`);
+    },
   },
   tv: {
     popular: (pageNumber = 1) => fetchMovies(`/tv/popular?page=${pageNumber}`),
     airingToday: (pageNumber = 1) => fetchMovies(`/tv/airing_today?page=${pageNumber}`),
     onTv: (pageNumber = 1) => fetchMovies(`/tv/on_the_air?page=${pageNumber}`),
     topRated: (pageNumber = 1) => fetchMovies(`/tv/top_rated?page=${pageNumber}`),
+    discover: (pageNumber = 1, filters) => {
+      const query = filters;
+      console.log(query);
+      return fetchMovies(`/discover/tv?${query}`);
+    },
   },
 };
 

@@ -38,15 +38,15 @@ export default defineComponent({
   name: 'Home',
   setup() {
     const {
-      loading: topRatedLoading,
+      moviesLoading: topRatedLoading,
       movies: topRatedMovies,
-      error: topRatedError,
+      moviesError: topRatedError,
       getMovies: getTopRatedMovies,
     } = useMovies('movie', 'topRated');
     const {
-      loading: popularLoading,
+      moviesLoading: popularLoading,
       movies: popularMovies,
-      error: popularError,
+      moviesError: popularError,
       getMovies: getPopularMovies,
     } = useMovies('movie', 'popular');
 

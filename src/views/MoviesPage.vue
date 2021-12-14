@@ -3,21 +3,21 @@
     <h1>{{ $route.name }}</h1>
     <div class="movies-page__content">
       <div class="movies-query">
-        <n-collapse>
-          <n-collapse-item title="Sort">
+        <n-collapse :default-expanded-names="['0']">
+          <n-collapse-item title="Sort" name="0">
             <div>Sort results By</div>
-            <n-select v-model:value="filters.sortValue" :options="sortingOptions" />
+            <n-select v-model:value="sortValue" :options="sortingOptions" />
           </n-collapse-item>
-          <n-collapse-item title="Filters">
+          <n-collapse-item title="Filters" name="1">
             <div class="filter">
               <div>Release Dates</div>
-              <n-date-picker v-model:value="filters.releaseDateGte" type="date" />
-              <n-date-picker v-model:value="filters.releaseDateLte" type="date" />
+              <n-date-picker v-model:value="releaseDateGte" type="date" />
+              <n-date-picker v-model:value="releaseDateLte" type="date" />
             </div>
             <n-divider></n-divider>
             <div class="filter">
               <div>Genres</div>
-              <n-checkbox-group v-if="genres" v-model:value="filters.genresInput">
+              <n-checkbox-group v-if="genres" v-model:value="genresInput">
                 <n-checkbox
                   v-for="genre in genres"
                   :genre="genre"
@@ -32,7 +32,7 @@
             <div class="filter">
               <div>User Score</div>
               <n-slider
-                v-model:value="filters.scoreValue"
+                v-model:value="scoreValue"
                 range
                 :marks="{
                   0: '0',
@@ -52,7 +52,7 @@
             <n-divider></n-divider>
             <div class="filter">
               <div>Minimum User Votes</div>
-              <n-slider v-model:value="filters.votesValue" max="500" />
+              <n-slider v-model:value="votesValue" max="500" />
             </div>
             <n-divider></n-divider>
           </n-collapse-item>
@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, toRefs, ref, watch, reactive } from 'vue';
+import { defineComponent, onMounted, ref, toRefs, watch } from 'vue';
 import MovieCard from '../components/MovieCard.vue';
 import { useRoute } from 'vue-router';
 import {
@@ -106,10 +106,8 @@ import {
   NSlider,
   NCheckboxGroup,
 } from 'naive-ui';
-import { sortingOptions } from '../constants';
-import useGenres from '../composables/useGenres';
 import useMovies from '../composables/useMovies';
-import useAirDates from '../composables/useAirDates';
+import useFilters from '../composables/useFilters';
 import { Movie, MovieType, TVShow, VideoType } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
 import toCamelCase from '../utils/toCamelCase';
@@ -120,35 +118,18 @@ export default defineComponent({
     const page = ref(1);
     const route = useRoute();
     const type = route.params.type as VideoType;
-    const pathKey = route.params.key as string;
     const typeRef = ref(type);
+    const pathKey = route.params.key as string;
     const key = toCamelCase(pathKey) as keyof MoviesFetchingService<Movie | TVShow>;
-    // const sortValue = ref(pathKey === 'top-rated' ? 'vote_average.desc' : 'popularity.desc');
-    // const genresInput = ref(null);
-    // const scoreValue = ref([0, 100]);
-    // const votesValue = ref(0);
 
-    const {
-      loading: moviesLoading,
+    const moviesData = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
+    const { movies, getMovies } = moviesData;
+
+    const { filters, getFilters } = useFilters<typeof type extends MovieType ? Movie : TVShow>(
       movies,
-      error: moviesError,
-      getMovies,
-    } = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
-
-    const { begin: releaseDateGte, end: releaseDateLte } = useAirDates<
-      typeof type extends MovieType ? Movie : TVShow
-    >(movies, type, key);
-
-    const { loading: genresLoading, genres, error: genresError, getGenres } = useGenres(type);
-
-    const filters = reactive({
-      sortValue: pathKey === 'top-rated' ? 'vote_average.desc' : 'popularity.desc',
-      genresInput: null,
-      scoreValue: [0, 100],
-      votesValue: 0,
-      releaseDateGte,
-      releaseDateLte,
-    });
+      type,
+      key
+    );
 
     watch(page, newPage => {
       getMovies(newPage, filters);
@@ -156,21 +137,16 @@ export default defineComponent({
 
     onMounted(() => {
       getMovies();
-      getGenres();
+      getFilters();
     });
 
     return {
-      ...toRefs(props),
-      genresLoading,
-      moviesLoading,
-      genresError,
-      moviesError,
-      page,
-      movies,
-      genres,
-      typeRef,
-      sortingOptions,
+      ...props,
+      ...moviesData,
+      ...toRefs(filters),
       filters,
+      page,
+      typeRef,
     };
   },
   props: {

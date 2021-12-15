@@ -100,6 +100,20 @@ import CardsList from '../components/CardsList.vue';
 
 export default defineComponent({
   name: 'MoviePage',
+  components: {
+    NButton,
+    NProgress,
+    NIcon,
+    Loader,
+    Heart,
+    Star,
+    StarRegular,
+    Bookmark,
+    ListUl,
+    NEmpty,
+    ActorCard,
+    CardsList,
+  },
   setup() {
     const route = useRoute();
     const id = route.params.id;
@@ -144,32 +158,21 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      getMovie();
+      getMovie().then(getMovieCredits).then(getMovieVideo);
     });
 
     return {
       movieDetailsLoading,
       movieCreditsLoading,
+      movieVideosLoading,
       movieDetails,
       movieDetailsError,
+      movieCreditsError,
+      movieVideosError,
       movieCoverSrc,
       movieTrailerLink,
       backgroundImageStyle,
     };
-  },
-  components: {
-    NButton,
-    NProgress,
-    NIcon,
-    Loader,
-    Heart,
-    Star,
-    StarRegular,
-    Bookmark,
-    ListUl,
-    NEmpty,
-    ActorCard,
-    CardsList,
   },
 });
 </script>

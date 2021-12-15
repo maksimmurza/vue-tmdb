@@ -1,15 +1,9 @@
-import router from './router';
-import store from './store';
-
 export const moviesDropdownOptions = ['Popular', 'Now playing', 'Upcoming', 'Top Rated'].map(
   label => ({
     label,
     key: label.toLowerCase(),
-    props: {
-      onClick: () => {
-        router.push(`/movie/${label.toLowerCase().replaceAll(' ', '-')}`);
-      },
-    },
+    url: `/movie/${label.toLowerCase().replaceAll(' ', '-')}`,
+    props: {},
   })
 );
 
@@ -17,17 +11,19 @@ export const tvShowsDropdownOptions = ['Popular', 'Airing Today', 'On TV', 'Top 
   label => ({
     label,
     key: label.toLowerCase(),
-    props: {
-      onClick: () => {
-        router.push(`/tv/${label.toLowerCase().replaceAll(' ', '-')}`);
-      },
-    },
+    url: `/tv/${label.toLowerCase().replaceAll(' ', '-')}`,
+    props: {},
   })
 );
 
 export const moreShowsDropdownOptions = [
-  { label: 'About', key: 'about' },
-  { label: 'API', key: 'api' },
+  { label: 'About', key: 'about', url: 'https://www.themoviedb.org/about' },
+  {
+    label: 'API',
+    key: 'api',
+    url: 'https://developers.themoviedb.org/3/getting-started/introduction',
+    props: {},
+  },
 ];
 
 export const profileDropdownOptions = [
@@ -39,11 +35,7 @@ export const profileDropdownOptions = [
   {
     label: 'Logout',
     key: 'logout',
-    props: {
-      onClick: (): void => {
-        store.dispatch('logout', store.state.user.userInfo?.sessionId);
-      },
-    },
+    props: {},
   },
 ];
 
@@ -81,14 +73,3 @@ export const sortingOptions = [
     value: 'original_title.desc',
   },
 ];
-
-// release_date.gte
-// release_date.lte
-
-// vote_average.gte
-// vote_average.lte
-
-// vote_count.gte
-// vote_average.lte
-
-// with_genres

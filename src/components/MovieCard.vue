@@ -33,6 +33,11 @@ import { Star } from '@vicons/fa';
 
 export default defineComponent({
   name: 'MovieCard',
+  components: { NCard, NIcon, Star },
+  props: {
+    movie: Object,
+    type: String,
+  },
   setup(props) {
     const movieCoverSrc = process.env.VUE_APP_IMG_URL + props.movie.poster_path;
     const ratingLabelIsHover = ref(false);
@@ -40,16 +45,11 @@ export default defineComponent({
     const titleProperty = computed(() => (props.type === 'movie' ? 'title' : 'name'));
 
     return {
-      ...toRefs(props),
+      props,
       movieCoverSrc,
       titleProperty,
       ratingLabelIsHover,
     };
-  },
-  components: { NCard, NIcon, Star },
-  props: {
-    movie: Object,
-    type: String,
   },
 });
 </script>

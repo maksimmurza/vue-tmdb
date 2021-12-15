@@ -36,6 +36,12 @@ import useMovies from '../composables/useMovies';
 
 export default defineComponent({
   name: 'Home',
+  components: {
+    MovieCard,
+    Search,
+    CardsList,
+    NDivider,
+  },
   setup() {
     const {
       moviesLoading: topRatedLoading,
@@ -65,12 +71,6 @@ export default defineComponent({
       popularError,
       getPopularMovies,
     };
-  },
-  components: {
-    MovieCard,
-    Search,
-    CardsList,
-    NDivider,
   },
 });
 </script>

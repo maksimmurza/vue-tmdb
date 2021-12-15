@@ -1,9 +1,9 @@
 import { fetchGenres } from '../api/genres';
-import { Genre } from '@/types/movie';
+import { Genre, VideoType } from '@/types/movie';
 import { ref, Ref } from 'vue';
 
 const useGenres = (
-  type: 'movie' | 'tv'
+  type: VideoType
 ): {
   loading: Ref<boolean>;
   genres: Ref<Array<Genre>>;

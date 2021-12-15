@@ -17,17 +17,17 @@ import { NSpin, NScrollbar, NAlert } from 'naive-ui';
 
 export default defineComponent({
   name: 'CardsList',
-  setup(props) {
-    return { ...toRefs(props) };
+  components: {
+    NSpin,
+    NScrollbar,
+    NAlert,
   },
   props: {
     loading: Boolean,
     error: Error || null,
   },
-  components: {
-    NSpin,
-    NScrollbar,
-    NAlert,
+  setup(props) {
+    return { props };
   },
 });
 </script>

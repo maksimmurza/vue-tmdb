@@ -1,4 +1,4 @@
-import { motionPicturesFetchingService } from '../api/movies';
+import { moviesFetchingService } from '../api/movies';
 import { MoviesListResponse, MoviesFetchingService } from '@/types/fetching';
 import { ref, Ref, toRefs } from 'vue';
 import { Movie, TVShow, VideoType } from '@/types/movie';
@@ -24,7 +24,7 @@ const useMovies = <Type extends Movie | TVShow>(
   const getMovies = async (page = 1, filters: any) => {
     moviesLoading.value = true;
     try {
-      const fetchingService = motionPicturesFetchingService[type];
+      const fetchingService = moviesFetchingService[type];
       const fetchingFunction = fetchingService[filters ? 'discover' : key];
       if (fetchingFunction) {
         const response = await fetchingFunction(page, filters && toRefs(filters));

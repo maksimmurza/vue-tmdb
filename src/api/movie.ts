@@ -1,7 +1,8 @@
+import { VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
 import axiosClient from '../utils/axiosClient';
 
-const fetchMovie = async (type: 'movie' | 'tv', movieId: number): Promise<AxiosResponse> => {
+const fetchMovie = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
   try {
     const response = await axiosClient.get(`/${type}/${movieId}`);
     return response;
@@ -13,7 +14,7 @@ const fetchMovie = async (type: 'movie' | 'tv', movieId: number): Promise<AxiosR
   }
 };
 
-const movieCredits = async (type: 'movie' | 'tv', movieId: number): Promise<AxiosResponse> => {
+const movieCredits = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
   try {
     const response = await axiosClient.get(`/${type}/${movieId}/credits`);
     return response;
@@ -25,7 +26,7 @@ const movieCredits = async (type: 'movie' | 'tv', movieId: number): Promise<Axio
   }
 };
 
-const movieVideos = async (type: 'movie' | 'tv', movieId: number): Promise<AxiosResponse> => {
+const movieVideos = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
   try {
     const response = await axiosClient.get(`/${type}/${movieId}/videos`);
     return response;

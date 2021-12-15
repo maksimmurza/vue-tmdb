@@ -30,6 +30,13 @@ import { ref } from 'vue';
 
 export default defineComponent({
   name: 'Login',
+  components: {
+    NForm,
+    NFormItem,
+    NInput,
+    NButton,
+    NSpin,
+  },
   setup() {
     const store = useStore();
     const model = ref({ username: '', password: '' });
@@ -39,13 +46,6 @@ export default defineComponent({
     };
 
     return { model, login, store };
-  },
-  components: {
-    NForm,
-    NFormItem,
-    NInput,
-    NButton,
-    NSpin,
   },
 });
 </script>

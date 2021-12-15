@@ -18,14 +18,14 @@ import { User } from '@vicons/fa';
 
 export default defineComponent({
   name: 'ActorCard',
-  setup(props) {
-    const actorPhotoSrc = process.env.VUE_APP_IMG_URL + props.actor.profile_path;
-
-    return { ...toRefs(props), actorPhotoSrc };
-  },
   components: { NCard, NIcon, User },
   props: {
     actor: Object,
+  },
+  setup(props) {
+    const actorPhotoSrc = process.env.VUE_APP_IMG_URL + props.actor.profile_path;
+
+    return { props, actorPhotoSrc };
   },
 });
 </script>

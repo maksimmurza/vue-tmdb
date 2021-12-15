@@ -1,5 +1,5 @@
 import { MoviesFetchingService } from '@/types/fetching';
-import { Genre, Movie, TVShow } from '@/types/movie';
+import { Genre, Movie, TVShow, VideoType } from '@/types/movie';
 import { toRefs } from '@vue/runtime-dom';
 import axios from 'axios';
 import moment from 'moment';
@@ -17,16 +17,14 @@ const fetchMovies = async (link: string) => {
   }
 };
 
-const discover = (pageNumber = 1, filters: any) => {
+const discover = (type: VideoType, pageNumber = 1, filters: any) => {
   let query = '';
   const { sortValue, releaseDateGte, releaseDateLte, genresInput, scoreValue, votesValue } =
     filters;
-  console.log(genresInput.value);
   const genresIds =
     genresInput.value && genresInput.value.length > 0
       ? genresInput.value.reduce((s: string, g: number) => `${s}${g},`, '')
       : [];
-  console.log('ids', genresIds);
   query = query.concat(sortValue.value ? `sort_by=${sortValue.value}&` : '');
   query = query.concat(
     releaseDateGte.value
@@ -49,11 +47,10 @@ const discover = (pageNumber = 1, filters: any) => {
       : ''
   );
   query = query.concat(votesValue.value ? `vote_count.gte=${votesValue.value}&` : '');
-  console.log('query', `/discover/movie?${query}${pageNumber}`);
-  return fetchMovies(`/discover/movie?${query}page=${pageNumber}`);
+  return fetchMovies(`/discover/${type}?${query}page=${pageNumber}`);
 };
 
-const motionPicturesFetchingService: {
+const moviesFetchingService: {
   movie: MoviesFetchingService<Movie>;
   tv: MoviesFetchingService<TVShow>;
 } = {
@@ -62,15 +59,15 @@ const motionPicturesFetchingService: {
     nowPlaying: (pageNumber = 1) => fetchMovies(`/movie/now_playing?page=${pageNumber}`),
     upcoming: (pageNumber = 1) => fetchMovies(`/movie/upcoming?page=${pageNumber}`),
     topRated: (pageNumber = 1) => fetchMovies(`/movie/top_rated?page=${pageNumber}`),
-    discover,
+    discover: (pageNumber: number, filters: any) => discover('movie', pageNumber, filters),
   },
   tv: {
     popular: (pageNumber = 1) => fetchMovies(`/tv/popular?page=${pageNumber}`),
     airingToday: (pageNumber = 1) => fetchMovies(`/tv/airing_today?page=${pageNumber}`),
     onTv: (pageNumber = 1) => fetchMovies(`/tv/on_the_air?page=${pageNumber}`),
     topRated: (pageNumber = 1) => fetchMovies(`/tv/top_rated?page=${pageNumber}`),
-    discover,
+    discover: (pageNumber: number, filters: any) => discover('tv', pageNumber, filters),
   },
 };
 
-export { motionPicturesFetchingService };
+export { moviesFetchingService };

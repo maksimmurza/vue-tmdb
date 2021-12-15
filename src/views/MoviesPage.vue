@@ -114,6 +114,23 @@ import toCamelCase from '../utils/toCamelCase';
 
 export default defineComponent({
   name: 'MoviesPage',
+  components: {
+    MovieCard,
+    NButton,
+    NCollapse,
+    NCollapseItem,
+    NCheckbox,
+    NCheckboxGroup,
+    NSpace,
+    NDivider,
+    NSelect,
+    NPagination,
+    NDatePicker,
+    NSlider,
+  },
+  props: {
+    title: String,
+  },
   setup(props) {
     const page = ref(1);
     const route = useRoute();
@@ -148,23 +165,6 @@ export default defineComponent({
       page,
       typeRef,
     };
-  },
-  props: {
-    title: String,
-  },
-  components: {
-    MovieCard,
-    NButton,
-    NCollapse,
-    NCollapseItem,
-    NCheckbox,
-    NCheckboxGroup,
-    NSpace,
-    NDivider,
-    NSelect,
-    NPagination,
-    NDatePicker,
-    NSlider,
   },
 });
 </script>

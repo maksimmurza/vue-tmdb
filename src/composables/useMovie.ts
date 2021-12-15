@@ -1,9 +1,9 @@
 import { fetchMovie, movieCredits, movieVideos } from '../api/movie';
-import { Movie, TVShow } from '@/types/movie';
-import { ref, Ref } from 'vue';
+import { Movie, TVShow, VideoType } from '@/types/movie';
+import { ref, Ref, watch } from 'vue';
 
 const useMovie = (
-  type: 'movie' | 'tv',
+  type: VideoType,
   movieId: number
 ): {
   movieDetailsLoading: Ref<boolean>;
@@ -31,23 +31,22 @@ const useMovie = (
       const response = await fetchMovie(type, movieId);
       movie.value = response.data;
       movieDetailsError.value = null;
-      getMovieCredits();
-      getMovieVideo();
     } catch (err) {
       movieDetailsError.value = err as Error;
     } finally {
       movieDetailsLoading.value = false;
     }
+    return;
   };
 
   const getMovieCredits = async () => {
     movieCreditsLoading.value = true;
     try {
-      const response = await movieCredits(type, movieId);
       if (movie.value) {
+        const response = await movieCredits(type, movieId);
         movie.value.credits = response.data;
+        movieCreditsError.value = null;
       }
-      movieCreditsError.value = null;
     } catch (err) {
       movieCreditsError.value = err as Error;
     } finally {
@@ -58,11 +57,11 @@ const useMovie = (
   const getMovieVideo = async () => {
     movieVideosLoading.value = true;
     try {
-      const response = await movieVideos(type, movieId);
       if (movie.value) {
+        const response = await movieVideos(type, movieId);
         movie.value.videos = response.data;
+        movieVideosError.value = null;
       }
-      movieVideosError.value = null;
     } catch (err) {
       movieVideosError.value = err as Error;
     } finally {

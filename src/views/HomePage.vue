@@ -48,7 +48,7 @@ export default defineComponent({
       movies: topRatedMovies,
       moviesError: topRatedError,
       getMovies: getTopRatedMovies,
-    } = useMovies('movie', 'topRated');
+    } = useMovies('movie', 'top-rated');
     const {
       moviesLoading: popularLoading,
       movies: popularMovies,

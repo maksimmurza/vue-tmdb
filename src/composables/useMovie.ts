@@ -1,6 +1,6 @@
 import { fetchMovie, movieCredits, movieVideos } from '../api/movie';
 import { Movie, TVShow, VideoType } from '@/types/movie';
-import { ref, Ref, watch } from 'vue';
+import { ref, Ref } from 'vue';
 
 const useMovie = (
   type: VideoType,

@@ -1,4 +1,4 @@
-export interface MotionPictureMember {
+export interface MovieMember {
   adult: boolean;
   gender: number;
   id: number;
@@ -9,20 +9,20 @@ export interface MotionPictureMember {
   profile_path: string;
 }
 
-export interface Actor extends MotionPictureMember {
+export interface Actor extends MovieMember {
   cast_id: number;
   character: string;
   credit_id: string;
   order: number;
 }
 
-export interface CrewMember extends MotionPictureMember {
+export interface CrewMember extends MovieMember {
   credit_id: string;
   department: string;
   job: string;
 }
 
-export interface MotionPictureCredits {
+export interface MovieCredits {
   id: number;
   cast: Array<Actor>;
   crew: Array<CrewMember>;

@@ -6,11 +6,11 @@ const useGenres = (
   type: VideoType
 ): {
   loading: Ref<boolean>;
-  genres: Ref<Array<Genre>>;
+  genresOptions: Ref<Array<Genre>>;
   getGenres: () => Promise<void>;
   error: Ref<Error | null>;
 } => {
-  const genres = ref<Array<Genre>>([]);
+  const genresOptions = ref<Array<Genre>>([]);
   const error = ref<Error | null>(null);
   const loading = ref<boolean>(false);
 
@@ -18,7 +18,7 @@ const useGenres = (
     loading.value = true;
     try {
       const response = await fetchGenres(type);
-      genres.value = response.data.genres as Array<Genre>;
+      genresOptions.value = response.data.genres as Array<Genre>;
       error.value = null;
     } catch (err) {
       error.value = err as Error;
@@ -29,7 +29,7 @@ const useGenres = (
 
   return {
     loading,
-    genres,
+    genresOptions,
     error,
     getGenres,
   };

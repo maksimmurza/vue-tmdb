@@ -1,6 +1,5 @@
 import { MoviesFetchingService } from '@/types/fetching';
-import { Genre, Movie, TVShow, VideoType } from '@/types/movie';
-import { toRefs } from '@vue/runtime-dom';
+import { Movie, MovieFilters, TVShow, VideoType } from '@/types/movie';
 import axios from 'axios';
 import moment from 'moment';
 import axiosClient from '../utils/axiosClient';
@@ -17,36 +16,40 @@ const fetchMovies = async (link: string) => {
   }
 };
 
-const discover = (type: VideoType, pageNumber = 1, filters: any) => {
+const discover = (type: VideoType, pageNumber = 1, filters: MovieFilters) => {
   let query = '';
-  const { sortValue, releaseDateGte, releaseDateLte, genresInput, scoreValue, votesValue } =
-    filters;
+  const {
+    sortValue,
+    releaseDateGteValue,
+    releaseDateLteValue,
+    genresValue,
+    scoreValue,
+    votesValue,
+  } = filters;
   const genresIds =
-    genresInput.value && genresInput.value.length > 0
-      ? genresInput.value.reduce((s: string, g: number) => `${s}${g},`, '')
+    genresValue && genresValue.length > 0
+      ? genresValue.reduce((s: string, g: number) => `${s}${g},`, '')
       : [];
-  query = query.concat(sortValue.value ? `sort_by=${sortValue.value}&` : '');
+  query = query.concat(sortValue ? `sort_by=${sortValue}&` : '');
   query = query.concat(
-    releaseDateGte.value
-      ? `release_date.gte=${moment(releaseDateGte.value).format('YYYY-MM-DD')}&`
+    releaseDateGteValue
+      ? `primary_release_date.gte=${moment(releaseDateGteValue).format('YYYY-MM-DD')}&`
       : ''
   );
   query = query.concat(
-    releaseDateLte.value
-      ? `release_date.lte=${moment(releaseDateLte.value).format('YYYY-MM-DD')}&`
+    releaseDateLteValue
+      ? `primary_release_date.lte=${moment(releaseDateLteValue).format('YYYY-MM-DD')}&`
       : ''
   );
   query = query.concat(
-    genresInput.value && genresInput.value.length > 0
-      ? `with_genres=${genresIds.slice(0, -1)}&`
-      : ''
+    genresValue && genresValue.length > 0 ? `with_genres=${genresIds.slice(0, -1)}&` : ''
   );
   query = query.concat(
-    scoreValue.value
-      ? `vote_average.gte=${scoreValue.value[0] / 10}&vote_average.lte=${scoreValue.value[1] / 10}&`
+    scoreValue
+      ? `vote_average.gte=${scoreValue[0] / 10}&vote_average.lte=${scoreValue[1] / 10}&`
       : ''
   );
-  query = query.concat(votesValue.value ? `vote_count.gte=${votesValue.value}&` : '');
+  query = query.concat(votesValue ? `vote_count.gte=${votesValue}&` : '');
   return fetchMovies(`/discover/${type}?${query}page=${pageNumber}`);
 };
 
@@ -56,17 +59,17 @@ const moviesFetchingService: {
 } = {
   movie: {
     popular: (pageNumber = 1) => fetchMovies(`/movie/popular?page=${pageNumber}`),
-    nowPlaying: (pageNumber = 1) => fetchMovies(`/movie/now_playing?page=${pageNumber}`),
+    'now-playing': (pageNumber = 1) => fetchMovies(`/movie/now_playing?page=${pageNumber}`),
     upcoming: (pageNumber = 1) => fetchMovies(`/movie/upcoming?page=${pageNumber}`),
-    topRated: (pageNumber = 1) => fetchMovies(`/movie/top_rated?page=${pageNumber}`),
-    discover: (pageNumber: number, filters: any) => discover('movie', pageNumber, filters),
+    'top-rated': (pageNumber = 1) => fetchMovies(`/movie/top_rated?page=${pageNumber}`),
+    discover: (pageNumber: number, filters: MovieFilters) => discover('movie', pageNumber, filters),
   },
   tv: {
     popular: (pageNumber = 1) => fetchMovies(`/tv/popular?page=${pageNumber}`),
-    airingToday: (pageNumber = 1) => fetchMovies(`/tv/airing_today?page=${pageNumber}`),
-    onTv: (pageNumber = 1) => fetchMovies(`/tv/on_the_air?page=${pageNumber}`),
-    topRated: (pageNumber = 1) => fetchMovies(`/tv/top_rated?page=${pageNumber}`),
-    discover: (pageNumber: number, filters: any) => discover('tv', pageNumber, filters),
+    'airing-today': (pageNumber = 1) => fetchMovies(`/tv/airing_today?page=${pageNumber}`),
+    'on-tv': (pageNumber = 1) => fetchMovies(`/tv/on_the_air?page=${pageNumber}`),
+    'top-rated': (pageNumber = 1) => fetchMovies(`/tv/top_rated?page=${pageNumber}`),
+    discover: (pageNumber: number, filters: MovieFilters) => discover('tv', pageNumber, filters),
   },
 };
 

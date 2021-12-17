@@ -1,4 +1,6 @@
-import { MotionPictureCredits } from './credits';
+import { Ref } from '@vue/runtime-dom';
+import { MovieCredits } from './credits';
+import { MoviesFetchingService } from './fetching';
 
 export type MovieType = 'movie';
 export type TVShowType = 'tv';
@@ -14,7 +16,7 @@ export interface MotionPicture {
   poster_path: string;
   vote_average: number;
   vote_count: number;
-  credits?: MotionPictureCredits;
+  credits?: MovieCredits;
   videos?: { id: number; results: Array<MotionPictureVideo> };
 }
 
@@ -51,4 +53,31 @@ export interface Genre {
   name: string;
 }
 
-// export type MovieFilters = ;
+export type SortValue =
+  | 'popularity.desc'
+  | 'popularity.asc'
+  | 'vote_average.desc'
+  | 'vote_average.asc'
+  | 'release_date.desc'
+  | 'release_date.asc'
+  | 'original_title.asc'
+  | 'original_title.desc';
+
+export interface Filters {
+  sortOptions: Array<{ label: string; value: SortValue }> | null;
+  sortValue: SortValue | null;
+  genresValue: Array<number> | null;
+  scoreValue: [0, 100];
+  votesValue: 0;
+  releaseDateGteValue: number | null;
+  releaseDateLteValue: number | null;
+}
+export interface MovieFilters extends Filters {
+  genresOptions: Array<Genre>;
+}
+
+export interface MovieFiltersWithRefGenres extends Filters {
+  genresOptions: Ref<Array<Genre>>;
+}
+
+export type MovieKey<Type> = keyof Omit<MoviesFetchingService<Type>, 'discover'>;

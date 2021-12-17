@@ -1,3 +1,5 @@
+import { SortValue } from './types/movie';
+
 export const moviesDropdownOptions = ['Popular', 'Now playing', 'Upcoming', 'Top Rated'].map(
   label => ({
     label,
@@ -39,37 +41,37 @@ export const profileDropdownOptions = [
   },
 ];
 
-export const sortingOptions = [
+export const sortOptions = [
   {
     label: 'Popularity Descending',
-    value: 'popularity.desc',
+    value: 'popularity.desc' as SortValue,
   },
   {
     label: 'Popularity Ascending',
-    value: 'popularity.asc',
+    value: 'popularity.asc' as SortValue,
   },
   {
     label: 'Rating Descending',
-    value: 'vote_average.desc',
+    value: 'vote_average.desc' as SortValue,
   },
   {
     label: 'Rating Ascending',
-    value: 'vote_average.asc',
+    value: 'vote_average.asc' as SortValue,
   },
   {
     label: 'Release Date Descending',
-    value: 'release_date.desc',
+    value: 'release_date.desc' as SortValue,
   },
   {
     label: 'Release Date Ascending',
-    value: 'release_date.asc',
+    value: 'release_date.asc' as SortValue,
   },
   {
     label: 'Title (A-Z)',
-    value: 'original_title.asc',
+    value: 'original_title.asc' as SortValue,
   },
   {
     label: 'Title (Z-A)',
-    value: 'original_title.desc',
+    value: 'original_title.desc' as SortValue,
   },
 ];

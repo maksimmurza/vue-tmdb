@@ -15,7 +15,7 @@ import { MoviesListResponse } from '@/types/fetching';
 const useFilters = <Type extends Movie | TVShow>(
   movies: Ref<MoviesListResponse<Type>>,
   type: VideoType,
-  key: MovieKey<Type>
+  key: MovieKey
 ): {
   filters: UnwrapNestedRefs<MovieFilters>;
   getFilters: () => void;

@@ -5,7 +5,7 @@ import { Movie, MovieFilters, MovieKey, TVShow, VideoType } from '@/types/movie'
 
 const useMovies = <Type extends Movie | TVShow>(
   type: VideoType,
-  key: MovieKey<Type>
+  key: MovieKey
 ): {
   moviesLoading: Ref<boolean>;
   movies: Ref<MoviesListResponse<Type>>;

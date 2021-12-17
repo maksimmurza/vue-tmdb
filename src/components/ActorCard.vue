@@ -11,21 +11,22 @@
   </n-card>
 </template>
 
-<script>
-import { defineComponent, toRefs } from 'vue';
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
 import { NCard, NIcon } from 'naive-ui';
 import { User } from '@vicons/fa';
+import { Actor } from '../types/credits';
 
 export default defineComponent({
   name: 'ActorCard',
   components: { NCard, NIcon, User },
   props: {
-    actor: Object,
+    actor: Object as PropType<Actor>,
   },
   setup(props) {
-    const actorPhotoSrc = process.env.VUE_APP_IMG_URL + props.actor.profile_path;
+    const actorPhotoSrc = process.env.VUE_APP_IMG_URL + props.actor?.profile_path;
 
-    return { props, actorPhotoSrc };
+    return { actorPhotoSrc };
   },
 });
 </script>

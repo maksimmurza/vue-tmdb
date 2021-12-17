@@ -7,7 +7,7 @@ import {
   VideoType,
 } from '@/types/movie';
 import { computed, ComputedRef, reactive, Ref, UnwrapNestedRefs } from 'vue';
-import useAirDates from './useAirDates';
+import getAirDates from '../utils/getAirDates';
 import useGenres from './useGenres';
 import { sortOptions } from '../constants';
 import { MoviesListResponse } from '@/types/fetching';
@@ -22,7 +22,7 @@ const useFilters = <Type extends Movie | TVShow>(
   filtersLoading: ComputedRef<boolean>;
   filtersError: ComputedRef<Error | null>;
 } => {
-  const { begin: releaseDateGteValue, end: releaseDateLteValue } = useAirDates<Type>(key);
+  const { begin: releaseDateGteValue, end: releaseDateLteValue } = getAirDates<Type>(key);
   const { loading: genresLoading, genresOptions, error: genresError, getGenres } = useGenres(type);
 
   const filters = reactive<MovieFiltersWithRefGenres>({

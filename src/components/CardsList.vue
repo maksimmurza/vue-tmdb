@@ -11,8 +11,8 @@
   </n-spin>
 </template>
 
-<script>
-import { defineComponent, toRefs } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { NSpin, NScrollbar, NAlert } from 'naive-ui';
 
 export default defineComponent({
@@ -25,9 +25,6 @@ export default defineComponent({
   props: {
     loading: Boolean,
     error: Error || null,
-  },
-  setup(props) {
-    return { props };
   },
 });
 </script>

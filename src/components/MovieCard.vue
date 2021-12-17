@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { defineComponent, toRefs, ref, computed } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import { NCard, NIcon } from 'naive-ui';
 import { Star } from '@vicons/fa';
 
@@ -45,7 +45,6 @@ export default defineComponent({
     const titleProperty = computed(() => (props.type === 'movie' ? 'title' : 'name'));
 
     return {
-      props,
       movieCoverSrc,
       titleProperty,
       ratingLabelIsHover,

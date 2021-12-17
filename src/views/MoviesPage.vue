@@ -31,23 +31,7 @@
             <n-divider></n-divider>
             <div class="filter">
               <div>User Score</div>
-              <n-slider
-                v-model:value="scoreValue"
-                range
-                :marks="{
-                  0: '0',
-                  10: '1',
-                  20: '2',
-                  30: '3',
-                  40: '4',
-                  50: '5',
-                  60: '6',
-                  70: '7',
-                  80: '8',
-                  90: '9',
-                  100: ' 10',
-                }"
-              />
+              <n-slider v-model:value="scoreValue" range :marks="scoreMarks" />
             </div>
             <n-divider></n-divider>
             <div class="filter">
@@ -110,6 +94,7 @@ import useMovies from '../composables/useMovies';
 import useFilters from '../composables/useFilters';
 import { Movie, MovieType, TVShow, VideoType } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
+import { scoreMarks } from '@/constants';
 
 export default defineComponent({
   name: 'MoviesPage',
@@ -130,7 +115,7 @@ export default defineComponent({
   props: {
     title: String,
   },
-  setup(props) {
+  setup() {
     const page = ref(1);
     const route = useRoute();
     const type = route.params.type as VideoType;
@@ -156,12 +141,12 @@ export default defineComponent({
     });
 
     return {
-      ...props,
       ...moviesData,
       ...toRefs(filters),
       filters,
       page,
       typeRef,
+      scoreMarks,
     };
   },
 });

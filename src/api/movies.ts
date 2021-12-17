@@ -1,7 +1,7 @@
 import { MoviesFetchingService } from '@/types/fetching';
 import { Movie, MovieFilters, TVShow, VideoType } from '@/types/movie';
 import axios from 'axios';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import axiosClient from '../utils/axiosClient';
 
 const fetchMovies = async (link: string) => {
@@ -33,12 +33,12 @@ const discover = (type: VideoType, pageNumber = 1, filters: MovieFilters) => {
   query = query.concat(sortValue ? `sort_by=${sortValue}&` : '');
   query = query.concat(
     releaseDateGteValue
-      ? `primary_release_date.gte=${moment(releaseDateGteValue).format('YYYY-MM-DD')}&`
+      ? `primary_release_date.gte=${dayjs(releaseDateGteValue).format('YYYY-MM-DD')}&`
       : ''
   );
   query = query.concat(
     releaseDateLteValue
-      ? `primary_release_date.lte=${moment(releaseDateLteValue).format('YYYY-MM-DD')}&`
+      ? `primary_release_date.lte=${dayjs(releaseDateLteValue).format('YYYY-MM-DD')}&`
       : ''
   );
   query = query.concat(

@@ -1,7 +1,7 @@
 import { MoviesFetchingService } from '@/types/fetching';
-import { Movie, MovieFilters, TVShow, VideoType } from '@/types/movie';
+import { Movie, MovieFilters, TVShow } from '@/types/movie';
+import getQuery from '@/utils/getQuery';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import axiosClient from '../utils/axiosClient';
 
 const fetchMovies = async (link: string) => {
@@ -16,43 +16,6 @@ const fetchMovies = async (link: string) => {
   }
 };
 
-const discover = (type: VideoType, pageNumber = 1, filters: MovieFilters) => {
-  let query = '';
-  const {
-    sortValue,
-    releaseDateGteValue,
-    releaseDateLteValue,
-    genresValue,
-    scoreValue,
-    votesValue,
-  } = filters;
-  const genresIds =
-    genresValue && genresValue.length > 0
-      ? genresValue.reduce((s: string, g: number) => `${s}${g},`, '')
-      : [];
-  query = query.concat(sortValue ? `sort_by=${sortValue}&` : '');
-  query = query.concat(
-    releaseDateGteValue
-      ? `primary_release_date.gte=${dayjs(releaseDateGteValue).format('YYYY-MM-DD')}&`
-      : ''
-  );
-  query = query.concat(
-    releaseDateLteValue
-      ? `primary_release_date.lte=${dayjs(releaseDateLteValue).format('YYYY-MM-DD')}&`
-      : ''
-  );
-  query = query.concat(
-    genresValue && genresValue.length > 0 ? `with_genres=${genresIds.slice(0, -1)}&` : ''
-  );
-  query = query.concat(
-    scoreValue
-      ? `vote_average.gte=${scoreValue[0] / 10}&vote_average.lte=${scoreValue[1] / 10}&`
-      : ''
-  );
-  query = query.concat(votesValue ? `vote_count.gte=${votesValue}&` : '');
-  return fetchMovies(`/discover/${type}?${query}page=${pageNumber}`);
-};
-
 const moviesFetchingService: {
   movie: MoviesFetchingService<Movie>;
   tv: MoviesFetchingService<TVShow>;
@@ -62,14 +25,16 @@ const moviesFetchingService: {
     'now-playing': (pageNumber = 1) => fetchMovies(`/movie/now_playing?page=${pageNumber}`),
     upcoming: (pageNumber = 1) => fetchMovies(`/movie/upcoming?page=${pageNumber}`),
     'top-rated': (pageNumber = 1) => fetchMovies(`/movie/top_rated?page=${pageNumber}`),
-    discover: (pageNumber: number, filters: MovieFilters) => discover('movie', pageNumber, filters),
+    discover: (pageNumber: number, filters: MovieFilters) =>
+      fetchMovies(`/discover/movie?${getQuery(filters)}page=${pageNumber}`),
   },
   tv: {
     popular: (pageNumber = 1) => fetchMovies(`/tv/popular?page=${pageNumber}`),
     'airing-today': (pageNumber = 1) => fetchMovies(`/tv/airing_today?page=${pageNumber}`),
     'on-tv': (pageNumber = 1) => fetchMovies(`/tv/on_the_air?page=${pageNumber}`),
     'top-rated': (pageNumber = 1) => fetchMovies(`/tv/top_rated?page=${pageNumber}`),
-    discover: (pageNumber: number, filters: MovieFilters) => discover('tv', pageNumber, filters),
+    discover: (pageNumber: number, filters: MovieFilters) =>
+      fetchMovies(`/discover/tv?${getQuery(filters)}page=${pageNumber}`),
   },
 };
 

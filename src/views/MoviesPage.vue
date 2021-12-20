@@ -6,20 +6,20 @@
         <n-collapse :default-expanded-names="['0']">
           <n-collapse-item title="Sort" name="0">
             <div>Sort results By</div>
-            <n-select v-model:value="sortValue" :options="sortOptions" />
+            <n-select v-model:value="filters.sortValue" :options="filters.sortOptions" />
           </n-collapse-item>
           <n-collapse-item title="Filters" name="1">
             <div class="filter">
               <div>Release Dates</div>
-              <n-date-picker v-model:value="releaseDateGteValue" type="date" />
-              <n-date-picker v-model:value="releaseDateLteValue" type="date" />
+              <n-date-picker v-model:value="filters.releaseDateGteValue" type="date" />
+              <n-date-picker v-model:value="filters.releaseDateLteValue" type="date" />
             </div>
             <n-divider></n-divider>
             <div class="filter">
               <div>Genres</div>
-              <n-checkbox-group v-if="genresOptions" v-model:value="genresValue">
+              <n-checkbox-group v-if="filters.genresOptions" v-model:value="filters.genresValue">
                 <n-checkbox
-                  v-for="genre in genresOptions"
+                  v-for="genre in filters.genresOptions"
                   :genre="genre"
                   :key="genre.id"
                   :value="genre.id"
@@ -31,12 +31,12 @@
             <n-divider></n-divider>
             <div class="filter">
               <div>User Score</div>
-              <n-slider v-model:value="scoreValue" range :marks="scoreMarks" />
+              <n-slider v-model:value="filters.scoreValue" range :marks="filters.scoreMarks" />
             </div>
             <n-divider></n-divider>
             <div class="filter">
               <div>Minimum User Votes</div>
-              <n-slider v-model:value="votesValue" max="500" />
+              <n-slider v-model:value="filters.votesValue" max="500" />
             </div>
             <n-divider></n-divider>
           </n-collapse-item>
@@ -74,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, toRefs, watch } from 'vue';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import MovieCard from '../components/MovieCard.vue';
 import { useRoute } from 'vue-router';
 import {
@@ -123,7 +123,7 @@ export default defineComponent({
     const key = route.params.key as keyof Omit<MoviesFetchingService<Movie | TVShow>, 'discover'>;
 
     const moviesData = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
-    const { movies, getMovies } = moviesData;
+    const { moviesLoading, movies, moviesError, getMovies } = moviesData;
 
     const { filters, getFilters } = useFilters<typeof type extends MovieType ? Movie : TVShow>(
       movies,
@@ -141,8 +141,10 @@ export default defineComponent({
     });
 
     return {
-      ...moviesData,
-      ...toRefs(filters),
+      moviesLoading,
+      movies,
+      moviesError,
+      getMovies,
       filters,
       page,
       typeRef,

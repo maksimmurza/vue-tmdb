@@ -44,37 +44,37 @@ export const profileDropdownOptions = [
 export const sortOptions = [
   {
     label: 'Popularity Descending',
-    value: 'popularity.desc' as SortValue,
+    value: 'popularity.desc',
   },
   {
     label: 'Popularity Ascending',
-    value: 'popularity.asc' as SortValue,
+    value: 'popularity.asc',
   },
   {
     label: 'Rating Descending',
-    value: 'vote_average.desc' as SortValue,
+    value: 'vote_average.desc',
   },
   {
     label: 'Rating Ascending',
-    value: 'vote_average.asc' as SortValue,
+    value: 'vote_average.asc',
   },
   {
     label: 'Release Date Descending',
-    value: 'release_date.desc' as SortValue,
+    value: 'release_date.desc',
   },
   {
     label: 'Release Date Ascending',
-    value: 'release_date.asc' as SortValue,
+    value: 'release_date.asc',
   },
   {
     label: 'Title (A-Z)',
-    value: 'original_title.asc' as SortValue,
+    value: 'original_title.asc',
   },
   {
     label: 'Title (Z-A)',
-    value: 'original_title.desc' as SortValue,
+    value: 'original_title.desc',
   },
-];
+] as Array<{ label: string; value: SortValue }>;
 
 export const scoreMarks = {
   0: '0',

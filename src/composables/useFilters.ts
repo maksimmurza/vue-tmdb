@@ -22,7 +22,7 @@ const useFilters = <Type extends Movie | TVShow>(
   filtersLoading: ComputedRef<boolean>;
   filtersError: ComputedRef<Error | null>;
 } => {
-  const { begin: releaseDateGteValue, end: releaseDateLteValue } = getAirDates<Type>(key);
+  const { begin: releaseDateGteValue, end: releaseDateLteValue } = getAirDates(key);
   const { loading: genresLoading, genresOptions, error: genresError, getGenres } = useGenres(type);
 
   const filters = reactive<MovieFiltersWithRefGenres>({

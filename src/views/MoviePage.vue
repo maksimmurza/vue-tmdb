@@ -53,13 +53,14 @@
               ><n-icon><list-ul /></n-icon
             ></n-button>
             <n-button strong size="large" circle type="info"
-              ><n-icon><heart /></n-icon
+              ><n-icon><heart :color="movieAccountStates?.favorite ? '#F36653' : 'white'" /></n-icon
             ></n-button>
             <n-button strong size="large" circle type="info"
-              ><n-icon><bookmark /></n-icon
+              ><n-icon
+                ><bookmark :color="movieAccountStates?.watchlist ? '#db5ece' : 'white'" /></n-icon
             ></n-button>
             <n-button strong size="large" circle type="info"
-              ><n-icon><star /></n-icon
+              ><n-icon><star :color="movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
             ></n-button>
           </div>
         </div>
@@ -91,12 +92,14 @@
 <script>
 import useMovie from '@/composables/useMovie';
 import { defineComponent, onMounted, computed } from 'vue';
+import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
 import { Heart, Star, StarRegular, Bookmark, ListUl } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
+import useMovieAccountStates from '../composables/useMovieAccountStates';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -116,8 +119,16 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
+    const store = useStore();
     const id = route.params.id;
     const type = route.params.type;
+    const { userInfo } = store.state.user;
+    const {
+      getMovieAccountStates,
+      movieAccountStatesLoading,
+      movieAccountStates,
+      movieAccountStatesError,
+    } = useMovieAccountStates();
     const {
       movieDetailsLoading,
       movieCreditsLoading,
@@ -158,17 +169,27 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      getMovie().then(getMovieCredits).then(getMovieVideo);
+      getMovie()
+        .then(getMovieCredits)
+        .then(getMovieVideo)
+        .then(() => {
+          if (userInfo) {
+            getMovieAccountStates(userInfo.sessionId, movieDetails.value.id, type);
+          }
+        });
     });
 
     return {
       movieDetailsLoading,
       movieCreditsLoading,
       movieVideosLoading,
+      movieAccountStatesLoading,
       movieDetails,
+      movieAccountStates,
       movieDetailsError,
       movieCreditsError,
       movieVideosError,
+      movieAccountStatesError,
       movieCoverSrc,
       movieTrailerLink,
       backgroundImageStyle,

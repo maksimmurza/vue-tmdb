@@ -125,11 +125,7 @@ export default defineComponent({
     const moviesData = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
     const { moviesLoading, movies, moviesError, getMovies } = moviesData;
 
-    const { filters, getFilters } = useFilters<typeof type extends MovieType ? Movie : TVShow>(
-      movies,
-      type,
-      key
-    );
+    const { filters, getFilters } = useFilters(type, key);
 
     watch(page, newPage => {
       getMovies(newPage, filters);

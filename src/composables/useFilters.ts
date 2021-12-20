@@ -1,19 +1,10 @@
-import {
-  Movie,
-  MovieFilters,
-  MovieFiltersWithRefGenres,
-  MovieKey,
-  TVShow,
-  VideoType,
-} from '@/types/movie';
-import { computed, ComputedRef, reactive, Ref, UnwrapNestedRefs } from 'vue';
+import { MovieFilters, MovieFiltersWithRefGenres, MovieKey, VideoType } from '@/types/movie';
+import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 import getAirDates from '../utils/getAirDates';
 import useGenres from './useGenres';
 import { sortOptions } from '../constants';
-import { MoviesListResponse } from '@/types/fetching';
 
-const useFilters = <Type extends Movie | TVShow>(
-  movies: Ref<MoviesListResponse<Type>>,
+const useFilters = (
   type: VideoType,
   key: MovieKey
 ): {

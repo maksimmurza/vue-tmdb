@@ -92,3 +92,10 @@ export interface MovieList {
   name: string;
   poster_path: string | null;
 }
+
+export interface MovieAccountStates {
+  id: number;
+  favorite: boolean;
+  rated: Record<string, unknown> | boolean;
+  watchlist: boolean;
+}

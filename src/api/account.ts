@@ -1,10 +1,28 @@
-import { MovieType } from '@/types/movie';
+import { MovieType, VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
 import axiosClient from '../utils/axiosClient';
 
 const accountDetails = async (sessionId: string): Promise<AxiosResponse> => {
   try {
     const response = await axiosClient.get(`account?session_id=${sessionId}`);
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+const fetchMovieAccountStates = async (
+  sessionId: string,
+  movieId: number,
+  type: VideoType
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClient.get(
+      `/${type}/${movieId}/account_states?session_id=${sessionId}`
+    );
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -101,4 +119,12 @@ const setFavorite = async (
   }
 };
 
-export { accountDetails, favoriteMovies, ratedMovies, watchList, createdLists, setFavorite };
+export {
+  accountDetails,
+  fetchMovieAccountStates,
+  favoriteMovies,
+  ratedMovies,
+  watchList,
+  createdLists,
+  setFavorite,
+};

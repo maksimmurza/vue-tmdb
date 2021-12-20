@@ -1,35 +1,54 @@
 <template>
-  <div class="details-header">
-    <div class="details-foreground">
+  <div v-if="movieDetails" class="movie-page-header">
+    <div class="movie-page-header__foreground">
       <div>
         <img :src="movieCoverSrc" />
       </div>
       <div class="movie-description">
-        <div class="movie-title-container">
-          <h1 class="movie-title">{{ movie && movie.title }}</h1>
-          <span class="movie-release-year">({{ movie && movie.release_date.slice(0, 4) }})</span>
+        <div>
+          <h1 class="movie-description__title">
+            {{ movieDetails.title ? movieDetails.title : movieDetails.name }}
+          </h1>
+          <span v-if="movieDetails.release_date" class="movie-description__release-year"
+            >({{ movieDetails.release_date.slice(0, 4) }})</span
+          >
         </div>
-        <div class="genres-list" v-if="movie">
+        <div v-if="movieDetails">
           <n-button
             round
             type="tertiary"
-            class="genre-button"
+            class="movie-description__genre-button"
             size="tiny"
-            v-for="genre in movie.genres"
+            v-for="genre in movieDetails.genres"
             :key="genre.id"
             >{{ genre.name }}
           </n-button>
         </div>
-        <div class="movie-page-rating-block">
-          <div class="movie-page-rating-label" v-if="movie">
+        <div class="rating-block">
+          <div v-if="movieDetails.vote_count > 0" class="rating-block__infographic">
             <n-progress
               type="circle"
               :indicator-text-color="'white'"
-              :percentage="movie.vote_average * 10"
-              :color="movie.vote_average < 5 ? 'red' : movie.vote_average < 8 ? 'orange' : 'green'"
+              :percentage="movieDetails.vote_average * 10"
+              :color="
+                movieDetails.vote_average < 5
+                  ? 'red'
+                  : movieDetails.vote_average < 8
+                  ? 'orange'
+                  : 'green'
+              "
             ></n-progress>
           </div>
-          <div class="personal-lists">
+          <div v-else>
+            <n-empty description="No rating yet">
+              <template #icon>
+                <n-icon>
+                  <star-regular />
+                </n-icon>
+              </template>
+            </n-empty>
+          </div>
+          <div class="rating-block__buttons">
             <n-button strong size="large" circle type="info"
               ><n-icon><list-ul /></n-icon
             ></n-button>
@@ -44,100 +63,162 @@
             ></n-button>
           </div>
         </div>
-        <div class="movie-overview" v-if="movie">
+        <div v-if="movieDetails" class="movie-description__overview">
           <h3>Overview</h3>
-          <p>{{ movie.overview }}</p>
+          <p>{{ movieDetails.overview }}</p>
         </div>
       </div>
     </div>
-    <div
-      class="details-background"
-      :style="{
-        backgroundImage: `url(${backgroundImageUrl})`,
-      }"
-    ></div>
+    <div class="movie-page-header__background" :style="backgroundImageStyle"></div>
   </div>
-  <div class="movie-page-cast"></div>
+  <loader v-else />
+  <div v-if="movieDetails && movieDetails.credits" class="movie-page-content">
+    <h1>Cast</h1>
+    <cards-list :loading="movieCreditsLoading" :error="movieDetailsError">
+      <actor-card
+        v-for="actor in movieDetails.credits.cast"
+        :key="actor.id"
+        :actor="actor"
+      ></actor-card>
+    </cards-list>
+    <h1>Trailer</h1>
+    <iframe :src="movieTrailerLink" width="700" height="500" frameborder="0">
+      {{ movieTrailerLink }}
+    </iframe>
+  </div>
 </template>
 
 <script>
 import useMovie from '@/composables/useMovie';
 import { defineComponent, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { NButton, NProgress, NIcon } from 'naive-ui';
-import { Heart, Star, Bookmark, ListUl } from '@vicons/fa';
+import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
+import { Heart, Star, StarRegular, Bookmark, ListUl } from '@vicons/fa';
+import ActorCard from '../components/ActorCard.vue';
+import Loader from '../components/Loader.vue';
+import CardsList from '../components/CardsList.vue';
 
 export default defineComponent({
   name: 'MoviePage',
+  components: {
+    NButton,
+    NProgress,
+    NIcon,
+    Loader,
+    Heart,
+    Star,
+    StarRegular,
+    Bookmark,
+    ListUl,
+    NEmpty,
+    ActorCard,
+    CardsList,
+  },
   setup() {
     const route = useRoute();
-    const { loading, movie, error, getMovie } = useMovie(route.params.id);
-    const backgroundImageUrl = computed(
-      () => process.env.VUE_APP_BACKGROUND_IMG_URL + movie.value?.backdrop_path
-    );
-    const movieCoverSrc = computed(() => process.env.VUE_APP_IMG_URL + movie.value?.poster_path);
+    const id = route.params.id;
+    const type = route.params.type;
+    const {
+      movieDetailsLoading,
+      movieCreditsLoading,
+      movieVideosLoading,
+      movie: movieDetails,
+      movieDetailsError,
+      movieCreditsError,
+      movieVideosError,
+      getMovie,
+      getMovieCredits,
+      getMovieVideo,
+    } = useMovie(type, id);
 
-    onMounted(() => {
-      getMovie();
+    const backgroundImageUrl = computed(
+      () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
+    );
+
+    const backgroundImageStyle = computed(() => ({
+      backgroundImage: `url(${backgroundImageUrl.value})`,
+    }));
+
+    const movieCoverSrc = computed(
+      () => process.env.VUE_APP_IMG_URL + movieDetails.value?.poster_path
+    );
+
+    const movieTrailerLink = computed(() => {
+      const officialTrailer = movieDetails.value?.videos?.results.find(
+        video => video.name === 'Official Trailer'
+      );
+
+      if (officialTrailer) {
+        return `https://www.youtube.com/embed/${officialTrailer.key}`;
+      }
+
+      return `https://www.youtube.com/embed/${
+        movieDetails.value?.videos?.results.find(video => video.type === 'Trailer').key
+      }`;
     });
 
-    return { loading, movie, error, getMovie, movieCoverSrc, backgroundImageUrl };
+    onMounted(() => {
+      getMovie().then(getMovieCredits).then(getMovieVideo);
+    });
+
+    return {
+      movieDetailsLoading,
+      movieCreditsLoading,
+      movieVideosLoading,
+      movieDetails,
+      movieDetailsError,
+      movieCreditsError,
+      movieVideosError,
+      movieCoverSrc,
+      movieTrailerLink,
+      backgroundImageStyle,
+    };
   },
-  components: { NButton, NProgress, NIcon, Heart, Star, Bookmark, ListUl },
 });
 </script>
 
 <style lang="scss">
-.details-header {
+.movie-page-header {
   position: relative;
-}
 
-.details-background {
-  z-index: 1;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  filter: blur(2px);
-  -webkit-filter: blur(2px);
-}
+  &__background {
+    z-index: 1;
+    position: absolute;
+    inset: 0;
+    filter: blur(2px);
+    -webkit-filter: blur(2px);
+  }
 
-.details-foreground {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  padding: 1.5rem 10vw;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.75);
+  &__foreground {
+    z-index: 3;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 10vw;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.75);
+  }
 }
 
 .movie-description {
   margin-left: 2rem;
-}
 
-.movie-title {
-  display: inline;
-}
+  &__title {
+    display: inline;
+  }
 
-.movie-release-year {
-  font-size: 22px;
-  font-weight: 500;
-  margin-left: 1rem;
-}
+  &__release-year {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-left: 1rem;
+  }
 
-.genre-button {
-  margin-right: 10px;
-}
-
-.personal-lists {
-  & > * {
-    margin-right: 1rem;
+  &__genre-button {
+    margin-right: 10px;
   }
 }
 
-.movie-page-rating-block {
+.rating-block {
   margin: 2rem 0;
   display: flex;
   align-items: center;
@@ -145,14 +226,33 @@ export default defineComponent({
   & > * {
     margin-right: 2rem;
   }
+
+  &__infographic {
+    background-color: transparent;
+  }
+
+  &__buttons {
+    & > * {
+      margin-right: 1rem;
+    }
+  }
 }
 
-.movie-page-rating-label {
-  background-color: transparent;
+.movie-page-content {
+  padding: 0 10vw;
 }
 
-.personal-list-button {
-  border-radius: 50%;
-  background-color: rgb(88, 112, 143);
+.movie-page-cast {
+  position: relative;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: #e2e8dd;
+
+  & > * {
+    min-width: 130px;
+    margin-right: 1rem;
+  }
 }
 </style>

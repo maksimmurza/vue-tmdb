@@ -1,5 +1,7 @@
-import { PopularMoviesResponse, UpcomingMoviesResponse, TopRatedMoviesResponse } from '@/types';
-import axios, { AxiosResponse } from 'axios';
+import { MoviesFetchingService } from '@/types/fetching';
+import { Movie, MovieFilters, TVShow } from '@/types/movie';
+import getQuery from '@/utils/getQuery';
+import axios from 'axios';
 import axiosClient from '../utils/axiosClient';
 
 const fetchMovies = async (link: string) => {
@@ -14,18 +16,26 @@ const fetchMovies = async (link: string) => {
   }
 };
 
-type FetchingFunction<T> = (pageNumber?: number) => Promise<AxiosResponse<T>>;
-
-type MovieFetchingService = {
-  popular: FetchingFunction<PopularMoviesResponse>;
-  upcoming: FetchingFunction<UpcomingMoviesResponse>;
-  topRated: FetchingFunction<TopRatedMoviesResponse>;
+const moviesFetchingService: {
+  movie: MoviesFetchingService<Movie>;
+  tv: MoviesFetchingService<TVShow>;
+} = {
+  movie: {
+    popular: (pageNumber = 1) => fetchMovies(`/movie/popular?page=${pageNumber}`),
+    'now-playing': (pageNumber = 1) => fetchMovies(`/movie/now_playing?page=${pageNumber}`),
+    upcoming: (pageNumber = 1) => fetchMovies(`/movie/upcoming?page=${pageNumber}`),
+    'top-rated': (pageNumber = 1) => fetchMovies(`/movie/top_rated?page=${pageNumber}`),
+    discover: (pageNumber: number, filters: MovieFilters) =>
+      fetchMovies(`/discover/movie?${getQuery(filters)}page=${pageNumber}`),
+  },
+  tv: {
+    popular: (pageNumber = 1) => fetchMovies(`/tv/popular?page=${pageNumber}`),
+    'airing-today': (pageNumber = 1) => fetchMovies(`/tv/airing_today?page=${pageNumber}`),
+    'on-tv': (pageNumber = 1) => fetchMovies(`/tv/on_the_air?page=${pageNumber}`),
+    'top-rated': (pageNumber = 1) => fetchMovies(`/tv/top_rated?page=${pageNumber}`),
+    discover: (pageNumber: number, filters: MovieFilters) =>
+      fetchMovies(`/discover/tv?${getQuery(filters)}page=${pageNumber}`),
+  },
 };
 
-const movieFetchingService: MovieFetchingService = {
-  popular: (pageNumber = 1) => fetchMovies(`/movie/popular?page=${pageNumber}`),
-  upcoming: (pageNumber = 1) => fetchMovies(`/movie/upcoming?page=${pageNumber}`),
-  topRated: (pageNumber = 1) => fetchMovies(`/movie/top_rated?page=${pageNumber}`),
-};
-
-export { movieFetchingService, MovieFetchingService };
+export { moviesFetchingService };

@@ -14,8 +14,9 @@ module.exports = {
     ecmaVersion: 2020,
   },
   rules: {
+    'vue/order-in-components': 'warn',
     'prettier/prettier': 0,
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-console': 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
   },
 };

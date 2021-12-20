@@ -1,36 +1,53 @@
-import { movieFetchingService, MovieFetchingService } from '../api/movies';
-import { Movie } from '@/types';
+import { moviesFetchingService } from '../api/movies';
+import { MoviesListResponse } from '@/types/fetching';
 import { ref, Ref } from 'vue';
+import { Movie, MovieFilters, MovieKey, TVShow, VideoType } from '@/types/movie';
 
-const useMovies = (
-  type: keyof MovieFetchingService
+const useMovies = <Type extends Movie | TVShow>(
+  type: VideoType,
+  key: MovieKey
 ): {
-  loading: Ref<boolean>;
-  movies: Ref<Array<Movie>>;
-  getMovies: () => Promise<void>;
-  error: Ref<Error | null>;
+  moviesLoading: Ref<boolean>;
+  movies: Ref<MoviesListResponse<Type>>;
+  getMovies: (page?: number, filters?: MovieFilters) => Promise<void>;
+  moviesError: Ref<Error | null>;
 } => {
-  const movies = ref<Array<Movie>>([]);
-  const error = ref<Error | null>(null);
-  const loading = ref<boolean>(false);
+  const movies = ref<MoviesListResponse<Type>>({
+    page: 0,
+    total_pages: 0,
+    total_results: 0,
+    results: [],
+  }) as Ref<MoviesListResponse<Type>>;
+  const moviesError = ref<Error | null>(null);
+  const moviesLoading = ref<boolean>(false);
 
-  const getMovies = async () => {
-    loading.value = true;
+  const getMovies = async (page = 1, filters?: MovieFilters) => {
+    moviesLoading.value = true;
     try {
-      const response = await movieFetchingService[type]();
-      movies.value = response.data.results;
-      error.value = null;
+      const fetchingService = moviesFetchingService[type];
+      let fetchingFunction, response;
+      if (filters) {
+        fetchingFunction = fetchingService['discover'];
+        response = await fetchingFunction(page, filters);
+      } else {
+        fetchingFunction = fetchingService[key];
+        if (fetchingFunction) {
+          response = await fetchingFunction(page);
+        }
+      }
+      movies.value = response?.data as MoviesListResponse<Type>;
+      moviesError.value = null;
     } catch (err) {
-      error.value = err as Error;
+      moviesError.value = err as Error;
     } finally {
-      loading.value = false;
+      moviesLoading.value = false;
     }
   };
 
   return {
-    loading,
+    moviesLoading,
     movies,
-    error,
+    moviesError,
     getMovies,
   };
 };

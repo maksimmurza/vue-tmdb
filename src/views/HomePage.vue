@@ -1,19 +1,25 @@
 <template>
-  <div class="content">
+  <div class="home-page-content">
     <search class="search" />
     <h1>What's popular</h1>
-    <n-scrollbar x-scrollable>
-      <div class="movies-container">
-        <movie-card v-for="movie in popularMovies" :key="movie.id" :movie="movie"></movie-card>
-      </div>
-    </n-scrollbar>
+    <cards-list :loading="popularLoading" :error="popularError">
+      <movie-card
+        v-for="movie in popularMovies.results"
+        :key="movie.id"
+        :movie="movie"
+        :type="'movie'"
+      ></movie-card>
+    </cards-list>
     <n-divider />
     <h1>Top rated movies</h1>
-    <n-scrollbar x-scrollable>
-      <div class="movies-container">
-        <movie-card v-for="movie in topRatedMovies" :key="movie.id" :movie="movie"></movie-card>
-      </div>
-    </n-scrollbar>
+    <cards-list :loading="topRatedLoading" :error="topRatedError">
+      <movie-card
+        v-for="movie in topRatedMovies.results"
+        :key="movie.id"
+        :movie="movie"
+        :type="'movie'"
+      ></movie-card>
+    </cards-list>
     <h3 v-if="error">
       {{ error }}
     </h3>
@@ -22,26 +28,33 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
-import { NScrollbar, NDivider } from 'naive-ui';
+import { NDivider } from 'naive-ui';
 import MovieCard from '../components/MovieCard.vue';
 import Search from '../components/Search.vue';
+import CardsList from '../components/CardsList.vue';
 import useMovies from '../composables/useMovies';
 
 export default defineComponent({
   name: 'Home',
+  components: {
+    MovieCard,
+    Search,
+    CardsList,
+    NDivider,
+  },
   setup() {
     const {
-      loading: topRatedLoading,
+      moviesLoading: topRatedLoading,
       movies: topRatedMovies,
-      error: topRatedError,
+      moviesError: topRatedError,
       getMovies: getTopRatedMovies,
-    } = useMovies('topRated');
+    } = useMovies('movie', 'top-rated');
     const {
-      loading: popularLoading,
+      moviesLoading: popularLoading,
       movies: popularMovies,
-      error: popularError,
+      moviesError: popularError,
       getMovies: getPopularMovies,
-    } = useMovies('popular');
+    } = useMovies('movie', 'popular');
 
     onMounted(() => {
       getPopularMovies();
@@ -59,32 +72,12 @@ export default defineComponent({
       getPopularMovies,
     };
   },
-  components: {
-    MovieCard,
-    Search,
-    NDivider,
-    NScrollbar,
-  },
 });
 </script>
 
 <style>
-.content {
+.home-page-content {
   padding: 0 10vw;
-}
-
-.movies-container {
-  position: relative;
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  flex-wrap: nowrap;
-  background-color: #e2e8dd;
-}
-
-.movies-container > * {
-  min-width: 200px;
-  margin-right: 1rem;
 }
 
 .search {

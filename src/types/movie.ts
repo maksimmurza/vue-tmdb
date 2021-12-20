@@ -80,4 +80,4 @@ export interface MovieFiltersWithRefGenres extends Filters {
   genresOptions: Ref<Array<Genre>>;
 }
 
-export type MovieKey<Type> = keyof Omit<MoviesFetchingService<Type>, 'discover'>;
+export type MovieKey = keyof Omit<MoviesFetchingService, 'discover'>;

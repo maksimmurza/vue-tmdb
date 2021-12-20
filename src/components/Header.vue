@@ -90,7 +90,6 @@ export default defineComponent({
         ...option,
         props: {
           onClick: () => {
-            console.log(window);
             window.open(option.url, '_blank');
           },
         },

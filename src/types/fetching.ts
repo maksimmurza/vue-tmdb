@@ -11,7 +11,7 @@ export interface MoviesListResponse<T> {
 
 export type FetchingMoviesFunction<T> = (pageNumber?: number) => Promise<AxiosResponse<T>>;
 
-export interface MoviesFetchingService<Type> {
+export interface MoviesFetchingService<Type = unknown> {
   popular: FetchingMoviesFunction<MoviesListResponse<Type>>;
   'now-playing'?: FetchingMoviesFunction<MoviesListResponse<Type>>;
   upcoming?: FetchingMoviesFunction<MoviesListResponse<Type>>;

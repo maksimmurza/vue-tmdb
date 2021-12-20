@@ -123,7 +123,7 @@ export default defineComponent({
     const key = route.params.key as keyof Omit<MoviesFetchingService<Movie | TVShow>, 'discover'>;
 
     const moviesData = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
-    const { movies, getMovies } = moviesData;
+    const { moviesLoading, movies, moviesError, getMovies } = moviesData;
 
     const { filters, getFilters } = useFilters<typeof type extends MovieType ? Movie : TVShow>(
       movies,
@@ -141,7 +141,10 @@ export default defineComponent({
     });
 
     return {
-      ...moviesData,
+      moviesLoading,
+      movies,
+      moviesError,
+      getMovies,
       ...toRefs(filters),
       filters,
       page,

@@ -1,9 +1,7 @@
-import { Movie, MovieKey, TVShow } from '@/types/movie';
+import { MovieKey } from '@/types/movie';
 import dayjs from 'dayjs';
 
-const getAirDates = <Type extends Movie | TVShow>(
-  key: MovieKey<Type>
-): { begin: number | null; end: number | null } => {
+const getAirDates = (key: MovieKey): { begin: number | null; end: number | null } => {
   const airDatesService = {
     popular: {
       begin: null,

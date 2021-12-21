@@ -35,7 +35,7 @@ const fetchMovieAccountStates = async (
 const favoriteMovies = async (
   accountId: string,
   sessionId: string,
-  type: MovieType
+  type: VideoType
 ): Promise<AxiosResponse> => {
   try {
     const response = await axiosClient.get(
@@ -101,7 +101,7 @@ const createdLists = async (accountId: string, sessionId: string): Promise<Axios
 const setFavorite = async (
   accountId: string,
   sessionId: string,
-  type: MovieType,
+  type: VideoType,
   movieId: number,
   favorite: boolean
 ): Promise<AxiosResponse> => {

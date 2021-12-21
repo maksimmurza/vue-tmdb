@@ -52,7 +52,12 @@
             <n-button strong size="large" circle type="info"
               ><n-icon><list-ul /></n-icon
             ></n-button>
-            <n-button strong size="large" circle type="info"
+            <n-button
+              strong
+              size="large"
+              circle
+              type="info"
+              @click="setFavoriteValue(movieDetails.id, !movieAccountStates?.favorite)"
               ><n-icon><heart :color="movieAccountStates?.favorite ? '#F36653' : 'white'" /></n-icon
             ></n-button>
             <n-button strong size="large" circle type="info"
@@ -100,6 +105,7 @@ import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
 import useMovieAccountStates from '../composables/useMovieAccountStates';
+import useFavoriteMovies from '../composables/useFavoriteMovies';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -124,12 +130,6 @@ export default defineComponent({
     const type = route.params.type;
     const { userInfo } = store.state.user;
     const {
-      getMovieAccountStates,
-      movieAccountStatesLoading,
-      movieAccountStates,
-      movieAccountStatesError,
-    } = useMovieAccountStates();
-    const {
       movieDetailsLoading,
       movieCreditsLoading,
       movieVideosLoading,
@@ -141,6 +141,22 @@ export default defineComponent({
       getMovieCredits,
       getMovieVideo,
     } = useMovie(type, id);
+    const {
+      getMovieAccountStates,
+      movieAccountStatesLoading,
+      movieAccountStates,
+      movieAccountStatesError,
+    } = useMovieAccountStates(userInfo?.sessionId, movieDetails?.value?.id, type);
+    const {
+      favoriteMoviesLoading,
+      favoriteMovies,
+      favoriteMoviesError,
+      getFavoriteMovies,
+      setFavoriteValueLoading,
+      setFavoriteValueResult,
+      setFavoriteValueError,
+      setFavoriteValue,
+    } = useFavoriteMovies(userInfo?.accountId, userInfo?.sessionId, type);
 
     const backgroundImageUrl = computed(
       () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
@@ -169,14 +185,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      getMovie()
-        .then(getMovieCredits)
-        .then(getMovieVideo)
-        .then(() => {
-          if (userInfo) {
-            getMovieAccountStates(userInfo.sessionId, movieDetails.value.id, type);
-          }
-        });
+      getMovie().then(getMovieCredits).then(getMovieVideo).then(getMovieAccountStates);
     });
 
     return {
@@ -193,6 +202,14 @@ export default defineComponent({
       movieCoverSrc,
       movieTrailerLink,
       backgroundImageStyle,
+      favoriteMoviesLoading,
+      favoriteMovies,
+      favoriteMoviesError,
+      getFavoriteMovies,
+      setFavoriteValueLoading,
+      setFavoriteValueResult,
+      setFavoriteValueError,
+      setFavoriteValue,
     };
   },
 });

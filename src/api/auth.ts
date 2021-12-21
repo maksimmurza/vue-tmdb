@@ -18,7 +18,7 @@ const login = async (username: string, password: string): Promise<AxiosResponse>
     if (axios.isAxiosError(error) && error.response) {
       throw new Error(error.response.data.status_message);
     }
-    throw new Error('Server is unavailable');
+    throw new Error((error as Error).message as string);
   }
 };
 

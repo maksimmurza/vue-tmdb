@@ -38,7 +38,7 @@ const favoriteMovies = async (
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(
+    const response = await axiosClient.post(
       `account/${accountId}/favorite/${type === 'movie' ? 'movies' : 'tv'}?session_id=${sessionId}`
     );
     return response;

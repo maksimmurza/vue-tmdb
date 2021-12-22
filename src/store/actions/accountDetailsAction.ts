@@ -9,13 +9,14 @@ async function accountDetailsAction(
   try {
     const response = await accountDetails(sessionId);
     const {
+      id,
       name,
       username,
       avatar: {
         tmdb: { avatar_path },
       },
     } = response.data;
-    commit('accountDetailsSuccess', { name, username, avatar: avatar_path });
+    commit('accountDetailsSuccess', { id, name, username, avatar: avatar_path });
   } catch (error) {
     throw new Error((error as Error).message);
   }

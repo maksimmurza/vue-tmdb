@@ -53,11 +53,13 @@
               ><n-icon><list-ul /></n-icon
             ></n-button>
             <n-button
+              :style="{ minWidth: 'fit-content' }"
               strong
               size="large"
               circle
               type="info"
-              @click="setFavoriteValue(movieDetails.id, !movieAccountStates?.favorite)"
+              @click="updateMovieFavoriteValue"
+              :loading="setFavoriteValueLoading"
               ><n-icon><heart :color="movieAccountStates?.favorite ? '#F36653' : 'white'" /></n-icon
             ></n-button>
             <n-button strong size="large" circle type="info"
@@ -129,6 +131,7 @@ export default defineComponent({
     const id = route.params.id;
     const type = route.params.type;
     const { userInfo } = store.state.user;
+
     const {
       movieDetailsLoading,
       movieCreditsLoading,
@@ -141,12 +144,14 @@ export default defineComponent({
       getMovieCredits,
       getMovieVideo,
     } = useMovie(type, id);
+
     const {
       getMovieAccountStates,
       movieAccountStatesLoading,
       movieAccountStates,
       movieAccountStatesError,
-    } = useMovieAccountStates(userInfo?.sessionId, movieDetails?.value?.id, type);
+    } = useMovieAccountStates();
+
     const {
       favoriteMoviesLoading,
       favoriteMovies,
@@ -156,7 +161,7 @@ export default defineComponent({
       setFavoriteValueResult,
       setFavoriteValueError,
       setFavoriteValue,
-    } = useFavoriteMovies(userInfo?.accountId, userInfo?.sessionId, type);
+    } = useFavoriteMovies();
 
     const backgroundImageUrl = computed(
       () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
@@ -184,8 +189,23 @@ export default defineComponent({
       }`;
     });
 
+    const updateMovieFavoriteValue = () => {
+      setFavoriteValue(
+        userInfo.id,
+        userInfo.sessionId,
+        type,
+        movieDetails.value.id,
+        !movieAccountStates?.value?.favorite
+      ).then(() => getMovieAccountStates(userInfo.sessionId, movieDetails?.value?.id, type));
+    };
+
     onMounted(() => {
-      getMovie().then(getMovieCredits).then(getMovieVideo).then(getMovieAccountStates);
+      getMovie()
+        .then(getMovieCredits)
+        .then(getMovieVideo)
+        .then(() => {
+          userInfo && getMovieAccountStates(userInfo.sessionId, movieDetails?.value?.id, type);
+        });
     });
 
     return {
@@ -206,10 +226,12 @@ export default defineComponent({
       favoriteMovies,
       favoriteMoviesError,
       getFavoriteMovies,
+      getMovieAccountStates,
       setFavoriteValueLoading,
       setFavoriteValueResult,
       setFavoriteValueError,
       setFavoriteValue,
+      updateMovieFavoriteValue,
     };
   },
 });

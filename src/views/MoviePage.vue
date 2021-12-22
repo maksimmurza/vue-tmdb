@@ -73,7 +73,28 @@
               ><n-icon
                 ><bookmark :color="movieAccountStates?.watchlist ? '#db5ece' : 'white'" /></n-icon
             ></n-button>
-            <n-button strong size="large" circle type="info"
+            <n-popover v-if="movieAccountStates" placement="bottom" trigger="click">
+              <template #trigger>
+                <n-button
+                  strong
+                  size="large"
+                  circle
+                  type="info"
+                  :loading="setRatingValueLoading || deleteRatingValueLoading"
+                  ><n-icon><star :color="movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
+                ></n-button>
+              </template>
+
+              <n-rate
+                allow-half
+                :default-value="movieAccountStates.rated ? movieAccountStates.rated.value / 2 : 0"
+                :on-update:value="updateMovieRating"
+              />
+              <n-button v-if="movieAccountStates.rated" @click="deleteMovieRating" text>
+                <n-icon><trash /></n-icon>
+              </n-button>
+            </n-popover>
+            <n-button v-else strong size="large" circle type="info"
               ><n-icon><star :color="movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
             ></n-button>
           </div>
@@ -103,19 +124,21 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { defineComponent, onMounted, computed } from 'vue';
+import { defineComponent, onMounted, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
-import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
-import { Heart, Star, StarRegular, Bookmark, ListUl } from '@vicons/fa';
+import { NButton, NProgress, NIcon, NEmpty, NRate, NPopover } from 'naive-ui';
+import { Heart, Star, StarRegular, Bookmark, ListUl, Trash } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
 import useMovieAccountStates from '../composables/useMovieAccountStates';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
 import useWatchlist from '../composables/useWatchlist';
+import useRating from '../composables/useRating';
+import { VideoType } from '@/types/movie';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -132,12 +155,15 @@ export default defineComponent({
     NEmpty,
     ActorCard,
     CardsList,
+    NRate,
+    NPopover,
+    Trash,
   },
   setup() {
     const route = useRoute();
     const store = useStore();
-    const id = route.params.id;
-    const type = route.params.type;
+    const id = parseInt(route.params.id as string);
+    const type = route.params.type as VideoType;
     const { userInfo } = store.state.user;
 
     const {
@@ -178,6 +204,17 @@ export default defineComponent({
       setWatchlistValue,
     } = useWatchlist();
 
+    const {
+      setRatingValueLoading,
+      setRatingValueResult,
+      setRatingValueError,
+      setRatingValue,
+      deleteRatingValue,
+      deleteRatingValueLoading,
+      deleteRatingValueResult,
+      deleteRatingValueError,
+    } = useRating();
+
     const backgroundImageUrl = computed(
       () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
     );
@@ -199,41 +236,73 @@ export default defineComponent({
         return `https://www.youtube.com/embed/${officialTrailer.key}`;
       }
 
-      return `https://www.youtube.com/embed/${
-        movieDetails.value?.videos?.results.find(video => video.type === 'Trailer').key
-      }`;
+      const trailer = movieDetails.value?.videos?.results.find(video => video.type === 'Trailer');
+
+      if (trailer) {
+        return `https://www.youtube.com/embed/${trailer.key}`;
+      }
+
+      return null;
     });
 
-    const updateMovieAccountStates = () =>
-      getMovieAccountStates(userInfo.sessionId, movieDetails?.value?.id, type);
+    const updateMovieAccountStates = () => {
+      if (movieDetails.value) {
+        getMovieAccountStates(userInfo.sessionId, movieDetails.value.id, type);
+      }
+    };
 
     const updateMovieFavoriteValue = () => {
-      setFavoriteValue(
-        userInfo.id,
-        userInfo.sessionId,
-        type,
-        movieDetails.value.id,
-        !movieAccountStates?.value?.favorite
-      ).then(updateMovieAccountStates);
+      if (userInfo && movieDetails.value && movieAccountStates.value) {
+        setFavoriteValue(
+          userInfo.id,
+          userInfo.sessionId,
+          type,
+          movieDetails.value.id,
+          !movieAccountStates.value.favorite
+        ).then(updateMovieAccountStates);
+      }
     };
 
     const updateMovieWatchlistValue = () => {
-      setWatchlistValue(
-        userInfo.id,
-        userInfo.sessionId,
-        type,
-        movieDetails.value.id,
-        !movieAccountStates?.value?.watchlist
-      ).then(updateMovieAccountStates);
+      if (userInfo && movieDetails.value && movieAccountStates.value) {
+        setWatchlistValue(
+          userInfo.id,
+          userInfo.sessionId,
+          type,
+          movieDetails.value.id,
+          !movieAccountStates.value.watchlist
+        ).then(updateMovieAccountStates);
+      }
     };
 
+    const updateMovieRating = (value: number) => {
+      if (userInfo && movieDetails.value && movieAccountStates.value) {
+        setRatingValue(userInfo.sessionId, type, movieDetails.value.id, value * 2).then(
+          updateMovieAccountStates
+        );
+      }
+    };
+
+    const deleteMovieRating = () => {
+      if (userInfo && movieDetails.value && movieAccountStates.value) {
+        deleteRatingValue(userInfo.sessionId, type, movieDetails.value.id).then(
+          updateMovieAccountStates
+        );
+      }
+    };
+
+    // watch(
+    //   [
+    //     setFavoriteValueResult,
+    //     setWatchlistValueResult,
+    //     setRatingValueResult,
+    //     deleteRatingValueResult,
+    //   ],
+    //   updateMovieAccountStates
+    // );
+
     onMounted(() => {
-      getMovie()
-        .then(getMovieCredits)
-        .then(getMovieVideo)
-        .then(() => {
-          userInfo && getMovieAccountStates(userInfo.sessionId, movieDetails?.value?.id, type);
-        });
+      getMovie().then(getMovieCredits).then(getMovieVideo).then(updateMovieAccountStates);
     });
 
     return {
@@ -253,18 +322,27 @@ export default defineComponent({
       favoriteMoviesLoading,
       favoriteMovies,
       favoriteMoviesError,
-      getFavoriteMovies,
-      getMovieAccountStates,
       setFavoriteValueLoading,
       setFavoriteValueResult,
       setFavoriteValueError,
-      setFavoriteValue,
-      updateMovieFavoriteValue,
-      setWatchlistValueLoading,
       setWatchlistValueResult,
       setWatchlistValueError,
+      setWatchlistValueLoading,
+      setRatingValueLoading,
+      setRatingValueResult,
+      setRatingValueError,
+      deleteRatingValueLoading,
+      deleteRatingValueResult,
+      deleteRatingValueError,
+      setRatingValue,
+      getMovieAccountStates,
+      getFavoriteMovies,
+      setFavoriteValue,
       setWatchlistValue,
+      updateMovieFavoriteValue,
       updateMovieWatchlistValue,
+      updateMovieRating,
+      deleteMovieRating,
     };
   },
 });

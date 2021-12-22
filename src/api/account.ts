@@ -140,6 +140,41 @@ const watchlist = async (
   }
 };
 
+const setRating = async (
+  sessionId: string,
+  type: VideoType,
+  movieId: number,
+  ratingValue: number
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClient.post(`/${type}/${movieId}/rating?session_id=${sessionId}`, {
+      value: ratingValue,
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+const deleteRating = async (
+  sessionId: string,
+  type: VideoType,
+  movieId: number
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClient.delete(`/${type}/${movieId}/rating?session_id=${sessionId}`);
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
 export {
   accountDetails,
   fetchMovieAccountStates,
@@ -149,4 +184,6 @@ export {
   watchlist,
   createdLists,
   setFavorite,
+  setRating,
+  deleteRating,
 };

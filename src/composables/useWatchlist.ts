@@ -1,11 +1,11 @@
 import { watchlist } from '../api/account';
 import { VideoType } from '@/types/movie';
 import { ref, Ref } from 'vue';
-import { MovieSetFavoriteResponse } from '@/types/fetching';
+import { MovieSetAccountStateResponse } from '@/types/fetching';
 
 const useFavoriteMovies = (): {
   setWatchlistValueLoading: Ref<boolean>;
-  setWatchlistValueResult: Ref<MovieSetFavoriteResponse | null>;
+  setWatchlistValueResult: Ref<MovieSetAccountStateResponse | null>;
   setWatchlistValueError: Ref<Error | null>;
   setWatchlistValue: (
     accountId: string,
@@ -16,7 +16,7 @@ const useFavoriteMovies = (): {
   ) => Promise<void>;
 } => {
   const setWatchlistValueLoading = ref<boolean>(false);
-  const setWatchlistValueResult = ref<MovieSetFavoriteResponse | null>(null);
+  const setWatchlistValueResult = ref<MovieSetAccountStateResponse | null>(null);
   const setWatchlistValueError = ref<Error | null>(null);
 
   const setWatchlistValue = async (
@@ -29,7 +29,7 @@ const useFavoriteMovies = (): {
     setWatchlistValueLoading.value = true;
     try {
       const response = await watchlist(accountId, sessionId, type, movieId, favorite);
-      setWatchlistValueResult.value = response.data as MovieSetFavoriteResponse;
+      setWatchlistValueResult.value = response.data as MovieSetAccountStateResponse;
       setWatchlistValueError.value = null;
     } catch (err) {
       setWatchlistValueError.value = err as Error;

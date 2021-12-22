@@ -1,7 +1,7 @@
 import { favoriteMovies as fetchFavoriteMovies, setFavorite } from '../api/account';
 import { Movie, TVShow, VideoType } from '@/types/movie';
 import { ref, Ref } from 'vue';
-import { MovieSetFavoriteResponse, MoviesListResponse } from '@/types/fetching';
+import { MovieSetAccountStateResponse, MoviesListResponse } from '@/types/fetching';
 
 const useFavoriteMovies = (): {
   favoriteMoviesLoading: Ref<boolean>;
@@ -9,7 +9,7 @@ const useFavoriteMovies = (): {
   favoriteMoviesError: Ref<Error | null>;
   getFavoriteMovies: (accountId: string, sessionId: string, type: VideoType) => Promise<void>;
   setFavoriteValueLoading: Ref<boolean>;
-  setFavoriteValueResult: Ref<MovieSetFavoriteResponse | null>;
+  setFavoriteValueResult: Ref<MovieSetAccountStateResponse | null>;
   setFavoriteValueError: Ref<Error | null>;
   setFavoriteValue: (
     accountId: string,
@@ -37,7 +37,7 @@ const useFavoriteMovies = (): {
   };
 
   const setFavoriteValueLoading = ref<boolean>(false);
-  const setFavoriteValueResult = ref<MovieSetFavoriteResponse | null>(null);
+  const setFavoriteValueResult = ref<MovieSetAccountStateResponse | null>(null);
   const setFavoriteValueError = ref<Error | null>(null);
 
   const setFavoriteValue = async (
@@ -50,7 +50,7 @@ const useFavoriteMovies = (): {
     setFavoriteValueLoading.value = true;
     try {
       const response = await setFavorite(accountId, sessionId, type, movieId, favorite);
-      setFavoriteValueResult.value = response.data as MovieSetFavoriteResponse;
+      setFavoriteValueResult.value = response.data as MovieSetAccountStateResponse;
       setFavoriteValueError.value = null;
     } catch (err) {
       setFavoriteValueError.value = err as Error;

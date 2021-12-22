@@ -9,7 +9,7 @@ export interface MoviesListResponse<T> {
   dates?: { maximum: string; minimum: string };
 }
 
-export interface MovieSetFavoriteResponse {
+export interface MovieSetAccountStateResponse {
   success: boolean;
   status_code: number;
   status_message: string;

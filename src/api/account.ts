@@ -119,12 +119,34 @@ const setFavorite = async (
   }
 };
 
+const watchlist = async (
+  accountId: string,
+  sessionId: string,
+  type: VideoType,
+  movieId: number,
+  watchlist: boolean
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClient.post(
+      `/account/${accountId}/watchlist?session_id=${sessionId}`,
+      { media_type: type, media_id: movieId, watchlist }
+    );
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
 export {
   accountDetails,
   fetchMovieAccountStates,
   favoriteMovies,
   ratedMovies,
   watchList,
+  watchlist,
   createdLists,
   setFavorite,
 };

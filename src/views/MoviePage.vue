@@ -62,7 +62,14 @@
               :loading="setFavoriteValueLoading"
               ><n-icon><heart :color="movieAccountStates?.favorite ? '#F36653' : 'white'" /></n-icon
             ></n-button>
-            <n-button strong size="large" circle type="info"
+            <n-button
+              :style="{ minWidth: 'fit-content' }"
+              strong
+              size="large"
+              circle
+              type="info"
+              @click="updateMovieWatchlistValue"
+              :loading="setWatchlistValueLoading"
               ><n-icon
                 ><bookmark :color="movieAccountStates?.watchlist ? '#db5ece' : 'white'" /></n-icon
             ></n-button>
@@ -108,6 +115,7 @@ import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
 import useMovieAccountStates from '../composables/useMovieAccountStates';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
+import useWatchlist from '../composables/useWatchlist';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -163,6 +171,13 @@ export default defineComponent({
       setFavoriteValue,
     } = useFavoriteMovies();
 
+    const {
+      setWatchlistValueLoading,
+      setWatchlistValueResult,
+      setWatchlistValueError,
+      setWatchlistValue,
+    } = useWatchlist();
+
     const backgroundImageUrl = computed(
       () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
     );
@@ -189,6 +204,9 @@ export default defineComponent({
       }`;
     });
 
+    const updateMovieAccountStates = () =>
+      getMovieAccountStates(userInfo.sessionId, movieDetails?.value?.id, type);
+
     const updateMovieFavoriteValue = () => {
       setFavoriteValue(
         userInfo.id,
@@ -196,7 +214,17 @@ export default defineComponent({
         type,
         movieDetails.value.id,
         !movieAccountStates?.value?.favorite
-      ).then(() => getMovieAccountStates(userInfo.sessionId, movieDetails?.value?.id, type));
+      ).then(updateMovieAccountStates);
+    };
+
+    const updateMovieWatchlistValue = () => {
+      setWatchlistValue(
+        userInfo.id,
+        userInfo.sessionId,
+        type,
+        movieDetails.value.id,
+        !movieAccountStates?.value?.watchlist
+      ).then(updateMovieAccountStates);
     };
 
     onMounted(() => {
@@ -232,6 +260,11 @@ export default defineComponent({
       setFavoriteValueError,
       setFavoriteValue,
       updateMovieFavoriteValue,
+      setWatchlistValueLoading,
+      setWatchlistValueResult,
+      setWatchlistValueError,
+      setWatchlistValue,
+      updateMovieWatchlistValue,
     };
   },
 });

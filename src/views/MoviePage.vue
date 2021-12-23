@@ -49,9 +49,42 @@
             </n-empty>
           </div>
           <div class="rating-block__buttons">
-            <n-button strong size="large" circle type="info"
+            <n-popover v-if="movieAccountStates" placement="bottom" trigger="click">
+              <template #trigger>
+                <n-button
+                  :loading="movieListsLoading"
+                  strong
+                  size="large"
+                  circle
+                  type="info"
+                  @click="fetchMovieLists"
+                  ><n-icon><list-ul /></n-icon
+                ></n-button>
+              </template>
+              <n-checkbox-group v-if="movieLists" v-model:value="movieListsValue">
+                <n-space vertical>
+                  <n-checkbox
+                    v-for="list in movieLists.results"
+                    :list="list"
+                    :key="list.id"
+                    :value="list.id"
+                    :label="list.name"
+                    :on-update:checked="updateMovieListsValues"
+                  />
+                </n-space>
+              </n-checkbox-group>
+              <!-- <n-button
+                type="primary"
+                size="small"
+                @click="updateMovieListsValues"
+                :style="{ margin: '1rem 0 0 0' }"
+                >Confirm</n-button
+              > -->
+            </n-popover>
+            <n-button v-else strong size="large" circle type="info"
               ><n-icon><list-ul /></n-icon
             ></n-button>
+
             <n-button
               :style="{ minWidth: 'fit-content' }"
               strong
@@ -126,10 +159,20 @@
 
 <script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { defineComponent, onMounted, computed, watch } from 'vue';
+import { defineComponent, onMounted, computed, watch, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
-import { NButton, NProgress, NIcon, NEmpty, NRate, NPopover } from 'naive-ui';
+import {
+  NButton,
+  NProgress,
+  NIcon,
+  NEmpty,
+  NRate,
+  NPopover,
+  NCheckbox,
+  NCheckboxGroup,
+  NSpace,
+} from 'naive-ui';
 import { Heart, Star, StarRegular, Bookmark, ListUl, Trash } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
@@ -139,6 +182,8 @@ import useFavoriteMovies from '../composables/useFavoriteMovies';
 import useWatchlist from '../composables/useWatchlist';
 import useRating from '../composables/useRating';
 import { VideoType } from '@/types/movie';
+import { isEqual } from 'lodash';
+import useMovieLists from '../composables/useMovieLists';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -158,6 +203,9 @@ export default defineComponent({
     NRate,
     NPopover,
     Trash,
+    NCheckbox,
+    NCheckboxGroup,
+    NSpace,
   },
   setup() {
     const route = useRoute();
@@ -165,6 +213,7 @@ export default defineComponent({
     const id = parseInt(route.params.id as string);
     const type = route.params.type as VideoType;
     const { userInfo } = store.state.user;
+    let movieListsValue = ref<Array<number>>([]);
 
     const {
       movieDetailsLoading,
@@ -215,6 +264,9 @@ export default defineComponent({
       deleteRatingValueError,
     } = useRating();
 
+    const { movieListsLoading, movieLists, movieListsError, getMovieLists, isMoviePersistInList } =
+      useMovieLists();
+
     const backgroundImageUrl = computed(
       () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
     );
@@ -246,7 +298,7 @@ export default defineComponent({
     });
 
     const updateMovieAccountStates = () => {
-      if (movieDetails.value) {
+      if (movieDetails.value && userInfo) {
         getMovieAccountStates(userInfo.sessionId, movieDetails.value.id, type);
       }
     };
@@ -291,15 +343,38 @@ export default defineComponent({
       }
     };
 
-    // watch(
-    //   [
-    //     setFavoriteValueResult,
-    //     setWatchlistValueResult,
-    //     setRatingValueResult,
-    //     deleteRatingValueResult,
-    //   ],
-    //   updateMovieAccountStates
-    // );
+    const checkMoviePersistence = () => {
+      if (movieLists.value?.results && movieLists.value.results.length > 0) {
+        movieLists.value.results.forEach(async list => {
+          const inList = await isMoviePersistInList(
+            movieDetails.value!.id,
+            list.id,
+            userInfo.sessionId
+          );
+
+          if (inList) {
+            movieListsValue.value.push(list.id);
+          }
+        });
+      }
+    };
+
+    const fetchMovieLists = () => {
+      if (userInfo && movieDetails.value && movieAccountStates.value) {
+        movieListsValue.value = [];
+        getMovieLists(userInfo.id, userInfo.sessionId).then(checkMoviePersistence);
+      }
+    };
+
+    const updateMovieListsValues = (checked: boolean): void => {
+      console.log('update');
+    };
+
+    watch(movieAccountStates, (newStates, prevStates) => {
+      if (isEqual(newStates, prevStates)) {
+        setTimeout(updateMovieAccountStates, 1500);
+      }
+    });
 
     onMounted(() => {
       getMovie().then(getMovieCredits).then(getMovieVideo).then(updateMovieAccountStates);
@@ -334,6 +409,10 @@ export default defineComponent({
       deleteRatingValueLoading,
       deleteRatingValueResult,
       deleteRatingValueError,
+      movieListsLoading,
+      movieLists,
+      movieListsError,
+      movieListsValue,
       setRatingValue,
       getMovieAccountStates,
       getFavoriteMovies,
@@ -343,6 +422,8 @@ export default defineComponent({
       updateMovieWatchlistValue,
       updateMovieRating,
       deleteMovieRating,
+      fetchMovieLists,
+      updateMovieListsValues,
     };
   },
 });

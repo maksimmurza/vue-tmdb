@@ -68,7 +68,7 @@ const ratedMovies = async (
   }
 };
 
-const watchList = async (
+const watchlistMovies = async (
   accountId: string,
   sessionId: string,
   type: MovieType
@@ -89,6 +89,24 @@ const watchList = async (
 const createdLists = async (accountId: string, sessionId: string): Promise<AxiosResponse> => {
   try {
     const response = await axiosClient.get(`account/${accountId}/lists?session_id=${sessionId}`);
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+const checkMovieListState = async (
+  movieId: number,
+  listId: number,
+  sessionId: string
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClient.get(
+      `list/${listId}/item_status?movie_id=${movieId}session_id=${sessionId}`
+    );
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -180,10 +198,11 @@ export {
   fetchMovieAccountStates,
   favoriteMovies,
   ratedMovies,
-  watchList,
+  watchlistMovies,
   watchlist,
   createdLists,
   setFavorite,
   setRating,
   deleteRating,
+  checkMovieListState,
 };

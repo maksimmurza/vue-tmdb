@@ -98,6 +98,44 @@ const createdLists = async (accountId: string, sessionId: string): Promise<Axios
   }
 };
 
+const addToList = async (
+  movieId: number,
+  listId: number,
+  sessionId: string,
+  type: VideoType
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClient.post(`list/${listId}/add_item?session_id=${sessionId}`, {
+      media_id: movieId,
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+const removeFromList = async (
+  movieId: number,
+  listId: number,
+  sessionId: string,
+  type: VideoType
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClient.post(`list/${listId}/remove_item?session_id=${sessionId}`, {
+      media_id: movieId,
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
 const checkMovieListState = async (
   movieId: number,
   listId: number,
@@ -205,4 +243,6 @@ export {
   setRating,
   deleteRating,
   checkMovieListState,
+  addToList,
+  removeFromList,
 };

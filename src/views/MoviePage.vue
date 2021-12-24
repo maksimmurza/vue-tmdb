@@ -52,7 +52,9 @@
             <n-popover v-if="movieAccountStates" placement="bottom" trigger="click">
               <template #trigger>
                 <n-button
-                  :loading="movieListsLoading"
+                  :loading="
+                    movieListsLoading || addMovieToListLoading || removeMovieFromListLoading
+                  "
                   strong
                   size="large"
                   circle
@@ -69,17 +71,12 @@
                     :key="list.id"
                     :value="list.id"
                     :label="list.name"
-                    :on-update:checked="updateMovieListsValues"
+                    @click="
+                      () => updateMovieListsValues(list.id, movieListsValue.includes(list.id))
+                    "
                   />
                 </n-space>
               </n-checkbox-group>
-              <!-- <n-button
-                type="primary"
-                size="small"
-                @click="updateMovieListsValues"
-                :style="{ margin: '1rem 0 0 0' }"
-                >Confirm</n-button
-              > -->
             </n-popover>
             <n-button v-else strong size="large" circle type="info"
               ><n-icon><list-ul /></n-icon
@@ -264,8 +261,21 @@ export default defineComponent({
       deleteRatingValueError,
     } = useRating();
 
-    const { movieListsLoading, movieLists, movieListsError, getMovieLists, isMoviePersistInList } =
-      useMovieLists();
+    const {
+      movieListsLoading,
+      movieLists,
+      movieListsError,
+      getMovieLists,
+      isMoviePersistInList,
+      addMovieToListResponse,
+      addMovieToListError,
+      addMovieToListLoading,
+      addMovieToList,
+      deleteMovieFromList,
+      removeMovieFromListResponse,
+      removeMovieFromListError,
+      removeMovieFromListLoading,
+    } = useMovieLists();
 
     const backgroundImageUrl = computed(
       () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
@@ -344,16 +354,18 @@ export default defineComponent({
     };
 
     const checkMoviePersistence = () => {
-      if (movieLists.value?.results && movieLists.value.results.length > 0) {
+      if (movieLists.value && movieLists.value.results.length > 0) {
         movieLists.value.results.forEach(async list => {
-          const inList = await isMoviePersistInList(
-            movieDetails.value!.id,
-            list.id,
-            userInfo.sessionId
-          );
+          if (movieDetails.value) {
+            const inList = await isMoviePersistInList(
+              movieDetails.value.id,
+              list.id,
+              userInfo.sessionId
+            );
 
-          if (inList) {
-            movieListsValue.value.push(list.id);
+            if (inList) {
+              movieListsValue.value.push(list.id);
+            }
           }
         });
       }
@@ -366,8 +378,12 @@ export default defineComponent({
       }
     };
 
-    const updateMovieListsValues = (checked: boolean): void => {
-      console.log('update');
+    const updateMovieListsValues = (listId: number, checked: boolean): void => {
+      if (movieDetails.value && checked) {
+        addMovieToList(movieDetails.value.id, type, listId, userInfo.sessionId);
+      } else if (movieDetails.value) {
+        deleteMovieFromList(movieDetails.value.id, type, listId, userInfo.sessionId);
+      }
     };
 
     watch(movieAccountStates, (newStates, prevStates) => {
@@ -413,6 +429,14 @@ export default defineComponent({
       movieLists,
       movieListsError,
       movieListsValue,
+      addMovieToListResponse,
+      addMovieToListError,
+      addMovieToListLoading,
+      removeMovieFromListResponse,
+      removeMovieFromListError,
+      removeMovieFromListLoading,
+      addMovieToList,
+      deleteMovieFromList,
       setRatingValue,
       getMovieAccountStates,
       getFavoriteMovies,
@@ -424,6 +448,9 @@ export default defineComponent({
       deleteMovieRating,
       fetchMovieLists,
       updateMovieListsValues,
+      log(checked: boolean) {
+        console.log(checked);
+      },
     };
   },
 });

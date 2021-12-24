@@ -1,18 +1,36 @@
-import { createdLists, checkMovieListState } from '../api/account';
+import { createdLists, checkMovieListState, addToList, removeFromList } from '../api/account';
 import { ref, Ref } from 'vue';
-import { MovieList } from '@/types/movie';
-import { MoviesListResponse } from '@/types/fetching';
+import { MovieList, VideoType } from '@/types/movie';
+import { MovieSetAccountStateResponse, MoviesListResponse } from '@/types/fetching';
 
 const useMovieLists = (): {
   movieListsLoading: Ref<boolean>;
   movieLists: Ref<MoviesListResponse<MovieList> | null>;
   movieListsError: Ref<Error | null>;
+  addMovieToListResponse: Ref<MovieSetAccountStateResponse | null>;
+  addMovieToListError: Ref<Error | null>;
+  addMovieToListLoading: Ref<boolean>;
+  removeMovieFromListResponse: Ref<MovieSetAccountStateResponse | null>;
+  removeMovieFromListError: Ref<Error | null>;
+  removeMovieFromListLoading: Ref<boolean>;
   getMovieLists: (accountId: string, sessionId: string) => Promise<void>;
   isMoviePersistInList: (
     movieId: number,
     listId: number,
     sessionId: string
   ) => Promise<boolean | void>;
+  addMovieToList: (
+    movieId: number,
+    type: VideoType,
+    listId: number,
+    sessionId: string
+  ) => Promise<void>;
+  deleteMovieFromList: (
+    movieId: number,
+    type: VideoType,
+    listId: number,
+    sessionId: string
+  ) => Promise<void>;
 } => {
   const movieLists = ref<MoviesListResponse<MovieList> | null>(null);
   const movieListsError = ref<Error | null>(null);
@@ -49,11 +67,63 @@ const useMovieLists = (): {
     }
   };
 
+  const addMovieToListResponse = ref<MovieSetAccountStateResponse | null>(null);
+  const addMovieToListError = ref<Error | null>(null);
+  const addMovieToListLoading = ref<boolean>(false);
+
+  const addMovieToList = async (
+    movieId: number,
+    type: VideoType,
+    listId: number,
+    sessionId: string
+  ) => {
+    addMovieToListLoading.value = true;
+    try {
+      const response = await addToList(movieId, listId, sessionId, type);
+      addMovieToListResponse.value = response.data as MovieSetAccountStateResponse;
+      addMovieToListError.value = null;
+    } catch (err) {
+      addMovieToListError.value = err as Error;
+    } finally {
+      addMovieToListLoading.value = false;
+    }
+  };
+
+  const removeMovieFromListResponse = ref<MovieSetAccountStateResponse | null>(null);
+  const removeMovieFromListError = ref<Error | null>(null);
+  const removeMovieFromListLoading = ref<boolean>(false);
+
+  const deleteMovieFromList = async (
+    movieId: number,
+    type: VideoType,
+    listId: number,
+    sessionId: string
+  ) => {
+    removeMovieFromListLoading.value = true;
+    try {
+      const response = await removeFromList(movieId, listId, sessionId, type);
+      removeMovieFromListResponse.value = response.data as MovieSetAccountStateResponse;
+      removeMovieFromListError.value = null;
+    } catch (err) {
+      removeMovieFromListError.value = err as Error;
+    } finally {
+      removeMovieFromListLoading.value = false;
+    }
+  };
+
   return {
     movieListsLoading,
     movieLists,
     movieListsError,
+    addMovieToListResponse,
+    addMovieToListError,
+    addMovieToListLoading,
+    removeMovieFromListResponse,
+    removeMovieFromListError,
+    removeMovieFromListLoading,
     getMovieLists,
+    addMovieToList,
+    deleteMovieFromList,
     isMoviePersistInList,
   };
 };

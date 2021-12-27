@@ -1,10 +1,10 @@
 import { VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
-import axiosClient from '../utils/axiosClient';
+import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
 
 const fetchGenres = async (type: VideoType): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(`/genre/${type}/list`);
+    const response = await axiosClientApiV3.get(`/genre/${type}/list`);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

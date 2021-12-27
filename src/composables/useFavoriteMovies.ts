@@ -7,13 +7,13 @@ const useFavoriteMovies = (): {
   favoriteMoviesLoading: Ref<boolean>;
   favoriteMovies: Ref<MoviesListResponse<Movie | TVShow> | null>;
   favoriteMoviesError: Ref<Error | null>;
-  getFavoriteMovies: (accountId: string, sessionId: string, type: VideoType) => Promise<void>;
+  getFavoriteMovies: (accountId: string, session_id: string, type: VideoType) => Promise<void>;
   setFavoriteValueLoading: Ref<boolean>;
   setFavoriteValueResult: Ref<MovieSetAccountStateResponse | null>;
   setFavoriteValueError: Ref<Error | null>;
   setFavoriteValue: (
     accountId: string,
-    sessionId: string,
+    session_id: string,
     type: VideoType,
     movieId: number,
     favorite: boolean
@@ -23,10 +23,10 @@ const useFavoriteMovies = (): {
   const favoriteMovies = ref<MoviesListResponse<Movie | TVShow> | null>(null);
   const favoriteMoviesError = ref<Error | null>(null);
 
-  const getFavoriteMovies = async (accountId: string, sessionId: string, type: VideoType) => {
+  const getFavoriteMovies = async (accountId: string, session_id: string, type: VideoType) => {
     favoriteMoviesLoading.value = true;
     try {
-      const response = await fetchFavoriteMovies(accountId, sessionId, type);
+      const response = await fetchFavoriteMovies(accountId, session_id, type);
       favoriteMovies.value = response.data as MoviesListResponse<Movie | TVShow>;
       favoriteMoviesError.value = null;
     } catch (err) {
@@ -42,14 +42,14 @@ const useFavoriteMovies = (): {
 
   const setFavoriteValue = async (
     accountId: string,
-    sessionId: string,
+    session_id: string,
     type: VideoType,
     movieId: number,
     favorite: boolean
   ) => {
     setFavoriteValueLoading.value = true;
     try {
-      const response = await setFavorite(accountId, sessionId, type, movieId, favorite);
+      const response = await setFavorite(accountId, session_id, type, movieId, favorite);
       setFavoriteValueResult.value = response.data as MovieSetAccountStateResponse;
       setFavoriteValueError.value = null;
     } catch (err) {

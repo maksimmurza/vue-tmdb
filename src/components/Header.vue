@@ -44,9 +44,9 @@
       </n-spin>
     </div>
     <div v-else>
-      <router-link :to="'/login'" style="text-decoration: none; color: inherit">
+      <a @click="login" style="text-decoration: none; color: inherit">
         <h3>Login</h3>
-      </router-link>
+      </a>
     </div>
   </div>
 </template>
@@ -73,6 +73,10 @@ export default defineComponent({
     const userAvatarBaseUrl = process.env.VUE_APP_AVATAR_IMG_URL;
 
     const user = computed(() => store.state.user);
+
+    const login = () => {
+      store.dispatch('login', { redirect_to: router.currentRoute });
+    };
 
     [moviesDropdownOptions, tvShowsDropdownOptions].forEach(options =>
       options.map(
@@ -103,7 +107,7 @@ export default defineComponent({
               ...option,
               props: {
                 onClick: () => {
-                  store.dispatch('logout', store.state.user.userInfo?.sessionId);
+                  store.dispatch('logout', store.state.user.userInfo?.session_id);
                 },
               },
             }
@@ -118,6 +122,7 @@ export default defineComponent({
       moreShowsDropdownOptionsClickable,
       profileDropdownOptionsClickable,
       user,
+      login,
     };
   },
 });

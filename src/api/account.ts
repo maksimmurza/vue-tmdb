@@ -1,10 +1,10 @@
 import { MovieType, VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
-import axiosClient from '../utils/axiosClient';
+import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
 
-const accountDetails = async (sessionId: string): Promise<AxiosResponse> => {
+const accountDetails = async (session_id: string): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(`account?session_id=${sessionId}`);
+    const response = await axiosClientApiV3.get(`account?session_id=${session_id}`);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -15,13 +15,13 @@ const accountDetails = async (sessionId: string): Promise<AxiosResponse> => {
 };
 
 const fetchMovieAccountStates = async (
-  sessionId: string,
+  session_id: string,
   movieId: number,
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(
-      `/${type}/${movieId}/account_states?session_id=${sessionId}`
+    const response = await axiosClientApiV3.get(
+      `/${type}/${movieId}/account_states?session_id=${session_id}`
     );
     return response;
   } catch (error) {
@@ -34,12 +34,12 @@ const fetchMovieAccountStates = async (
 
 const favoriteMovies = async (
   accountId: string,
-  sessionId: string,
+  session_id: string,
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.post(
-      `account/${accountId}/favorite/${type === 'movie' ? 'movies' : 'tv'}?session_id=${sessionId}`
+    const response = await axiosClientApiV3.post(
+      `account/${accountId}/favorite/${type === 'movie' ? 'movies' : 'tv'}?session_id=${session_id}`
     );
     return response;
   } catch (error) {
@@ -52,12 +52,12 @@ const favoriteMovies = async (
 
 const ratedMovies = async (
   accountId: string,
-  sessionId: string,
+  session_id: string,
   type: MovieType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(
-      `account/${accountId}/rated/${type === 'movie' ? 'movies' : 'tv'}?session_id=${sessionId}`
+    const response = await axiosClientApiV3.get(
+      `account/${accountId}/rated/${type === 'movie' ? 'movies' : 'tv'}?session_id=${session_id}`
     );
     return response;
   } catch (error) {
@@ -70,12 +70,14 @@ const ratedMovies = async (
 
 const watchlistMovies = async (
   accountId: string,
-  sessionId: string,
+  session_id: string,
   type: MovieType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(
-      `account/${accountId}/watchlist/${type === 'movie' ? 'movies' : 'tv'}?session_id=${sessionId}`
+    const response = await axiosClientApiV3.get(
+      `account/${accountId}/watchlist/${
+        type === 'movie' ? 'movies' : 'tv'
+      }?session_id=${session_id}`
     );
     return response;
   } catch (error) {
@@ -86,9 +88,11 @@ const watchlistMovies = async (
   }
 };
 
-const createdLists = async (accountId: string, sessionId: string): Promise<AxiosResponse> => {
+const createdLists = async (accountId: string, session_id: string): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(`account/${accountId}/lists?session_id=${sessionId}`);
+    const response = await axiosClientApiV3.get(
+      `account/${accountId}/lists?session_id=${session_id}`
+    );
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -101,13 +105,16 @@ const createdLists = async (accountId: string, sessionId: string): Promise<Axios
 const addToList = async (
   movieId: number,
   listId: number,
-  sessionId: string,
+  session_id: string,
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.post(`list/${listId}/add_item?session_id=${sessionId}`, {
-      media_id: movieId,
-    });
+    const response = await axiosClientApiV3.post(
+      `list/${listId}/add_item?session_id=${session_id}`,
+      {
+        media_id: movieId,
+      }
+    );
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -120,13 +127,16 @@ const addToList = async (
 const removeFromList = async (
   movieId: number,
   listId: number,
-  sessionId: string,
+  session_id: string,
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.post(`list/${listId}/remove_item?session_id=${sessionId}`, {
-      media_id: movieId,
-    });
+    const response = await axiosClientApiV3.post(
+      `list/${listId}/remove_item?session_id=${session_id}`,
+      {
+        media_id: movieId,
+      }
+    );
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -139,11 +149,11 @@ const removeFromList = async (
 const checkMovieListState = async (
   movieId: number,
   listId: number,
-  sessionId: string
+  session_id: string
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(
-      `list/${listId}/item_status?movie_id=${movieId}session_id=${sessionId}`
+    const response = await axiosClientApiV3.get(
+      `list/${listId}/item_status?movie_id=${movieId}session_id=${session_id}`
     );
     return response;
   } catch (error) {
@@ -156,14 +166,14 @@ const checkMovieListState = async (
 
 const setFavorite = async (
   accountId: string,
-  sessionId: string,
+  session_id: string,
   type: VideoType,
   movieId: number,
   favorite: boolean
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.post(
-      `/account/${accountId}/favorite?session_id=${sessionId}`,
+    const response = await axiosClientApiV3.post(
+      `/account/${accountId}/favorite?session_id=${session_id}`,
       { media_type: type, media_id: movieId, favorite }
     );
     return response;
@@ -177,14 +187,14 @@ const setFavorite = async (
 
 const watchlist = async (
   accountId: string,
-  sessionId: string,
+  session_id: string,
   type: VideoType,
   movieId: number,
   watchlist: boolean
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.post(
-      `/account/${accountId}/watchlist?session_id=${sessionId}`,
+    const response = await axiosClientApiV3.post(
+      `/account/${accountId}/watchlist?session_id=${session_id}`,
       { media_type: type, media_id: movieId, watchlist }
     );
     return response;
@@ -197,15 +207,18 @@ const watchlist = async (
 };
 
 const setRating = async (
-  sessionId: string,
+  session_id: string,
   type: VideoType,
   movieId: number,
   ratingValue: number
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.post(`/${type}/${movieId}/rating?session_id=${sessionId}`, {
-      value: ratingValue,
-    });
+    const response = await axiosClientApiV3.post(
+      `/${type}/${movieId}/rating?session_id=${session_id}`,
+      {
+        value: ratingValue,
+      }
+    );
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -216,12 +229,14 @@ const setRating = async (
 };
 
 const deleteRating = async (
-  sessionId: string,
+  session_id: string,
   type: VideoType,
   movieId: number
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.delete(`/${type}/${movieId}/rating?session_id=${sessionId}`);
+    const response = await axiosClientApiV3.delete(
+      `/${type}/${movieId}/rating?session_id=${session_id}`
+    );
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

@@ -9,7 +9,7 @@ const useFavoriteMovies = (): {
   setWatchlistValueError: Ref<Error | null>;
   setWatchlistValue: (
     accountId: string,
-    sessionId: string,
+    session_id: string,
     type: VideoType,
     movieId: number,
     favorite: boolean
@@ -21,14 +21,14 @@ const useFavoriteMovies = (): {
 
   const setWatchlistValue = async (
     accountId: string,
-    sessionId: string,
+    session_id: string,
     type: VideoType,
     movieId: number,
     favorite: boolean
   ) => {
     setWatchlistValueLoading.value = true;
     try {
-      const response = await watchlist(accountId, sessionId, type, movieId, favorite);
+      const response = await watchlist(accountId, session_id, type, movieId, favorite);
       setWatchlistValueResult.value = response.data as MovieSetAccountStateResponse;
       setWatchlistValueError.value = null;
     } catch (err) {

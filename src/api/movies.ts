@@ -2,11 +2,11 @@ import { MoviesFetchingService } from '@/types/fetching';
 import { Movie, MovieFilters, TVShow } from '@/types/movie';
 import getQuery from '@/utils/getQuery';
 import axios from 'axios';
-import axiosClient from '../utils/axiosClient';
+import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
 
 const fetchMovies = async (link: string) => {
   try {
-    const response = await axiosClient.get(link);
+    const response = await axiosClientApiV3.get(link);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

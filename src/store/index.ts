@@ -6,6 +6,7 @@ import * as accountDetailsMutations from './mutations/accountDetailsMutations';
 import loginAction from './actions/loginAction';
 import logoutAction from './actions/logoutAction';
 import accountDetailsAction from './actions/accountDetailsAction';
+import approveLoginAction from './actions/approveLoginAction';
 
 export interface AppState {
   user: {
@@ -31,6 +32,7 @@ export default createStore<AppState>({
   actions: {
     login: loginAction,
     logout: logoutAction,
+    approveLogin: approveLoginAction,
     accountDetails: accountDetailsAction,
   },
   modules: {},

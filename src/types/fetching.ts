@@ -15,6 +15,10 @@ export interface MovieSetAccountStateResponse {
   status_message: string;
 }
 
+export interface RequestTokenResponse extends MovieSetAccountStateResponse {
+  request_token: string;
+}
+
 export type FetchingMoviesFunction<T> = (pageNumber?: number) => Promise<AxiosResponse<T>>;
 
 export interface MoviesFetchingService<Type = unknown> {

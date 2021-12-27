@@ -11,12 +11,12 @@ const useRating = (): {
   deleteRatingValueResult: Ref<MovieSetAccountStateResponse | null>;
   deleteRatingValueError: Ref<Error | null>;
   setRatingValue: (
-    sessionId: string,
+    session_id: string,
     type: VideoType,
     movieId: number,
     ratingValue: number
   ) => Promise<void>;
-  deleteRatingValue: (sessionId: string, type: VideoType, movieId: number) => Promise<void>;
+  deleteRatingValue: (session_id: string, type: VideoType, movieId: number) => Promise<void>;
 } => {
   const setRatingValueLoading = ref<boolean>(false);
   const setRatingValueResult = ref<MovieSetAccountStateResponse | null>(null);
@@ -26,14 +26,14 @@ const useRating = (): {
   const deleteRatingValueError = ref<Error | null>(null);
 
   const setRatingValue = async (
-    sessionId: string,
+    session_id: string,
     type: VideoType,
     movieId: number,
     ratingValue: number
   ) => {
     setRatingValueLoading.value = true;
     try {
-      const response = await setRating(sessionId, type, movieId, ratingValue);
+      const response = await setRating(session_id, type, movieId, ratingValue);
       setRatingValueResult.value = response.data as MovieSetAccountStateResponse;
       setRatingValueError.value = null;
     } catch (err) {
@@ -43,10 +43,10 @@ const useRating = (): {
     }
   };
 
-  const deleteRatingValue = async (sessionId: string, type: VideoType, movieId: number) => {
+  const deleteRatingValue = async (session_id: string, type: VideoType, movieId: number) => {
     deleteRatingValueLoading.value = true;
     try {
-      const response = await deleteRating(sessionId, type, movieId);
+      const response = await deleteRating(session_id, type, movieId);
       deleteRatingValueResult.value = response.data as MovieSetAccountStateResponse;
       deleteRatingValueError.value = null;
     } catch (err) {

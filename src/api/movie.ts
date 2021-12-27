@@ -1,10 +1,10 @@
 import { VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
-import axiosClient from '../utils/axiosClient';
+import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
 
 const fetchMovie = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(`/${type}/${movieId}`);
+    const response = await axiosClientApiV3.get(`/${type}/${movieId}`);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -16,7 +16,7 @@ const fetchMovie = async (type: VideoType, movieId: number): Promise<AxiosRespon
 
 const movieCredits = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(`/${type}/${movieId}/credits`);
+    const response = await axiosClientApiV3.get(`/${type}/${movieId}/credits`);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -28,7 +28,7 @@ const movieCredits = async (type: VideoType, movieId: number): Promise<AxiosResp
 
 const movieVideos = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(`/${type}/${movieId}/videos`);
+    const response = await axiosClientApiV3.get(`/${type}/${movieId}/videos`);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

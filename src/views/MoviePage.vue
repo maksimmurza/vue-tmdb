@@ -309,7 +309,7 @@ export default defineComponent({
 
     const updateMovieAccountStates = () => {
       if (movieDetails.value && userInfo) {
-        getMovieAccountStates(userInfo.sessionId, movieDetails.value.id, type);
+        getMovieAccountStates(userInfo.session_id, movieDetails.value.id, type);
       }
     };
 
@@ -317,7 +317,7 @@ export default defineComponent({
       if (userInfo && movieDetails.value && movieAccountStates.value) {
         setFavoriteValue(
           userInfo.id,
-          userInfo.sessionId,
+          userInfo.session_id,
           type,
           movieDetails.value.id,
           !movieAccountStates.value.favorite
@@ -329,7 +329,7 @@ export default defineComponent({
       if (userInfo && movieDetails.value && movieAccountStates.value) {
         setWatchlistValue(
           userInfo.id,
-          userInfo.sessionId,
+          userInfo.session_id,
           type,
           movieDetails.value.id,
           !movieAccountStates.value.watchlist
@@ -339,7 +339,7 @@ export default defineComponent({
 
     const updateMovieRating = (value: number) => {
       if (userInfo && movieDetails.value && movieAccountStates.value) {
-        setRatingValue(userInfo.sessionId, type, movieDetails.value.id, value * 2).then(
+        setRatingValue(userInfo.session_id, type, movieDetails.value.id, value * 2).then(
           updateMovieAccountStates
         );
       }
@@ -347,7 +347,7 @@ export default defineComponent({
 
     const deleteMovieRating = () => {
       if (userInfo && movieDetails.value && movieAccountStates.value) {
-        deleteRatingValue(userInfo.sessionId, type, movieDetails.value.id).then(
+        deleteRatingValue(userInfo.session_id, type, movieDetails.value.id).then(
           updateMovieAccountStates
         );
       }
@@ -360,7 +360,7 @@ export default defineComponent({
             const inList = await isMoviePersistInList(
               movieDetails.value.id,
               list.id,
-              userInfo.sessionId
+              userInfo.session_id
             );
 
             if (inList) {
@@ -374,15 +374,15 @@ export default defineComponent({
     const fetchMovieLists = () => {
       if (userInfo && movieDetails.value && movieAccountStates.value) {
         movieListsValue.value = [];
-        getMovieLists(userInfo.id, userInfo.sessionId).then(checkMoviePersistence);
+        getMovieLists(userInfo.id, userInfo.session_id).then(checkMoviePersistence);
       }
     };
 
     const updateMovieListsValues = (listId: number, checked: boolean): void => {
       if (movieDetails.value && checked) {
-        addMovieToList(movieDetails.value.id, type, listId, userInfo.sessionId);
+        addMovieToList(movieDetails.value.id, type, listId, userInfo.session_id);
       } else if (movieDetails.value) {
-        deleteMovieFromList(movieDetails.value.id, type, listId, userInfo.sessionId);
+        deleteMovieFromList(movieDetails.value.id, type, listId, userInfo.session_id);
       }
     };
 

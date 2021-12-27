@@ -14,5 +14,5 @@ export function accountDetailsFail(state: AppState, errorMessage: string): void 
 export function accountDetailsSuccess(state: AppState, userInfo: UserInfo): void {
   state.user.loading = false;
   state.user.errorMessage = null;
-  state.user.userInfo = userInfo;
+  state.user.userInfo = { ...state.user.userInfo, ...userInfo };
 }

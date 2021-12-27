@@ -1,14 +1,14 @@
-import { logout } from '@/api/auth';
+import { logoutV3 } from '@/api/auth';
 import { ActionContext } from 'vuex';
 import { AppState } from '..';
 
 async function logoutAction(
   { commit }: ActionContext<AppState, AppState>,
-  sessionId: string
+  session_id: string
 ): Promise<void> {
   commit('logoutLoading');
   try {
-    const response = await logout(sessionId);
+    const response = await logoutV3(session_id);
     const { success } = response.data;
     if (success) {
       commit('logoutSuccess');

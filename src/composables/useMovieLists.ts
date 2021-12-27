@@ -13,33 +13,33 @@ const useMovieLists = (): {
   removeMovieFromListResponse: Ref<MovieSetAccountStateResponse | null>;
   removeMovieFromListError: Ref<Error | null>;
   removeMovieFromListLoading: Ref<boolean>;
-  getMovieLists: (accountId: string, sessionId: string) => Promise<void>;
+  getMovieLists: (accountId: string, session_id: string) => Promise<void>;
   isMoviePersistInList: (
     movieId: number,
     listId: number,
-    sessionId: string
+    session_id: string
   ) => Promise<boolean | void>;
   addMovieToList: (
     movieId: number,
     type: VideoType,
     listId: number,
-    sessionId: string
+    session_id: string
   ) => Promise<void>;
   deleteMovieFromList: (
     movieId: number,
     type: VideoType,
     listId: number,
-    sessionId: string
+    session_id: string
   ) => Promise<void>;
 } => {
   const movieLists = ref<MoviesListResponse<MovieList> | null>(null);
   const movieListsError = ref<Error | null>(null);
   const movieListsLoading = ref<boolean>(false);
 
-  const getMovieLists = async (accountId: string, sessionId: string) => {
+  const getMovieLists = async (accountId: string, session_id: string) => {
     movieListsLoading.value = true;
     try {
-      const response = await createdLists(accountId, sessionId);
+      const response = await createdLists(accountId, session_id);
       movieLists.value = response.data as MoviesListResponse<MovieList>;
       movieListsError.value = null;
     } catch (err) {
@@ -52,11 +52,11 @@ const useMovieLists = (): {
   const isMoviePersistInList = async (
     movieId: number,
     listId: number,
-    sessionId: string
+    session_id: string
   ): Promise<boolean | void> => {
     movieListsLoading.value = true;
     try {
-      const response = await checkMovieListState(movieId, listId, sessionId);
+      const response = await checkMovieListState(movieId, listId, session_id);
       const isMovieInList = response.data as { id: string | null; item_present: boolean };
       movieListsError.value = null;
       return isMovieInList.item_present;
@@ -75,11 +75,11 @@ const useMovieLists = (): {
     movieId: number,
     type: VideoType,
     listId: number,
-    sessionId: string
+    session_id: string
   ) => {
     addMovieToListLoading.value = true;
     try {
-      const response = await addToList(movieId, listId, sessionId, type);
+      const response = await addToList(movieId, listId, session_id, type);
       addMovieToListResponse.value = response.data as MovieSetAccountStateResponse;
       addMovieToListError.value = null;
     } catch (err) {
@@ -97,11 +97,11 @@ const useMovieLists = (): {
     movieId: number,
     type: VideoType,
     listId: number,
-    sessionId: string
+    session_id: string
   ) => {
     removeMovieFromListLoading.value = true;
     try {
-      const response = await removeFromList(movieId, listId, sessionId, type);
+      const response = await removeFromList(movieId, listId, session_id, type);
       removeMovieFromListResponse.value = response.data as MovieSetAccountStateResponse;
       removeMovieFromListError.value = null;
     } catch (err) {

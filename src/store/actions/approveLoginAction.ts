@@ -9,8 +9,8 @@ async function approveLoginAction(store: ActionContext<AppState, AppState>): Pro
     const { access_token } = responseAccessToken.data;
     const sessionResponse = await createSession(access_token);
     const { session_id } = sessionResponse.data;
-    store.commit('accountDetailsSuccess', { session_id });
     store.dispatch('accountDetails', { session_id });
+    store.commit('accountDetailsSuccess', { session_id, access_token });
   } catch (error) {
     store.commit('loginFail', (error as Error).message);
   }

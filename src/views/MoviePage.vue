@@ -359,8 +359,9 @@ export default defineComponent({
           if (movieDetails.value) {
             const inList = await isMoviePersistInList(
               movieDetails.value.id,
+              type,
               list.id,
-              userInfo.session_id
+              userInfo.access_token
             );
 
             if (inList) {
@@ -380,9 +381,9 @@ export default defineComponent({
 
     const updateMovieListsValues = (listId: number, checked: boolean): void => {
       if (movieDetails.value && checked) {
-        addMovieToList(movieDetails.value.id, type, listId, userInfo.session_id);
+        addMovieToList(movieDetails.value.id, type, listId, userInfo.access_token);
       } else if (movieDetails.value) {
-        deleteMovieFromList(movieDetails.value.id, type, listId, userInfo.session_id);
+        deleteMovieFromList(movieDetails.value.id, type, listId, userInfo.access_token);
       }
     };
 

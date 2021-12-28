@@ -56,26 +56,27 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 import { NDropdown, NButton, NIcon, NAvatar, NSpin } from 'naive-ui';
 import { UserAstronaut } from '@vicons/fa';
-import router from '../router';
 import {
   moviesDropdownOptions,
   tvShowsDropdownOptions,
   moreShowsDropdownOptions,
   profileDropdownOptions,
 } from '../constants';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'Header',
   components: { NDropdown, NButton, NIcon, NAvatar, UserAstronaut, NSpin },
   setup() {
     const store = useStore();
+    const router = useRouter();
 
     const userAvatarBaseUrl = process.env.VUE_APP_AVATAR_IMG_URL;
 
     const user = computed(() => store.state.user);
 
     const login = () => {
-      store.dispatch('login', { redirect_to: router.currentRoute });
+      store.dispatch('login', { redirect_to: `${window.location.origin}/approved` });
     };
 
     [moviesDropdownOptions, tvShowsDropdownOptions].forEach(options =>

@@ -16,14 +16,15 @@ const useMovieLists = (): {
   getMovieLists: (accountId: string, session_id: string) => Promise<void>;
   isMoviePersistInList: (
     movieId: number,
+    type: VideoType,
     listId: number,
-    session_id: string
+    access_token: string
   ) => Promise<boolean | void>;
   addMovieToList: (
     movieId: number,
     type: VideoType,
     listId: number,
-    session_id: string
+    access_token: string
   ) => Promise<void>;
   deleteMovieFromList: (
     movieId: number,
@@ -51,15 +52,23 @@ const useMovieLists = (): {
 
   const isMoviePersistInList = async (
     movieId: number,
+    type: VideoType,
     listId: number,
-    session_id: string
+    access_token: string
   ): Promise<boolean | void> => {
     movieListsLoading.value = true;
     try {
-      const response = await checkMovieListState(movieId, listId, session_id);
-      const isMovieInList = response.data as { id: string | null; item_present: boolean };
+      const response = await checkMovieListState(movieId, type, listId, access_token);
+      const isMovieInList = response.data as {
+        id: string | null;
+        media_id: number;
+        media_type: string;
+        status_code: number;
+        status_message: string;
+        success: boolean;
+      };
       movieListsError.value = null;
-      return isMovieInList.item_present;
+      return isMovieInList.success;
     } catch (err) {
       movieListsError.value = err as Error;
     } finally {
@@ -75,11 +84,11 @@ const useMovieLists = (): {
     movieId: number,
     type: VideoType,
     listId: number,
-    session_id: string
+    access_token: string
   ) => {
     addMovieToListLoading.value = true;
     try {
-      const response = await addToList(movieId, listId, session_id, type);
+      const response = await addToList(movieId, listId, access_token, type);
       addMovieToListResponse.value = response.data as MovieSetAccountStateResponse;
       addMovieToListError.value = null;
     } catch (err) {
@@ -97,11 +106,11 @@ const useMovieLists = (): {
     movieId: number,
     type: VideoType,
     listId: number,
-    session_id: string
+    access_token: string
   ) => {
     removeMovieFromListLoading.value = true;
     try {
-      const response = await removeFromList(movieId, listId, session_id, type);
+      const response = await removeFromList(movieId, listId, access_token, type);
       removeMovieFromListResponse.value = response.data as MovieSetAccountStateResponse;
       removeMovieFromListError.value = null;
     } catch (err) {

@@ -42,7 +42,6 @@ const logoutV3 = async (session_id: string): Promise<AxiosResponse> => {
 
 const loginV4 = async (redirect_to: string): Promise<AxiosResponse<RequestTokenResponse>> => {
   try {
-    // const baseURL = window.location.origin;
     const createRequestTokenResponse = await axiosClientApiV4.post(`/auth/request_token`, {
       redirect_to,
     });
@@ -61,7 +60,7 @@ const loginV4 = async (redirect_to: string): Promise<AxiosResponse<RequestTokenR
 const approveAccessToken = async (): Promise<AxiosResponse> => {
   try {
     const request_token = window.localStorage.getItem('request_token');
-    window.localStorage.clear();
+    window.localStorage.removeItem('request_token');
     const createAccessTokenResponse = await axiosClientApiV4.post(`/auth/access_token`, {
       request_token,
     });

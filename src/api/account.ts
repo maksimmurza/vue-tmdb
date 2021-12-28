@@ -4,7 +4,7 @@ import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
 
 const accountDetails = async (session_id: string): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClientApiV3.get(`account?session_id=${session_id}`);
+    const response = await axiosClientApiV3.get(`/account?session_id=${session_id}`);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -105,15 +105,16 @@ const createdLists = async (accountId: string, session_id: string): Promise<Axio
 const addToList = async (
   movieId: number,
   listId: number,
-  session_id: string,
+  access_token: string,
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClientApiV3.post(
-      `list/${listId}/add_item?session_id=${session_id}`,
+    const response = await axiosClientApiV4.post(
+      `list/${listId}/items`,
       {
-        media_id: movieId,
-      }
+        items: [{ media_type: type, media_id: movieId }],
+      },
+      { headers: { Authorization: `Bearer ${access_token}` } }
     );
     return response;
   } catch (error) {
@@ -127,16 +128,14 @@ const addToList = async (
 const removeFromList = async (
   movieId: number,
   listId: number,
-  session_id: string,
+  access_token: string,
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClientApiV3.post(
-      `list/${listId}/remove_item?session_id=${session_id}`,
-      {
-        media_id: movieId,
-      }
-    );
+    const response = await axiosClientApiV4.delete(`list/${listId}/items`, {
+      data: { items: [{ media_type: type, media_id: movieId }] },
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -148,12 +147,14 @@ const removeFromList = async (
 
 const checkMovieListState = async (
   movieId: number,
+  type: VideoType,
   listId: number,
-  session_id: string
+  access_token: string
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClientApiV3.get(
-      `list/${listId}/item_status?movie_id=${movieId}session_id=${session_id}`
+    const response = await axiosClientApiV4.get(
+      `list/${listId}/item_status?media_id=${movieId}&media_type=${type}`,
+      { headers: { Authorization: `Bearer ${access_token}` } }
     );
     return response;
   } catch (error) {

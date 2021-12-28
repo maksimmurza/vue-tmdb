@@ -31,7 +31,7 @@
             <n-divider></n-divider>
             <div class="filter">
               <div>User Score</div>
-              <n-slider v-model:value="filters.scoreValue" range :marks="filters.scoreMarks" />
+              <n-slider v-model:value="filters.scoreValue" range :marks="scoreMarks" />
             </div>
             <n-divider></n-divider>
             <div class="filter">

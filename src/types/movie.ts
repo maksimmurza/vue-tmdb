@@ -99,3 +99,16 @@ export interface MovieAccountStates {
   rated: Record<string, unknown> | boolean;
   watchlist: boolean;
 }
+
+export interface MovieDetails {
+  details: Ref<Movie | TVShow | null>;
+  detailsLoading: Ref<boolean>;
+  detailsError: Ref<Error | null>;
+  creditsLoading: Ref<boolean>;
+  creditsError: Ref<Error | null>;
+  videosLoading: Ref<boolean>;
+  videosError: Ref<Error | null>;
+  getDetails: () => Promise<void>;
+  getCredits: () => Promise<void>;
+  getVideo: () => Promise<void>;
+}

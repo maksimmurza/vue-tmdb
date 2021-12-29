@@ -1,85 +1,71 @@
 import { fetchMovie, movieCredits, movieVideos } from '../api/movie';
-import { Movie, TVShow, VideoType } from '@/types/movie';
+import { Movie, MovieDetails, TVShow, VideoType } from '@/types/movie';
 import { ref, Ref } from 'vue';
 
-const useMovie = (
-  type: VideoType,
-  movieId: number
-): {
-  movieDetailsLoading: Ref<boolean>;
-  movieCreditsLoading: Ref<boolean>;
-  movieVideosLoading: Ref<boolean>;
-  movie: Ref<Movie | TVShow | null>;
-  movieDetailsError: Ref<Error | null>;
-  movieCreditsError: Ref<Error | null>;
-  movieVideosError: Ref<Error | null>;
-  getMovie: () => Promise<void>;
-  getMovieCredits: () => Promise<void>;
-  getMovieVideo: () => Promise<void>;
-} => {
-  const movie = ref<Movie | TVShow | null>(null);
-  const movieDetailsError = ref<Error | null>(null);
-  const movieCreditsError = ref<Error | null>(null);
-  const movieVideosError = ref<Error | null>(null);
-  const movieDetailsLoading = ref<boolean>(false);
-  const movieCreditsLoading = ref<boolean>(false);
-  const movieVideosLoading = ref<boolean>(false);
+const useMovie = (type: VideoType, movieId: number): MovieDetails => {
+  const details = ref<Movie | TVShow | null>(null);
+  const detailsError = ref<Error | null>(null);
+  const creditsError = ref<Error | null>(null);
+  const videosError = ref<Error | null>(null);
+  const detailsLoading = ref<boolean>(false);
+  const creditsLoading = ref<boolean>(false);
+  const videosLoading = ref<boolean>(false);
 
-  const getMovie = async () => {
-    movieDetailsLoading.value = true;
+  const getDetails = async () => {
+    detailsLoading.value = true;
     try {
       const response = await fetchMovie(type, movieId);
-      movie.value = response.data;
-      movieDetailsError.value = null;
+      details.value = response.data;
+      detailsError.value = null;
     } catch (err) {
-      movieDetailsError.value = err as Error;
+      detailsError.value = err as Error;
     } finally {
-      movieDetailsLoading.value = false;
+      detailsLoading.value = false;
     }
     return;
   };
 
-  const getMovieCredits = async () => {
-    movieCreditsLoading.value = true;
+  const getCredits = async () => {
+    creditsLoading.value = true;
     try {
-      if (movie.value) {
+      if (details.value) {
         const response = await movieCredits(type, movieId);
-        movie.value.credits = response.data;
-        movieCreditsError.value = null;
+        details.value.credits = response.data;
+        creditsError.value = null;
       }
     } catch (err) {
-      movieCreditsError.value = err as Error;
+      creditsError.value = err as Error;
     } finally {
-      movieCreditsLoading.value = false;
+      creditsLoading.value = false;
     }
   };
 
-  const getMovieVideo = async () => {
-    movieVideosLoading.value = true;
+  const getVideo = async () => {
+    videosLoading.value = true;
     try {
-      if (movie.value) {
+      if (details.value) {
         const response = await movieVideos(type, movieId);
-        movie.value.videos = response.data;
-        movieVideosError.value = null;
+        details.value.videos = response.data;
+        videosError.value = null;
       }
     } catch (err) {
-      movieVideosError.value = err as Error;
+      videosError.value = err as Error;
     } finally {
-      movieVideosLoading.value = false;
+      videosLoading.value = false;
     }
   };
 
   return {
-    movieDetailsLoading,
-    movieCreditsLoading,
-    movieVideosLoading,
-    movie,
-    movieDetailsError,
-    movieCreditsError,
-    movieVideosError,
-    getMovie,
-    getMovieCredits,
-    getMovieVideo,
+    details,
+    detailsLoading,
+    detailsError,
+    creditsLoading,
+    creditsError,
+    videosLoading,
+    videosError,
+    getDetails,
+    getCredits,
+    getVideo,
   };
 };
 

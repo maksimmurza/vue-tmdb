@@ -1,5 +1,5 @@
 <template>
-  <div v-if="movieDetails" class="movie-page-header">
+  <div v-if="movie.details" class="movie-page-header">
     <div class="movie-page-header__foreground">
       <div>
         <img :src="movieCoverSrc" />
@@ -7,33 +7,33 @@
       <div class="movie-description">
         <div>
           <h1 class="movie-description__title">
-            {{ movieDetails.title ? movieDetails.title : movieDetails.name }}
+            {{ movie.details.title ? movie.details.title : movie.details.name }}
           </h1>
-          <span v-if="movieDetails.release_date" class="movie-description__release-year"
-            >({{ movieDetails.release_date.slice(0, 4) }})</span
+          <span v-if="movie.details.release_date" class="movie-description__release-year"
+            >({{ movie.details.release_date.slice(0, 4) }})</span
           >
         </div>
-        <div v-if="movieDetails">
+        <div v-if="movie.details">
           <n-button
             round
             type="tertiary"
             class="movie-description__genre-button"
             size="tiny"
-            v-for="genre in movieDetails.genres"
+            v-for="genre in movie.details.genres"
             :key="genre.id"
             >{{ genre.name }}
           </n-button>
         </div>
         <div class="rating-block">
-          <div v-if="movieDetails.vote_count > 0" class="rating-block__infographic">
+          <div v-if="movie.details.vote_count > 0" class="rating-block__infographic">
             <n-progress
               type="circle"
               :indicator-text-color="'white'"
-              :percentage="movieDetails.vote_average * 10"
+              :percentage="movie.details.vote_average * 10"
               :color="
-                movieDetails.vote_average < 5
+                movie.details.vote_average < 5
                   ? 'red'
-                  : movieDetails.vote_average < 8
+                  : movie.details.vote_average < 8
                   ? 'orange'
                   : 'green'
               "
@@ -129,20 +129,20 @@
             ></n-button>
           </div>
         </div>
-        <div v-if="movieDetails" class="movie-description__overview">
+        <div v-if="movie.details" class="movie-description__overview">
           <h3>Overview</h3>
-          <p>{{ movieDetails.overview }}</p>
+          <p>{{ movie.details.overview }}</p>
         </div>
       </div>
     </div>
     <div class="movie-page-header__background" :style="backgroundImageStyle"></div>
   </div>
   <loader v-else />
-  <div v-if="movieDetails && movieDetails.credits" class="movie-page-content">
+  <div v-if="movie.details && movie.details.credits" class="movie-page-content">
     <h1>Cast</h1>
-    <cards-list :loading="movieCreditsLoading" :error="movieDetailsError">
+    <cards-list :loading="movie.creditsLoading" :error="movie.detailsError">
       <actor-card
-        v-for="actor in movieDetails.credits.cast"
+        v-for="actor in movie.details.credits.cast"
         :key="actor.id"
         :actor="actor"
       ></actor-card>
@@ -156,7 +156,7 @@
 
 <script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { defineComponent, onMounted, computed, watch, ref } from 'vue';
+import { defineComponent, onMounted, computed, watch, ref, reactive, Ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import {
@@ -178,7 +178,7 @@ import useMovieAccountStates from '../composables/useMovieAccountStates';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
 import useWatchlist from '../composables/useWatchlist';
 import useRating from '../composables/useRating';
-import { VideoType } from '@/types/movie';
+import { Movie, MovieDetails, TVShow, VideoType } from '@/types/movie';
 import { isEqual } from 'lodash';
 import useMovieLists from '../composables/useMovieLists';
 
@@ -212,18 +212,7 @@ export default defineComponent({
     const { userInfo } = store.state.user;
     let movieListsValue = ref<Array<number>>([]);
 
-    const {
-      movieDetailsLoading,
-      movieCreditsLoading,
-      movieVideosLoading,
-      movie: movieDetails,
-      movieDetailsError,
-      movieCreditsError,
-      movieVideosError,
-      getMovie,
-      getMovieCredits,
-      getMovieVideo,
-    } = useMovie(type, id);
+    const movie = reactive<MovieDetails>(useMovie(type, id));
 
     const {
       getMovieAccountStates,
@@ -278,19 +267,17 @@ export default defineComponent({
     } = useMovieLists();
 
     const backgroundImageUrl = computed(
-      () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
+      () => process.env.VUE_APP_BACKGROUND_IMG_URL + movie.details?.backdrop_path
     );
 
     const backgroundImageStyle = computed(() => ({
       backgroundImage: `url(${backgroundImageUrl.value})`,
     }));
 
-    const movieCoverSrc = computed(
-      () => process.env.VUE_APP_IMG_URL + movieDetails.value?.poster_path
-    );
+    const movieCoverSrc = computed(() => process.env.VUE_APP_IMG_URL + movie.details?.poster_path);
 
     const movieTrailerLink = computed(() => {
-      const officialTrailer = movieDetails.value?.videos?.results.find(
+      const officialTrailer = movie.details?.videos?.results.find(
         video => video.name === 'Official Trailer'
       );
 
@@ -298,7 +285,7 @@ export default defineComponent({
         return `https://www.youtube.com/embed/${officialTrailer.key}`;
       }
 
-      const trailer = movieDetails.value?.videos?.results.find(video => video.type === 'Trailer');
+      const trailer = movie.details?.videos?.results.find(video => video.type === 'Trailer');
 
       if (trailer) {
         return `https://www.youtube.com/embed/${trailer.key}`;
@@ -308,46 +295,46 @@ export default defineComponent({
     });
 
     const updateMovieAccountStates = () => {
-      if (movieDetails.value && userInfo) {
-        getMovieAccountStates(userInfo.session_id, movieDetails.value.id, type);
+      if (movie.details && userInfo) {
+        getMovieAccountStates(userInfo.session_id, movie.details.id, type);
       }
     };
 
     const updateMovieFavoriteValue = () => {
-      if (userInfo && movieDetails.value && movieAccountStates.value) {
+      if (userInfo && movie.details && movieAccountStates.value) {
         setFavoriteValue(
           userInfo.id,
           userInfo.session_id,
           type,
-          movieDetails.value.id,
+          movie.details.id,
           !movieAccountStates.value.favorite
         ).then(updateMovieAccountStates);
       }
     };
 
     const updateMovieWatchlistValue = () => {
-      if (userInfo && movieDetails.value && movieAccountStates.value) {
+      if (userInfo && movie.details && movieAccountStates.value) {
         setWatchlistValue(
           userInfo.id,
           userInfo.session_id,
           type,
-          movieDetails.value.id,
+          movie.details.id,
           !movieAccountStates.value.watchlist
         ).then(updateMovieAccountStates);
       }
     };
 
     const updateMovieRating = (value: number) => {
-      if (userInfo && movieDetails.value && movieAccountStates.value) {
-        setRatingValue(userInfo.session_id, type, movieDetails.value.id, value * 2).then(
+      if (userInfo && movie.details && movieAccountStates.value) {
+        setRatingValue(userInfo.session_id, type, movie.details.id, value * 2).then(
           updateMovieAccountStates
         );
       }
     };
 
     const deleteMovieRating = () => {
-      if (userInfo && movieDetails.value && movieAccountStates.value) {
-        deleteRatingValue(userInfo.session_id, type, movieDetails.value.id).then(
+      if (userInfo && movie.details && movie.details && movieAccountStates.value) {
+        deleteRatingValue(userInfo.session_id, type, movie.details.id).then(
           updateMovieAccountStates
         );
       }
@@ -356,9 +343,9 @@ export default defineComponent({
     const checkMoviePersistence = () => {
       if (movieLists.value && movieLists.value.results.length > 0) {
         movieLists.value.results.forEach(async list => {
-          if (movieDetails.value) {
+          if (movie.details) {
             const inList = await isMoviePersistInList(
-              movieDetails.value.id,
+              movie.details.id,
               type,
               list.id,
               userInfo.access_token
@@ -373,17 +360,17 @@ export default defineComponent({
     };
 
     const fetchMovieLists = () => {
-      if (userInfo && movieDetails.value && movieAccountStates.value) {
+      if (userInfo && movie.details && movieAccountStates.value) {
         movieListsValue.value = [];
         getMovieLists(userInfo.id, userInfo.session_id).then(checkMoviePersistence);
       }
     };
 
     const updateMovieListsValues = (listId: number, checked: boolean): void => {
-      if (movieDetails.value && checked) {
-        addMovieToList(movieDetails.value.id, type, listId, userInfo.access_token);
-      } else if (movieDetails.value) {
-        deleteMovieFromList(movieDetails.value.id, type, listId, userInfo.access_token);
+      if (movie.details && checked) {
+        addMovieToList(movie.details.id, type, listId, userInfo.access_token);
+      } else if (movie.details) {
+        deleteMovieFromList(movie.details.id, type, listId, userInfo.access_token);
       }
     };
 
@@ -394,19 +381,12 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      getMovie().then(getMovieCredits).then(getMovieVideo).then(updateMovieAccountStates);
+      movie.getDetails().then(movie.getCredits).then(movie.getVideo).then(updateMovieAccountStates);
     });
 
     return {
-      movieDetailsLoading,
-      movieCreditsLoading,
-      movieVideosLoading,
-      movieAccountStatesLoading,
-      movieDetails,
+      movie,
       movieAccountStates,
-      movieDetailsError,
-      movieCreditsError,
-      movieVideosError,
       movieAccountStatesError,
       movieCoverSrc,
       movieTrailerLink,
@@ -449,9 +429,6 @@ export default defineComponent({
       deleteMovieRating,
       fetchMovieLists,
       updateMovieListsValues,
-      log(checked: boolean) {
-        console.log(checked);
-      },
     };
   },
 });

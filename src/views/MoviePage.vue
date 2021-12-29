@@ -2,7 +2,7 @@
   <div v-if="movie.details" class="movie-page-header">
     <div class="movie-page-header__foreground">
       <div>
-        <img :src="movieCoverSrc" />
+        <img :src="movie.coverURL" />
       </div>
       <div class="movie-description">
         <div>
@@ -49,7 +49,7 @@
             </n-empty>
           </div>
           <div class="rating-block__buttons">
-            <n-popover v-if="movieAccountStates" placement="bottom" trigger="click">
+            <n-popover v-if="movie.accountStates" placement="bottom" trigger="click">
               <template #trigger>
                 <n-button
                   :loading="
@@ -90,7 +90,8 @@
               type="info"
               @click="updateMovieFavoriteValue"
               :loading="setFavoriteValueLoading"
-              ><n-icon><heart :color="movieAccountStates?.favorite ? '#F36653' : 'white'" /></n-icon
+              ><n-icon
+                ><heart :color="movie.accountStates?.favorite ? '#F36653' : 'white'" /></n-icon
             ></n-button>
             <n-button
               :style="{ minWidth: 'fit-content' }"
@@ -101,9 +102,9 @@
               @click="updateMovieWatchlistValue"
               :loading="setWatchlistValueLoading"
               ><n-icon
-                ><bookmark :color="movieAccountStates?.watchlist ? '#db5ece' : 'white'" /></n-icon
+                ><bookmark :color="movie.accountStates?.watchlist ? '#db5ece' : 'white'" /></n-icon
             ></n-button>
-            <n-popover v-if="movieAccountStates" placement="bottom" trigger="click">
+            <n-popover v-if="movie.accountStates" placement="bottom" trigger="click">
               <template #trigger>
                 <n-button
                   strong
@@ -111,21 +112,21 @@
                   circle
                   type="info"
                   :loading="setRatingValueLoading || deleteRatingValueLoading"
-                  ><n-icon><star :color="movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
+                  ><n-icon><star :color="movie.accountStates?.rated ? 'gold' : 'white'" /></n-icon
                 ></n-button>
               </template>
 
               <n-rate
                 allow-half
-                :default-value="movieAccountStates.rated ? movieAccountStates.rated.value / 2 : 0"
+                :default-value="movie.accountStates.rated ? movie.accountStates.rated.value / 2 : 0"
                 :on-update:value="updateMovieRating"
               />
-              <n-button v-if="movieAccountStates.rated" @click="deleteMovieRating" text>
+              <n-button v-if="movie.accountStates.rated" @click="deleteMovieRating" text>
                 <n-icon><trash /></n-icon>
               </n-button>
             </n-popover>
             <n-button v-else strong size="large" circle type="info"
-              ><n-icon><star :color="movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
+              ><n-icon><star :color="movie.accountStates?.rated ? 'gold' : 'white'" /></n-icon
             ></n-button>
           </div>
         </div>
@@ -135,28 +136,24 @@
         </div>
       </div>
     </div>
-    <div class="movie-page-header__background" :style="backgroundImageStyle"></div>
+    <div class="movie-page-header__background" :style="movie.backgroundImageStyle"></div>
   </div>
   <loader v-else />
-  <div v-if="movie.details && movie.details.credits" class="movie-page-content">
+  <div v-if="movie.credits" class="movie-page-content">
     <h1>Cast</h1>
     <cards-list :loading="movie.creditsLoading" :error="movie.detailsError">
-      <actor-card
-        v-for="actor in movie.details.credits.cast"
-        :key="actor.id"
-        :actor="actor"
-      ></actor-card>
+      <actor-card v-for="actor in movie.credits.cast" :key="actor.id" :actor="actor"></actor-card>
     </cards-list>
     <h1>Trailer</h1>
-    <iframe :src="movieTrailerLink" width="700" height="500" frameborder="0">
-      {{ movieTrailerLink }}
+    <iframe :src="movie.trailerURL" width="700" height="500" frameborder="0">
+      {{ movie.trailerURL }}
     </iframe>
   </div>
 </template>
 
 <script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { defineComponent, onMounted, computed, watch, ref, reactive, Ref } from 'vue';
+import { defineComponent, onMounted, ref, reactive, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import {
@@ -174,13 +171,13 @@ import { Heart, Star, StarRegular, Bookmark, ListUl, Trash } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
-import useMovieAccountStates from '../composables/useMovieAccountStates';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
 import useWatchlist from '../composables/useWatchlist';
 import useRating from '../composables/useRating';
-import { Movie, MovieDetails, TVShow, VideoType } from '@/types/movie';
+import { MovieInfo, VideoType } from '@/types/movie';
 import { isEqual } from 'lodash';
 import useMovieLists from '../composables/useMovieLists';
+import useMovieAccountStates from '@/composables/useMovieAccountStates';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -212,7 +209,7 @@ export default defineComponent({
     const { userInfo } = store.state.user;
     let movieListsValue = ref<Array<number>>([]);
 
-    const movie = reactive<MovieDetails>(useMovie(type, id));
+    const movie = reactive<MovieInfo>(useMovie(type, id));
 
     const {
       getMovieAccountStates,
@@ -265,34 +262,6 @@ export default defineComponent({
       removeMovieFromListError,
       removeMovieFromListLoading,
     } = useMovieLists();
-
-    const backgroundImageUrl = computed(
-      () => process.env.VUE_APP_BACKGROUND_IMG_URL + movie.details?.backdrop_path
-    );
-
-    const backgroundImageStyle = computed(() => ({
-      backgroundImage: `url(${backgroundImageUrl.value})`,
-    }));
-
-    const movieCoverSrc = computed(() => process.env.VUE_APP_IMG_URL + movie.details?.poster_path);
-
-    const movieTrailerLink = computed(() => {
-      const officialTrailer = movie.details?.videos?.results.find(
-        video => video.name === 'Official Trailer'
-      );
-
-      if (officialTrailer) {
-        return `https://www.youtube.com/embed/${officialTrailer.key}`;
-      }
-
-      const trailer = movie.details?.videos?.results.find(video => video.type === 'Trailer');
-
-      if (trailer) {
-        return `https://www.youtube.com/embed/${trailer.key}`;
-      }
-
-      return null;
-    });
 
     const updateMovieAccountStates = () => {
       if (movie.details && userInfo) {
@@ -386,11 +355,6 @@ export default defineComponent({
 
     return {
       movie,
-      movieAccountStates,
-      movieAccountStatesError,
-      movieCoverSrc,
-      movieTrailerLink,
-      backgroundImageStyle,
       favoriteMoviesLoading,
       favoriteMovies,
       favoriteMoviesError,
@@ -416,6 +380,7 @@ export default defineComponent({
       removeMovieFromListResponse,
       removeMovieFromListError,
       removeMovieFromListLoading,
+      movieAccountStatesLoading,
       addMovieToList,
       deleteMovieFromList,
       setRatingValue,

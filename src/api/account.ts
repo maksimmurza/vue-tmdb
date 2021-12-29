@@ -153,7 +153,7 @@ const checkMovieListState = async (
 ): Promise<AxiosResponse> => {
   try {
     const response = await axiosClientApiV4.get(
-      `list/${listId}/item_status?media_id=${movieId}&media_type=${type}`,
+      `/list/${listId}/item_status?media_id=${movieId}&media_type=${type}`,
       { headers: { Authorization: `Bearer ${access_token}` } }
     );
     return response;

@@ -49,7 +49,7 @@
             </n-empty>
           </div>
           <div class="rating-block__buttons">
-            <n-popover v-if="accountStates" placement="bottom" trigger="click">
+            <n-popover v-if="accountStates.movieAccountStates" placement="bottom" trigger="click">
               <template #trigger>
                 <n-button
                   :loading="
@@ -120,9 +120,7 @@
                   circle
                   type="info"
                   :loading="rating.setRatingValueLoading || rating.deleteRatingValueLoading"
-                  ><n-icon
-                    ><star
-                      :color="accountStates.movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
+                  ><n-icon><star :color="movieRated ? 'gold' : 'white'" /></n-icon
                 ></n-button>
               </template>
 
@@ -194,8 +192,7 @@ import CardsList from '../components/CardsList.vue';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
 import useWatchlist from '../composables/useWatchlist';
 import useRating from '../composables/useRating';
-import { MovieInfo, VideoType } from '@/types/movie';
-import { isEqual } from 'lodash';
+import { VideoType } from '@/types/movie';
 import useMovieLists from '../composables/useMovieLists';
 import useMovieAccountStates from '@/composables/useMovieAccountStates';
 
@@ -228,6 +225,7 @@ export default defineComponent({
     const type = route.params.type as VideoType;
     const { userInfo } = store.state.user;
     let movieListsValue = ref<Array<number>>([]);
+    let movieRated = ref<boolean>(false);
 
     const movie = reactive(useMovie(type, id));
     const accountStates = reactive(useMovieAccountStates());
@@ -274,6 +272,7 @@ export default defineComponent({
       if (userInfo && movie.details && accountStates.movieAccountStates) {
         rating
           .setRatingValue(userInfo.session_id, type, movie.details.id, value * 2)
+          .then(() => (movieRated.value = true))
           .then(updateMovieAccountStates);
       }
     };
@@ -282,6 +281,7 @@ export default defineComponent({
       if (userInfo && movie.details && movie.details && accountStates.movieAccountStates) {
         rating
           .deleteRatingValue(userInfo.session_id, type, movie.details.id)
+          .then(() => (movieRated.value = false))
           .then(updateMovieAccountStates);
       }
     };
@@ -321,7 +321,18 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      movie.getDetails().then(movie.getCredits).then(movie.getVideo).then(updateMovieAccountStates);
+      movie
+        .getDetails()
+        .then(movie.getCredits)
+        .then(movie.getVideo)
+        .then(updateMovieAccountStates)
+        .then(() => {
+          if (accountStates.movieAccountStates?.rated) {
+            movieRated.value = true;
+          } else {
+            movieRated.value = false;
+          }
+        });
     });
 
     return {
@@ -332,6 +343,7 @@ export default defineComponent({
       rating,
       movieLists,
       movieListsValue,
+      movieRated,
       updateMovieFavoriteValue,
       updateMovieWatchlistValue,
       updateMovieRating,

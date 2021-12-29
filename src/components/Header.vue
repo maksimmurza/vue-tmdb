@@ -71,7 +71,7 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
 
-    const userAvatarBaseUrl = process.env.VUE_APP_AVATAR_IMG_URL;
+    const userAvatarBaseUrl = process.env.VUE_APP_IMG_URL;
 
     const user = computed(() => store.state.user);
 

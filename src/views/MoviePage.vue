@@ -49,11 +49,13 @@
             </n-empty>
           </div>
           <div class="rating-block__buttons">
-            <n-popover v-if="movie.accountStates" placement="bottom" trigger="click">
+            <n-popover v-if="accountStates" placement="bottom" trigger="click">
               <template #trigger>
                 <n-button
                   :loading="
-                    movieListsLoading || addMovieToListLoading || removeMovieFromListLoading
+                    movieLists.movieListsLoading ||
+                    movieLists.addMovieToListLoading ||
+                    movieLists.removeMovieFromListLoading
                   "
                   strong
                   size="large"
@@ -63,10 +65,10 @@
                   ><n-icon><list-ul /></n-icon
                 ></n-button>
               </template>
-              <n-checkbox-group v-if="movieLists" v-model:value="movieListsValue">
+              <n-checkbox-group v-if="movieLists.movieListsResult" v-model:value="movieListsValue">
                 <n-space vertical>
                   <n-checkbox
-                    v-for="list in movieLists.results"
+                    v-for="list in movieLists.movieListsResult.results"
                     :list="list"
                     :key="list.id"
                     :value="list.id"
@@ -89,9 +91,12 @@
               circle
               type="info"
               @click="updateMovieFavoriteValue"
-              :loading="setFavoriteValueLoading"
+              :loading="favoriteMovies.setFavoriteValueLoading"
               ><n-icon
-                ><heart :color="movie.accountStates?.favorite ? '#F36653' : 'white'" /></n-icon
+                ><heart
+                  :color="
+                    accountStates.movieAccountStates?.favorite ? '#F36653' : 'white'
+                  " /></n-icon
             ></n-button>
             <n-button
               :style="{ minWidth: 'fit-content' }"
@@ -100,33 +105,48 @@
               circle
               type="info"
               @click="updateMovieWatchlistValue"
-              :loading="setWatchlistValueLoading"
+              :loading="watchlist.setWatchlistValueLoading"
               ><n-icon
-                ><bookmark :color="movie.accountStates?.watchlist ? '#db5ece' : 'white'" /></n-icon
+                ><bookmark
+                  :color="
+                    accountStates.movieAccountStates?.watchlist ? '#db5ece' : 'white'
+                  " /></n-icon
             ></n-button>
-            <n-popover v-if="movie.accountStates" placement="bottom" trigger="click">
+            <n-popover v-if="accountStates" placement="bottom" trigger="click">
               <template #trigger>
                 <n-button
                   strong
                   size="large"
                   circle
                   type="info"
-                  :loading="setRatingValueLoading || deleteRatingValueLoading"
-                  ><n-icon><star :color="movie.accountStates?.rated ? 'gold' : 'white'" /></n-icon
+                  :loading="rating.setRatingValueLoading || rating.deleteRatingValueLoading"
+                  ><n-icon
+                    ><star
+                      :color="accountStates.movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
                 ></n-button>
               </template>
 
               <n-rate
                 allow-half
-                :default-value="movie.accountStates.rated ? movie.accountStates.rated.value / 2 : 0"
+                :default-value="
+                  accountStates.movieAccountStates.rated
+                    ? accountStates.movieAccountStates.rated.value / 2
+                    : 0
+                "
                 :on-update:value="updateMovieRating"
               />
-              <n-button v-if="movie.accountStates.rated" @click="deleteMovieRating" text>
+              <n-button
+                v-if="accountStates.movieAccountStates.rated"
+                @click="deleteMovieRating"
+                text
+              >
                 <n-icon><trash /></n-icon>
               </n-button>
             </n-popover>
             <n-button v-else strong size="large" circle type="info"
-              ><n-icon><star :color="movie.accountStates?.rated ? 'gold' : 'white'" /></n-icon
+              ><n-icon
+                ><star
+                  :color="accountStates.movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
             ></n-button>
           </div>
         </div>
@@ -209,111 +229,68 @@ export default defineComponent({
     const { userInfo } = store.state.user;
     let movieListsValue = ref<Array<number>>([]);
 
-    const movie = reactive<MovieInfo>(useMovie(type, id));
-
-    const {
-      getMovieAccountStates,
-      movieAccountStatesLoading,
-      movieAccountStates,
-      movieAccountStatesError,
-    } = useMovieAccountStates();
-
-    const {
-      favoriteMoviesLoading,
-      favoriteMovies,
-      favoriteMoviesError,
-      getFavoriteMovies,
-      setFavoriteValueLoading,
-      setFavoriteValueResult,
-      setFavoriteValueError,
-      setFavoriteValue,
-    } = useFavoriteMovies();
-
-    const {
-      setWatchlistValueLoading,
-      setWatchlistValueResult,
-      setWatchlistValueError,
-      setWatchlistValue,
-    } = useWatchlist();
-
-    const {
-      setRatingValueLoading,
-      setRatingValueResult,
-      setRatingValueError,
-      setRatingValue,
-      deleteRatingValue,
-      deleteRatingValueLoading,
-      deleteRatingValueResult,
-      deleteRatingValueError,
-    } = useRating();
-
-    const {
-      movieListsLoading,
-      movieLists,
-      movieListsError,
-      getMovieLists,
-      isMoviePersistInList,
-      addMovieToListResponse,
-      addMovieToListError,
-      addMovieToListLoading,
-      addMovieToList,
-      deleteMovieFromList,
-      removeMovieFromListResponse,
-      removeMovieFromListError,
-      removeMovieFromListLoading,
-    } = useMovieLists();
+    const movie = reactive(useMovie(type, id));
+    const accountStates = reactive(useMovieAccountStates());
+    const favoriteMovies = reactive(useFavoriteMovies());
+    const watchlist = reactive(useWatchlist());
+    const rating = reactive(useRating());
+    const movieLists = reactive(useMovieLists());
 
     const updateMovieAccountStates = () => {
       if (movie.details && userInfo) {
-        getMovieAccountStates(userInfo.session_id, movie.details.id, type);
+        accountStates.getMovieAccountStates(userInfo.session_id, movie.details.id, type);
       }
     };
 
     const updateMovieFavoriteValue = () => {
-      if (userInfo && movie.details && movieAccountStates.value) {
-        setFavoriteValue(
-          userInfo.id,
-          userInfo.session_id,
-          type,
-          movie.details.id,
-          !movieAccountStates.value.favorite
-        ).then(updateMovieAccountStates);
+      if (userInfo && movie.details && accountStates.movieAccountStates) {
+        favoriteMovies
+          .setFavoriteValue(
+            userInfo.id,
+            userInfo.session_id,
+            type,
+            movie.details.id,
+            !accountStates.movieAccountStates.favorite
+          )
+          .then(updateMovieAccountStates);
       }
     };
 
     const updateMovieWatchlistValue = () => {
-      if (userInfo && movie.details && movieAccountStates.value) {
-        setWatchlistValue(
-          userInfo.id,
-          userInfo.session_id,
-          type,
-          movie.details.id,
-          !movieAccountStates.value.watchlist
-        ).then(updateMovieAccountStates);
+      if (userInfo && movie.details && accountStates.movieAccountStates) {
+        watchlist
+          .setWatchlistValue(
+            userInfo.id,
+            userInfo.session_id,
+            type,
+            movie.details.id,
+            !accountStates.movieAccountStates.watchlist
+          )
+          .then(updateMovieAccountStates);
       }
     };
 
     const updateMovieRating = (value: number) => {
-      if (userInfo && movie.details && movieAccountStates.value) {
-        setRatingValue(userInfo.session_id, type, movie.details.id, value * 2).then(
-          updateMovieAccountStates
-        );
+      if (userInfo && movie.details && accountStates.movieAccountStates) {
+        rating
+          .setRatingValue(userInfo.session_id, type, movie.details.id, value * 2)
+          .then(updateMovieAccountStates);
       }
     };
 
     const deleteMovieRating = () => {
-      if (userInfo && movie.details && movie.details && movieAccountStates.value) {
-        deleteRatingValue(userInfo.session_id, type, movie.details.id).then(
-          updateMovieAccountStates
-        );
+      if (userInfo && movie.details && movie.details && accountStates.movieAccountStates) {
+        rating
+          .deleteRatingValue(userInfo.session_id, type, movie.details.id)
+          .then(updateMovieAccountStates);
       }
     };
 
     const checkMoviePersistence = () => {
-      if (movieLists.value && movieLists.value.results.length > 0) {
-        movieLists.value.results.forEach(async list => {
+      if (movieLists.movieListsResult && movieLists.movieListsResult.results.length > 0) {
+        movieLists.movieListsResult.results.forEach(async list => {
           if (movie.details) {
-            const inList = await isMoviePersistInList(
+            const inList = await movieLists.isMoviePersistInList(
               movie.details.id,
               type,
               list.id,
@@ -329,25 +306,19 @@ export default defineComponent({
     };
 
     const fetchMovieLists = () => {
-      if (userInfo && movie.details && movieAccountStates.value) {
+      if (userInfo && movie.details && accountStates.movieAccountStates) {
         movieListsValue.value = [];
-        getMovieLists(userInfo.id, userInfo.session_id).then(checkMoviePersistence);
+        movieLists.getMovieLists(userInfo.id, userInfo.session_id).then(checkMoviePersistence);
       }
     };
 
     const updateMovieListsValues = (listId: number, checked: boolean): void => {
       if (movie.details && checked) {
-        addMovieToList(movie.details.id, type, listId, userInfo.access_token);
+        movieLists.addMovieToList(movie.details.id, type, listId, userInfo.access_token);
       } else if (movie.details) {
-        deleteMovieFromList(movie.details.id, type, listId, userInfo.access_token);
+        movieLists.deleteMovieFromList(movie.details.id, type, listId, userInfo.access_token);
       }
     };
-
-    watch(movieAccountStates, (newStates, prevStates) => {
-      if (isEqual(newStates, prevStates)) {
-        setTimeout(updateMovieAccountStates, 1500);
-      }
-    });
 
     onMounted(() => {
       movie.getDetails().then(movie.getCredits).then(movie.getVideo).then(updateMovieAccountStates);
@@ -355,39 +326,12 @@ export default defineComponent({
 
     return {
       movie,
-      favoriteMoviesLoading,
+      accountStates,
       favoriteMovies,
-      favoriteMoviesError,
-      setFavoriteValueLoading,
-      setFavoriteValueResult,
-      setFavoriteValueError,
-      setWatchlistValueResult,
-      setWatchlistValueError,
-      setWatchlistValueLoading,
-      setRatingValueLoading,
-      setRatingValueResult,
-      setRatingValueError,
-      deleteRatingValueLoading,
-      deleteRatingValueResult,
-      deleteRatingValueError,
-      movieListsLoading,
+      watchlist,
+      rating,
       movieLists,
-      movieListsError,
       movieListsValue,
-      addMovieToListResponse,
-      addMovieToListError,
-      addMovieToListLoading,
-      removeMovieFromListResponse,
-      removeMovieFromListError,
-      removeMovieFromListLoading,
-      movieAccountStatesLoading,
-      addMovieToList,
-      deleteMovieFromList,
-      setRatingValue,
-      getMovieAccountStates,
-      getFavoriteMovies,
-      setFavoriteValue,
-      setWatchlistValue,
       updateMovieFavoriteValue,
       updateMovieWatchlistValue,
       updateMovieRating,

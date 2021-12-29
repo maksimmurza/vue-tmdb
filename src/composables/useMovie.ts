@@ -1,15 +1,7 @@
 import { fetchMovie, movieCredits, movieVideos } from '../api/movie';
-import {
-  MotionPictureVideo,
-  Movie,
-  MovieAccountStates,
-  MovieInfo,
-  TVShow,
-  VideoType,
-} from '@/types/movie';
+import { MotionPictureVideo, Movie, MovieInfo, TVShow, VideoType } from '@/types/movie';
 import { computed, ref } from 'vue';
 import { MovieCredits } from '@/types/credits';
-import { fetchMovieAccountStates } from '@/api/account';
 
 const useMovie = (type: VideoType, movieId: number): MovieInfo => {
   const details = ref<Movie | TVShow | null>(null);

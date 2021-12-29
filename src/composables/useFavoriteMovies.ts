@@ -4,13 +4,13 @@ import { ref, Ref } from 'vue';
 import { MovieSetAccountStateResponse, MoviesListResponse } from '@/types/fetching';
 
 const useFavoriteMovies = (): {
-  favoriteMoviesLoading: Ref<boolean>;
   favoriteMovies: Ref<MoviesListResponse<Movie | TVShow> | null>;
+  favoriteMoviesLoading: Ref<boolean>;
   favoriteMoviesError: Ref<Error | null>;
-  getFavoriteMovies: (accountId: string, session_id: string, type: VideoType) => Promise<void>;
-  setFavoriteValueLoading: Ref<boolean>;
   setFavoriteValueResult: Ref<MovieSetAccountStateResponse | null>;
+  setFavoriteValueLoading: Ref<boolean>;
   setFavoriteValueError: Ref<Error | null>;
+  getFavoriteMovies: (accountId: string, session_id: string, type: VideoType) => Promise<void>;
   setFavoriteValue: (
     accountId: string,
     session_id: string,
@@ -60,13 +60,13 @@ const useFavoriteMovies = (): {
   };
 
   return {
-    favoriteMoviesLoading,
     favoriteMovies,
+    favoriteMoviesLoading,
     favoriteMoviesError,
-    getFavoriteMovies,
-    setFavoriteValueLoading,
     setFavoriteValueResult,
+    setFavoriteValueLoading,
     setFavoriteValueError,
+    getFavoriteMovies,
     setFavoriteValue,
   };
 };

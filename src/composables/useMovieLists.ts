@@ -5,7 +5,7 @@ import { MovieSetAccountStateResponse, MoviesListResponse } from '@/types/fetchi
 
 const useMovieLists = (): {
   movieListsLoading: Ref<boolean>;
-  movieLists: Ref<MoviesListResponse<MovieList> | null>;
+  movieListsResult: Ref<MoviesListResponse<MovieList> | null>;
   movieListsError: Ref<Error | null>;
   addMovieToListResponse: Ref<MovieSetAccountStateResponse | null>;
   addMovieToListError: Ref<Error | null>;
@@ -33,7 +33,7 @@ const useMovieLists = (): {
     session_id: string
   ) => Promise<void>;
 } => {
-  const movieLists = ref<MoviesListResponse<MovieList> | null>(null);
+  const movieListsResult = ref<MoviesListResponse<MovieList> | null>(null);
   const movieListsError = ref<Error | null>(null);
   const movieListsLoading = ref<boolean>(false);
 
@@ -41,7 +41,7 @@ const useMovieLists = (): {
     movieListsLoading.value = true;
     try {
       const response = await createdLists(accountId, session_id);
-      movieLists.value = response.data as MoviesListResponse<MovieList>;
+      movieListsResult.value = response.data as MoviesListResponse<MovieList>;
       movieListsError.value = null;
     } catch (err) {
       movieListsError.value = err as Error;
@@ -122,7 +122,7 @@ const useMovieLists = (): {
 
   return {
     movieListsLoading,
-    movieLists,
+    movieListsResult,
     movieListsError,
     addMovieToListResponse,
     addMovieToListError,

@@ -3,16 +3,16 @@ import { VideoType } from '@/types/movie';
 import { ref, Ref } from 'vue';
 import { MovieSetAccountStateResponse } from '@/types/fetching';
 
-const useFavoriteMovies = (): {
+const useWatchlist = (): {
   setWatchlistValueLoading: Ref<boolean>;
   setWatchlistValueResult: Ref<MovieSetAccountStateResponse | null>;
   setWatchlistValueError: Ref<Error | null>;
   setWatchlistValue: (
-    accountId: string,
+    accountId: number,
     session_id: string,
     type: VideoType,
     movieId: number,
-    favorite: boolean
+    watchlistValue: boolean
   ) => Promise<void>;
 } => {
   const setWatchlistValueLoading = ref<boolean>(false);
@@ -20,15 +20,16 @@ const useFavoriteMovies = (): {
   const setWatchlistValueError = ref<Error | null>(null);
 
   const setWatchlistValue = async (
-    accountId: string,
+    accountId: number,
     session_id: string,
     type: VideoType,
     movieId: number,
-    favorite: boolean
+    watchlistValue: boolean
   ) => {
     setWatchlistValueLoading.value = true;
     try {
-      const response = await watchlist(accountId, session_id, type, movieId, favorite);
+      console.log(accountId, session_id, type, movieId, watchlistValue);
+      const response = await watchlist(accountId, session_id, type, movieId, watchlistValue);
       setWatchlistValueResult.value = response.data as MovieSetAccountStateResponse;
       setWatchlistValueError.value = null;
     } catch (err) {
@@ -46,4 +47,4 @@ const useFavoriteMovies = (): {
   };
 };
 
-export default useFavoriteMovies;
+export default useWatchlist;

@@ -13,7 +13,7 @@ const useMovieLists = (): {
   removeMovieFromListResponse: Ref<MovieSetAccountStateResponse | null>;
   removeMovieFromListError: Ref<Error | null>;
   removeMovieFromListLoading: Ref<boolean>;
-  getMovieLists: (accountId: string, session_id: string) => Promise<void>;
+  getMovieLists: (accountId: number, session_id: string) => Promise<void>;
   isMoviePersistInList: (
     movieId: number,
     type: VideoType,
@@ -37,7 +37,7 @@ const useMovieLists = (): {
   const movieListsError = ref<Error | null>(null);
   const movieListsLoading = ref<boolean>(false);
 
-  const getMovieLists = async (accountId: string, session_id: string) => {
+  const getMovieLists = async (accountId: number, session_id: string) => {
     movieListsLoading.value = true;
     try {
       const response = await createdLists(accountId, session_id);

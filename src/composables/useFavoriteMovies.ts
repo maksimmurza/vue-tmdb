@@ -10,7 +10,7 @@ const useFavoriteMovies = (): {
   setFavoriteValueResult: Ref<MovieSetAccountStateResponse | null>;
   setFavoriteValueLoading: Ref<boolean>;
   setFavoriteValueError: Ref<Error | null>;
-  getFavoriteMovies: (accountId: string, session_id: string, type: VideoType) => Promise<void>;
+  getFavoriteMovies: (accountId: number, session_id: string, type: VideoType) => Promise<void>;
   setFavoriteValue: (
     accountId: number,
     session_id: string,
@@ -23,7 +23,7 @@ const useFavoriteMovies = (): {
   const favoriteMovies = ref<MoviesListResponse<Movie | TVShow> | null>(null);
   const favoriteMoviesError = ref<Error | null>(null);
 
-  const getFavoriteMovies = async (accountId: string, session_id: string, type: VideoType) => {
+  const getFavoriteMovies = async (accountId: number, session_id: string, type: VideoType) => {
     favoriteMoviesLoading.value = true;
     try {
       const response = await fetchFavoriteMovies(accountId, session_id, type);

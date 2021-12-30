@@ -83,41 +83,18 @@
             <n-button v-else strong size="large" circle type="info"
               ><n-icon><list-ul /></n-icon
             ></n-button>
-
-            <!-- <n-button
-              :style="{ minWidth: 'fit-content' }"
-              strong
-              size="large"
-              circle
-              type="info"
-              @click="updateMovieFavoriteValue"
-              :loading="favoriteMovies.setFavoriteValueLoading"
-              ><n-icon
-                ><heart
-                  :color="
-                    accountStates.movieAccountStates?.favorite ? '#F36653' : 'white'
-                  " /></n-icon
-            ></n-button> -->
             <like-button
               :movieId="movie.details.id"
               :type="type"
               :favorite="accountStates.movieAccountStates?.favorite"
               @updated="updateMovieAccountStates"
             />
-            <n-button
-              :style="{ minWidth: 'fit-content' }"
-              strong
-              size="large"
-              circle
-              type="info"
-              @click="updateMovieWatchlistValue"
-              :loading="watchlist.setWatchlistValueLoading"
-              ><n-icon
-                ><bookmark
-                  :color="
-                    accountStates.movieAccountStates?.watchlist ? '#db5ece' : 'white'
-                  " /></n-icon
-            ></n-button>
+            <watchlist-button
+              :movieId="movie.details.id"
+              :type="type"
+              :watchlist="accountStates.movieAccountStates?.watchlist"
+              @updated="updateMovieAccountStates"
+            />
             <n-popover v-if="accountStates" placement="bottom" trigger="click">
               <template #trigger>
                 <n-button
@@ -191,17 +168,16 @@ import {
   NCheckboxGroup,
   NSpace,
 } from 'naive-ui';
-import { Heart, Star, StarRegular, Bookmark, ListUl, Trash } from '@vicons/fa';
+import { Star, StarRegular, ListUl, Trash } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
-// import useFavoriteMovies from '../composables/useFavoriteMovies';
-import useWatchlist from '../composables/useWatchlist';
 import useRating from '../composables/useRating';
 import { VideoType } from '@/types/movie';
 import useMovieLists from '../composables/useMovieLists';
 import useMovieAccountStates from '@/composables/useMovieAccountStates';
 import LikeButton from '../components/LikeButton.vue';
+import WatchlistButton from '../components/WatchlistButton.vue';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -210,10 +186,8 @@ export default defineComponent({
     NProgress,
     NIcon,
     Loader,
-    // Heart,
     Star,
     StarRegular,
-    Bookmark,
     ListUl,
     NEmpty,
     ActorCard,
@@ -225,6 +199,7 @@ export default defineComponent({
     NCheckboxGroup,
     NSpace,
     LikeButton,
+    WatchlistButton,
   },
   setup() {
     const route = useRoute();
@@ -237,42 +212,12 @@ export default defineComponent({
 
     const movie = reactive(useMovie(type, id));
     const accountStates = reactive(useMovieAccountStates());
-    // const favoriteMovies = reactive(useFavoriteMovies());
-    const watchlist = reactive(useWatchlist());
     const rating = reactive(useRating());
     const movieLists = reactive(useMovieLists());
 
     const updateMovieAccountStates = () => {
       if (movie.details && userInfo) {
         accountStates.getMovieAccountStates(userInfo.session_id, movie.details.id, type);
-      }
-    };
-
-    // const updateMovieFavoriteValue = () => {
-    //   if (userInfo && movie.details && accountStates.movieAccountStates) {
-    //     favoriteMovies
-    //       .setFavoriteValue(
-    //         userInfo.id,
-    //         userInfo.session_id,
-    //         type,
-    //         movie.details.id,
-    //         !accountStates.movieAccountStates.favorite
-    //       )
-    //       .then(updateMovieAccountStates);
-    //   }
-    // };
-
-    const updateMovieWatchlistValue = () => {
-      if (userInfo && movie.details && accountStates.movieAccountStates) {
-        watchlist
-          .setWatchlistValue(
-            userInfo.id,
-            userInfo.session_id,
-            type,
-            movie.details.id,
-            !accountStates.movieAccountStates.watchlist
-          )
-          .then(updateMovieAccountStates);
       }
     };
 
@@ -348,15 +293,11 @@ export default defineComponent({
     return {
       movie,
       accountStates,
-      // favoriteMovies,
-      watchlist,
       rating,
       movieLists,
       movieListsValue,
       movieRated,
-      // updateMovieFavoriteValue,
       type,
-      updateMovieWatchlistValue,
       updateMovieRating,
       deleteMovieRating,
       fetchMovieLists,

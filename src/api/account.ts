@@ -33,7 +33,7 @@ const fetchMovieAccountStates = async (
 };
 
 const favoriteMovies = async (
-  accountId: string,
+  accountId: number,
   session_id: string,
   type: VideoType
 ): Promise<AxiosResponse> => {
@@ -51,7 +51,7 @@ const favoriteMovies = async (
 };
 
 const ratedMovies = async (
-  accountId: string,
+  accountId: number,
   session_id: string,
   type: MovieType
 ): Promise<AxiosResponse> => {
@@ -69,7 +69,7 @@ const ratedMovies = async (
 };
 
 const watchlistMovies = async (
-  accountId: string,
+  accountId: number,
   session_id: string,
   type: MovieType
 ): Promise<AxiosResponse> => {
@@ -88,7 +88,7 @@ const watchlistMovies = async (
   }
 };
 
-const createdLists = async (accountId: string, session_id: string): Promise<AxiosResponse> => {
+const createdLists = async (accountId: number, session_id: string): Promise<AxiosResponse> => {
   try {
     const response = await axiosClientApiV3.get(
       `account/${accountId}/lists?session_id=${session_id}`
@@ -187,7 +187,7 @@ const setFavorite = async (
 };
 
 const watchlist = async (
-  accountId: string,
+  accountId: number,
   session_id: string,
   type: VideoType,
   movieId: number,

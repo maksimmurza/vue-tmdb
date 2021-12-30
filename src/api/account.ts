@@ -166,7 +166,7 @@ const checkMovieListState = async (
 };
 
 const setFavorite = async (
-  accountId: string,
+  accountId: number,
   session_id: string,
   type: VideoType,
   movieId: number,

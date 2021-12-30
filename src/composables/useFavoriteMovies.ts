@@ -12,7 +12,7 @@ const useFavoriteMovies = (): {
   setFavoriteValueError: Ref<Error | null>;
   getFavoriteMovies: (accountId: string, session_id: string, type: VideoType) => Promise<void>;
   setFavoriteValue: (
-    accountId: string,
+    accountId: number,
     session_id: string,
     type: VideoType,
     movieId: number,
@@ -41,7 +41,7 @@ const useFavoriteMovies = (): {
   const setFavoriteValueError = ref<Error | null>(null);
 
   const setFavoriteValue = async (
-    accountId: string,
+    accountId: number,
     session_id: string,
     type: VideoType,
     movieId: number,

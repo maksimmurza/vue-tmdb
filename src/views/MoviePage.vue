@@ -48,7 +48,7 @@
               </template>
             </n-empty>
           </div>
-          <div class="rating-block__buttons">
+          <div v-if="userInfo" class="rating-block__buttons">
             <n-popover v-if="accountStates.movieAccountStates" placement="bottom" trigger="click">
               <template #trigger>
                 <n-button
@@ -95,41 +95,14 @@
               :watchlist="accountStates.movieAccountStates?.watchlist"
               @updated="updateMovieAccountStates"
             />
-            <n-popover v-if="accountStates" placement="bottom" trigger="click">
-              <template #trigger>
-                <n-button
-                  strong
-                  size="large"
-                  circle
-                  type="info"
-                  :loading="rating.setRatingValueLoading || rating.deleteRatingValueLoading"
-                  ><n-icon><star :color="movieRated ? 'gold' : 'white'" /></n-icon
-                ></n-button>
-              </template>
-
-              <n-rate
-                allow-half
-                :default-value="
-                  accountStates.movieAccountStates.rated
-                    ? accountStates.movieAccountStates.rated.value / 2
-                    : 0
-                "
-                :on-update:value="updateMovieRating"
-              />
-              <n-button
-                v-if="accountStates.movieAccountStates.rated"
-                @click="deleteMovieRating"
-                text
-              >
-                <n-icon><trash /></n-icon>
-              </n-button>
-            </n-popover>
-            <n-button v-else strong size="large" circle type="info"
-              ><n-icon
-                ><star
-                  :color="accountStates.movieAccountStates?.rated ? 'gold' : 'white'" /></n-icon
-            ></n-button>
+            <rating-button
+              :movieId="movie.details.id"
+              :type="type"
+              :ratingValue="accountStates.movieAccountStates?.rated"
+              @updated="updateMovieAccountStates"
+            />
           </div>
+          <div v-else>You should log in to rate or add movie to lists</div>
         </div>
         <div v-if="movie.details" class="movie-description__overview">
           <h3>Overview</h3>
@@ -154,7 +127,7 @@
 
 <script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { defineComponent, onMounted, ref, reactive, watch } from 'vue';
+import { defineComponent, onMounted, ref, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import {
@@ -162,22 +135,21 @@ import {
   NProgress,
   NIcon,
   NEmpty,
-  NRate,
   NPopover,
   NCheckbox,
   NCheckboxGroup,
   NSpace,
 } from 'naive-ui';
-import { Star, StarRegular, ListUl, Trash } from '@vicons/fa';
+import { StarRegular, ListUl } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
-import useRating from '../composables/useRating';
 import { VideoType } from '@/types/movie';
 import useMovieLists from '../composables/useMovieLists';
 import useMovieAccountStates from '@/composables/useMovieAccountStates';
 import LikeButton from '../components/LikeButton.vue';
 import WatchlistButton from '../components/WatchlistButton.vue';
+import RatingButton from '../components/RatingButton.vue';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -186,20 +158,18 @@ export default defineComponent({
     NProgress,
     NIcon,
     Loader,
-    Star,
     StarRegular,
     ListUl,
     NEmpty,
     ActorCard,
     CardsList,
-    NRate,
     NPopover,
-    Trash,
     NCheckbox,
     NCheckboxGroup,
     NSpace,
     LikeButton,
     WatchlistButton,
+    RatingButton,
   },
   setup() {
     const route = useRoute();
@@ -208,34 +178,15 @@ export default defineComponent({
     const type = route.params.type as VideoType;
     const { userInfo } = store.state.user;
     let movieListsValue = ref<Array<number>>([]);
-    let movieRated = ref<boolean>(false);
 
     const movie = reactive(useMovie(type, id));
     const accountStates = reactive(useMovieAccountStates());
-    const rating = reactive(useRating());
     const movieLists = reactive(useMovieLists());
 
     const updateMovieAccountStates = () => {
+      console.log('aaa');
       if (movie.details && userInfo) {
         accountStates.getMovieAccountStates(userInfo.session_id, movie.details.id, type);
-      }
-    };
-
-    const updateMovieRating = (value: number) => {
-      if (userInfo && movie.details && accountStates.movieAccountStates) {
-        rating
-          .setRatingValue(userInfo.session_id, type, movie.details.id, value * 2)
-          .then(() => (movieRated.value = true))
-          .then(updateMovieAccountStates);
-      }
-    };
-
-    const deleteMovieRating = () => {
-      if (userInfo && movie.details && movie.details && accountStates.movieAccountStates) {
-        rating
-          .deleteRatingValue(userInfo.session_id, type, movie.details.id)
-          .then(() => (movieRated.value = false))
-          .then(updateMovieAccountStates);
       }
     };
 
@@ -280,26 +231,16 @@ export default defineComponent({
           movie.getCredits();
           movie.getVideo();
         })
-        .then(updateMovieAccountStates)
-        .then(() => {
-          if (accountStates.movieAccountStates?.rated) {
-            movieRated.value = true;
-          } else {
-            movieRated.value = false;
-          }
-        });
+        .then(updateMovieAccountStates);
     });
 
     return {
       movie,
       accountStates,
-      rating,
       movieLists,
       movieListsValue,
-      movieRated,
       type,
-      updateMovieRating,
-      deleteMovieRating,
+      userInfo,
       fetchMovieLists,
       updateMovieListsValues,
       updateMovieAccountStates,

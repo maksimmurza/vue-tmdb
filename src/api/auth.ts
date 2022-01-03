@@ -1,7 +1,6 @@
 import { RequestTokenResponse } from '@/types/fetching';
 import axios, { AxiosResponse } from 'axios';
 import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
-// import { useRouter } from 'vue-router';
 
 const loginV3 = async (username: string, password: string): Promise<AxiosResponse> => {
   try {
@@ -43,10 +42,11 @@ const logoutV3 = async (session_id: string): Promise<AxiosResponse> => {
 const loginV4 = async (redirect_to: string): Promise<AxiosResponse<RequestTokenResponse>> => {
   try {
     const createRequestTokenResponse = await axiosClientApiV4.post(`/auth/request_token`, {
-      redirect_to,
+      redirect_to: `${window.location.origin}/approved`,
     });
     const { request_token } = createRequestTokenResponse.data;
     window.localStorage.setItem('request_token', request_token);
+    window.localStorage.setItem('redirect_to', redirect_to);
     window.open(`https://www.themoviedb.org/auth/access?request_token=${request_token}`, '_self');
     return createRequestTokenResponse;
   } catch (error) {

@@ -159,6 +159,9 @@ const checkMovieListState = async (
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
+      if (error.response.data.status_code === 34) {
+        return error.response;
+      }
       throw new Error(error.response.data.status_message);
     }
     throw new Error('Server is unavailable');

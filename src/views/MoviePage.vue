@@ -30,13 +30,7 @@
               type="circle"
               :indicator-text-color="'white'"
               :percentage="movie.details.vote_average * 10"
-              :color="
-                movie.details.vote_average < 5
-                  ? 'red'
-                  : movie.details.vote_average < 8
-                  ? 'orange'
-                  : 'green'
-              "
+              :color="ratingColor"
             ></n-progress>
           </div>
           <div v-else>
@@ -94,7 +88,7 @@
 
 <script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { defineComponent, onMounted, reactive } from 'vue';
+import { computed, defineComponent, onMounted, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
@@ -130,16 +124,24 @@ export default defineComponent({
     const store = useStore();
     const id = parseInt(route.params.id as string);
     const type = route.params.type as VideoType;
-    const { userInfo } = store.state.user;
+    const userInfo = computed(() => store.state.user.userInfo);
 
     const movie = reactive(useMovie(type, id));
     const accountStates = reactive(useMovieAccountStates());
 
     const updateMovieAccountStates = () => {
-      if (movie.details && userInfo) {
-        accountStates.getMovieAccountStates(userInfo.session_id, movie.details.id, type);
+      if (movie.details && userInfo.value) {
+        accountStates.getMovieAccountStates(userInfo.value.session_id, movie.details.id, type);
       }
     };
+
+    const ratingColor = computed(() => {
+      return movie.details && movie.details.vote_average < 5
+        ? 'red'
+        : movie.details && movie.details.vote_average < 8
+        ? 'orange'
+        : 'green';
+    });
 
     onMounted(() => {
       movie
@@ -156,6 +158,7 @@ export default defineComponent({
       accountStates,
       type,
       userInfo,
+      ratingColor,
       updateMovieAccountStates,
     };
   },

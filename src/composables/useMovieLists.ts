@@ -61,8 +61,8 @@ const useMovieLists = (): {
       const response = await checkMovieListState(movieId, type, listId, access_token);
       const isMovieInList = response.data as {
         id: string | null;
-        media_id: number;
-        media_type: string;
+        media_id?: number;
+        media_type?: string;
         status_code: number;
         status_message: string;
         success: boolean;

@@ -76,7 +76,7 @@ export default defineComponent({
     const user = computed(() => store.state.user);
 
     const login = () => {
-      store.dispatch('login', { redirect_to: `${window.location.origin}/approved` });
+      store.dispatch('login', { redirect_to: router.currentRoute.value.fullPath });
     };
 
     [moviesDropdownOptions, tvShowsDropdownOptions].forEach(options =>

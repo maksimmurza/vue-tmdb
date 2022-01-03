@@ -28,7 +28,6 @@ const useWatchlist = (): {
   ) => {
     setWatchlistValueLoading.value = true;
     try {
-      console.log(accountId, session_id, type, movieId, watchlistValue);
       const response = await watchlist(accountId, session_id, type, movieId, watchlistValue);
       setWatchlistValueResult.value = response.data as MovieSetAccountStateResponse;
       setWatchlistValueError.value = null;

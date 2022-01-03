@@ -1,6 +1,6 @@
 import { VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
-import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
+import { axiosClientApiV3 } from '../utils/axiosClient';
 
 const fetchGenres = async (type: VideoType): Promise<AxiosResponse> => {
   try {

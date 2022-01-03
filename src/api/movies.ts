@@ -2,7 +2,7 @@ import { MoviesFetchingService } from '@/types/fetching';
 import { Movie, MovieFilters, TVShow } from '@/types/movie';
 import getQuery from '@/utils/getQuery';
 import axios from 'axios';
-import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
+import { axiosClientApiV3 } from '../utils/axiosClient';
 
 const fetchMovies = async (link: string) => {
   try {

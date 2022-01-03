@@ -1,34 +1,29 @@
-<template lang="">
+<template>
   <loader v-if="user.loading"></loader>
-  <n-alert
-    v-else-if="user.userInfo && !user.errorMessage"
-    type="success"
-    title="You successfuly logged in"
-    class="alert"
-  ></n-alert>
-  <n-alert v-else type="warning" title="Some error while logging in" class="alert">{{
-    user.errorMessage
-  }}</n-alert>
 </template>
-<script>
+
+<script lang="ts">
 import { defineComponent, onMounted, computed } from 'vue';
 import { useStore } from 'vuex';
-import { NAlert } from 'naive-ui';
 import Loader from '../components/Loader.vue';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'loginConfirmationPage',
   components: {
-    NAlert,
     Loader,
   },
   setup() {
     const store = useStore();
-
+    const router = useRouter();
     const user = computed(() => store.state.user);
 
     onMounted(() => {
-      store.dispatch('approveLogin');
+      store.dispatch('approveLogin').then(() => {
+        const redirect_to = window.localStorage.getItem('redirect_to');
+        router.push(redirect_to as string);
+        window.localStorage.removeItem('redirect_to');
+      });
     });
 
     return {
@@ -38,13 +33,4 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-.login-form {
-  padding: 0 10vw;
-  margin-top: 2rem;
-}
-
-.alert {
-  margin: 1rem 10vw;
-}
-</style>
+<style lang="scss"></style>

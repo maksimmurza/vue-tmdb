@@ -1,4 +1,4 @@
-import { fetchMovie, movieCredits, movieVideos } from '../api/movie';
+import movieFetchingService from '../api/movie';
 import { MotionPictureVideo, Movie, MovieInfo, TVShow, VideoType } from '@/types/movie';
 import { computed, ref } from 'vue';
 import { MovieCredits } from '@/types/credits';
@@ -17,7 +17,7 @@ const useMovie = (type: VideoType, movieId: number): MovieInfo => {
   const getDetails = async () => {
     detailsLoading.value = true;
     try {
-      const response = await fetchMovie(type, movieId);
+      const response = await movieFetchingService.fetchMovie(type, movieId);
       details.value = response.data;
       detailsError.value = null;
     } catch (err) {
@@ -32,7 +32,7 @@ const useMovie = (type: VideoType, movieId: number): MovieInfo => {
     creditsLoading.value = true;
     try {
       if (details.value) {
-        const response = await movieCredits(type, movieId);
+        const response = await movieFetchingService.movieCredits(type, movieId);
         credits.value = response.data;
         creditsError.value = null;
       }
@@ -47,7 +47,7 @@ const useMovie = (type: VideoType, movieId: number): MovieInfo => {
     videosLoading.value = true;
     try {
       if (details.value) {
-        const response = await movieVideos(type, movieId);
+        const response = await movieFetchingService.movieVideos(type, movieId);
         video.value = response.data.results;
         videosError.value = null;
       }

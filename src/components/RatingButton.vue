@@ -1,7 +1,8 @@
 <template>
-  <n-popover v-if="userInfo && ratingValue !== undefined" placement="bottom" trigger="click">
+  <n-popover placement="bottom" trigger="click">
     <template #trigger>
       <n-button
+        :disabled="ratingValue === undefined"
         strong
         size="large"
         circle
@@ -17,14 +18,11 @@
         :default-value="ratingValue.value / 2"
         :on-update:value="updateMovieRating"
       />
-      <n-button v-if="ratingValue" @click="deleteMovieRating" text>
+      <n-button v-if="ratingValue" @click="deleteMovieRating" class="delete-rating-button" text>
         <n-icon><trash /></n-icon>
       </n-button>
     </div>
   </n-popover>
-  <n-button v-else disabled strong size="large" circle type="info"
-    ><n-icon><star :color="'white'" /></n-icon
-  ></n-button>
 </template>
 
 <script lang="ts">
@@ -96,5 +94,9 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.delete-rating-button {
+  margin-left: 0.5rem;
 }
 </style>

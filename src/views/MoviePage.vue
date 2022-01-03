@@ -49,40 +49,7 @@
             </n-empty>
           </div>
           <div v-if="userInfo" class="rating-block__buttons">
-            <n-popover v-if="accountStates.movieAccountStates" placement="bottom" trigger="click">
-              <template #trigger>
-                <n-button
-                  :loading="
-                    movieLists.movieListsLoading ||
-                    movieLists.addMovieToListLoading ||
-                    movieLists.removeMovieFromListLoading
-                  "
-                  strong
-                  size="large"
-                  circle
-                  type="info"
-                  @click="fetchMovieLists"
-                  ><n-icon><list-ul /></n-icon
-                ></n-button>
-              </template>
-              <n-checkbox-group v-if="movieLists.movieListsResult" v-model:value="movieListsValue">
-                <n-space vertical>
-                  <n-checkbox
-                    v-for="list in movieLists.movieListsResult.results"
-                    :list="list"
-                    :key="list.id"
-                    :value="list.id"
-                    :label="list.name"
-                    @click="
-                      () => updateMovieListsValues(list.id, movieListsValue.includes(list.id))
-                    "
-                  />
-                </n-space>
-              </n-checkbox-group>
-            </n-popover>
-            <n-button v-else strong size="large" circle type="info"
-              ><n-icon><list-ul /></n-icon
-            ></n-button>
+            <lists-button :movieId="movie.details.id" :type="type" />
             <like-button
               :movieId="movie.details.id"
               :type="type"
@@ -127,29 +94,20 @@
 
 <script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { defineComponent, onMounted, ref, reactive } from 'vue';
+import { defineComponent, onMounted, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
-import {
-  NButton,
-  NProgress,
-  NIcon,
-  NEmpty,
-  NPopover,
-  NCheckbox,
-  NCheckboxGroup,
-  NSpace,
-} from 'naive-ui';
-import { StarRegular, ListUl } from '@vicons/fa';
+import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
+import { StarRegular } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
 import { VideoType } from '@/types/movie';
-import useMovieLists from '../composables/useMovieLists';
 import useMovieAccountStates from '@/composables/useMovieAccountStates';
 import LikeButton from '../components/LikeButton.vue';
 import WatchlistButton from '../components/WatchlistButton.vue';
 import RatingButton from '../components/RatingButton.vue';
+import ListsButton from '../components/ListsButton.vue';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -159,17 +117,13 @@ export default defineComponent({
     NIcon,
     Loader,
     StarRegular,
-    ListUl,
     NEmpty,
     ActorCard,
     CardsList,
-    NPopover,
-    NCheckbox,
-    NCheckboxGroup,
-    NSpace,
     LikeButton,
     WatchlistButton,
     RatingButton,
+    ListsButton,
   },
   setup() {
     const route = useRoute();
@@ -177,50 +131,13 @@ export default defineComponent({
     const id = parseInt(route.params.id as string);
     const type = route.params.type as VideoType;
     const { userInfo } = store.state.user;
-    let movieListsValue = ref<Array<number>>([]);
 
     const movie = reactive(useMovie(type, id));
     const accountStates = reactive(useMovieAccountStates());
-    const movieLists = reactive(useMovieLists());
 
     const updateMovieAccountStates = () => {
-      console.log('aaa');
       if (movie.details && userInfo) {
         accountStates.getMovieAccountStates(userInfo.session_id, movie.details.id, type);
-      }
-    };
-
-    const checkMoviePersistence = () => {
-      if (movieLists.movieListsResult && movieLists.movieListsResult.results.length > 0) {
-        movieLists.movieListsResult.results.forEach(async list => {
-          if (movie.details) {
-            const inList = await movieLists.isMoviePersistInList(
-              movie.details.id,
-              type,
-              list.id,
-              userInfo.access_token
-            );
-
-            if (inList) {
-              movieListsValue.value.push(list.id);
-            }
-          }
-        });
-      }
-    };
-
-    const fetchMovieLists = () => {
-      if (userInfo && movie.details && accountStates.movieAccountStates) {
-        movieListsValue.value = [];
-        movieLists.getMovieLists(userInfo.id, userInfo.session_id).then(checkMoviePersistence);
-      }
-    };
-
-    const updateMovieListsValues = (listId: number, checked: boolean): void => {
-      if (movie.details && checked) {
-        movieLists.addMovieToList(movie.details.id, type, listId, userInfo.access_token);
-      } else if (movie.details) {
-        movieLists.deleteMovieFromList(movie.details.id, type, listId, userInfo.access_token);
       }
     };
 
@@ -237,12 +154,8 @@ export default defineComponent({
     return {
       movie,
       accountStates,
-      movieLists,
-      movieListsValue,
       type,
       userInfo,
-      fetchMovieLists,
-      updateMovieListsValues,
       updateMovieAccountStates,
     };
   },

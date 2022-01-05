@@ -44,9 +44,9 @@
       </n-spin>
     </div>
     <div v-else>
-      <router-link :to="'/login'" style="text-decoration: none; color: inherit">
+      <a @click="login" style="text-decoration: none; color: inherit">
         <h3>Login</h3>
-      </router-link>
+      </a>
     </div>
   </div>
 </template>
@@ -56,23 +56,28 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 import { NDropdown, NButton, NIcon, NAvatar, NSpin } from 'naive-ui';
 import { UserAstronaut } from '@vicons/fa';
-import router from '../router';
 import {
   moviesDropdownOptions,
   tvShowsDropdownOptions,
   moreShowsDropdownOptions,
   profileDropdownOptions,
 } from '../constants';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'Header',
   components: { NDropdown, NButton, NIcon, NAvatar, UserAstronaut, NSpin },
   setup() {
     const store = useStore();
+    const router = useRouter();
 
-    const userAvatarBaseUrl = process.env.VUE_APP_AVATAR_IMG_URL;
+    const userAvatarBaseUrl = process.env.VUE_APP_IMG_URL;
 
     const user = computed(() => store.state.user);
+
+    const login = () => {
+      store.dispatch('login', { redirect_to: router.currentRoute.value.fullPath });
+    };
 
     [moviesDropdownOptions, tvShowsDropdownOptions].forEach(options =>
       options.map(
@@ -103,7 +108,7 @@ export default defineComponent({
               ...option,
               props: {
                 onClick: () => {
-                  store.dispatch('logout', store.state.user.userInfo?.sessionId);
+                  store.dispatch('logout', store.state.user.userInfo?.session_id);
                 },
               },
             }
@@ -118,6 +123,7 @@ export default defineComponent({
       moreShowsDropdownOptionsClickable,
       profileDropdownOptionsClickable,
       user,
+      login,
     };
   },
 });

@@ -4,18 +4,19 @@ import { AppState } from '..';
 
 async function accountDetailsAction(
   { commit }: ActionContext<AppState, AppState>,
-  { sessionId }: { sessionId: string }
+  { session_id }: { session_id: string }
 ): Promise<void> {
   try {
-    const response = await accountDetails(sessionId);
+    const response = await accountDetails(session_id);
     const {
+      id,
       name,
       username,
       avatar: {
         tmdb: { avatar_path },
       },
     } = response.data;
-    commit('accountDetailsSuccess', { name, username, avatar: avatar_path });
+    commit('accountDetailsSuccess', { id, name, username, avatar: avatar_path });
   } catch (error) {
     throw new Error((error as Error).message);
   }

@@ -1,19 +1,17 @@
-import { login } from '@/api/auth';
-import router from '@/router';
+import { loginV4 } from '@/api/auth';
+import { RequestTokenResponse } from '@/types/fetching';
 import { ActionContext } from 'vuex';
 import { AppState } from '..';
 
 async function loginAction(
-  { commit, dispatch }: ActionContext<AppState, AppState>,
-  { username, password }: { username: string; password: string }
+  { commit }: ActionContext<AppState, AppState>,
+  { redirect_to }: { redirect_to: string }
 ): Promise<void> {
   commit('loginLoading');
   try {
-    const response = await login(username, password);
-    const { session_id: sessionId } = response.data;
-    await dispatch('accountDetails', { sessionId });
-    commit('loginSuccess', { sessionId });
-    router.go(-1);
+    const response = await loginV4(redirect_to);
+    const { request_token } = response.data as RequestTokenResponse;
+    commit('loginSuccess', { request_token });
   } catch (error) {
     commit('loginFail', (error as Error).message);
   }

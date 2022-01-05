@@ -31,7 +31,7 @@
             <n-divider></n-divider>
             <div class="filter">
               <div>User Score</div>
-              <n-slider v-model:value="filters.scoreValue" range :marks="filters.scoreMarks" />
+              <n-slider v-model:value="filters.scoreValue" range :marks="scoreMarks" />
             </div>
             <n-divider></n-divider>
             <div class="filter">
@@ -54,8 +54,9 @@
           >Search</n-button
         >
       </div>
-      <n-space vertical justify="center">
-        <div v-if="movies" class="movies-block">
+      <div class="movies-block">
+        <loader v-if="moviesLoading" style="flex-grow: 1" />
+        <div v-else-if="movies.results.length > 0" class="movies-results">
           <movie-card
             v-for="movie in movies.results"
             :key="movie.id"
@@ -63,12 +64,15 @@
             :type="typeRef"
           ></movie-card>
         </div>
+        <n-alert v-else-if="movies.results.length === 0" type="warning"
+          >There are no movies with such parameters</n-alert
+        >
         <n-pagination
           v-model:page="page"
           :page-count="movies.total_pages"
           class="pagination"
         ></n-pagination>
-      </n-space>
+      </div>
     </div>
   </div>
 </template>
@@ -84,17 +88,18 @@ import {
   NDivider,
   NSelect,
   NCheckbox,
-  NSpace,
   NDatePicker,
   NPagination,
   NSlider,
   NCheckboxGroup,
+  NAlert,
 } from 'naive-ui';
 import useMovies from '../composables/useMovies';
 import useFilters from '../composables/useFilters';
 import { Movie, MovieType, TVShow, VideoType } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
 import { scoreMarks } from '@/constants';
+import Loader from '../components/Loader.vue';
 
 export default defineComponent({
   name: 'MoviesPage',
@@ -105,12 +110,13 @@ export default defineComponent({
     NCollapseItem,
     NCheckbox,
     NCheckboxGroup,
-    NSpace,
     NDivider,
     NSelect,
     NPagination,
     NDatePicker,
     NSlider,
+    Loader,
+    NAlert,
   },
   props: {
     title: String,
@@ -125,11 +131,7 @@ export default defineComponent({
     const moviesData = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
     const { moviesLoading, movies, moviesError, getMovies } = moviesData;
 
-    const { filters, getFilters } = useFilters<typeof type extends MovieType ? Movie : TVShow>(
-      movies,
-      type,
-      key
-    );
+    const { filters, getFilters } = useFilters(type, key);
 
     watch(page, newPage => {
       getMovies(newPage, filters);
@@ -144,11 +146,11 @@ export default defineComponent({
       moviesLoading,
       movies,
       moviesError,
-      getMovies,
       filters,
       page,
       typeRef,
       scoreMarks,
+      getMovies,
     };
   },
 });
@@ -171,7 +173,13 @@ export default defineComponent({
 }
 
 .movies-block {
-  flex-grow: 3;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.movies-results {
+  flex-grow: 1;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;

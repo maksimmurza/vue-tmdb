@@ -1,8 +1,9 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, RouteRecordRaw, createWebHistory } from 'vue-router';
 import Home from '../views/HomePage.vue';
 import MoviePage from '../views/MoviePage.vue';
 import MoviesPage from '../views/MoviesPage.vue';
-import Login from '../views/LoginPage.vue';
+import LoginPage from '../views/LoginPage.vue';
+import LoginApprovedPage from '../views/LoginApprovedPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,12 +24,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: LoginPage,
+  },
+  {
+    path: '/approved',
+    name: 'Approved',
+    component: LoginApprovedPage,
   },
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
 });
 

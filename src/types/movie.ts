@@ -1,4 +1,4 @@
-import { Ref } from '@vue/runtime-dom';
+import { ComputedRef, Ref } from '@vue/runtime-dom';
 import { MovieCredits } from './credits';
 import { MoviesFetchingService } from './fetching';
 
@@ -81,3 +81,40 @@ export interface MovieFiltersWithRefGenres extends Filters {
 }
 
 export type MovieKey = keyof Omit<MoviesFetchingService, 'discover'>;
+
+export interface MovieList {
+  description: string;
+  favorite_count: number;
+  id: number;
+  item_count: number;
+  iso_639_1: number;
+  list_type: string;
+  name: string;
+  poster_path: string | null;
+}
+
+export interface MovieAccountStates {
+  id: number;
+  favorite: boolean;
+  rated: Record<string, unknown> | boolean;
+  watchlist: boolean;
+}
+
+export interface MovieInfo {
+  details: Ref<Movie | TVShow | null>;
+  detailsLoading: Ref<boolean>;
+  detailsError: Ref<Error | null>;
+  credits: Ref<MovieCredits | null>;
+  creditsLoading: Ref<boolean>;
+  creditsError: Ref<Error | null>;
+  video: Ref<Array<MotionPictureVideo>>;
+  videosLoading: Ref<boolean>;
+  videosError: Ref<Error | null>;
+  coverURL: ComputedRef<string | null>;
+  trailerURL: ComputedRef<string | null>;
+  backgroundImageURL: ComputedRef<string | null>;
+  backgroundImageStyle: ComputedRef<{ backgroundImage: string }>;
+  getDetails: () => Promise<void>;
+  getCredits: () => Promise<void>;
+  getVideo: () => Promise<void>;
+}

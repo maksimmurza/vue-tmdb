@@ -9,6 +9,16 @@ export interface MoviesListResponse<T> {
   dates?: { maximum: string; minimum: string };
 }
 
+export interface MovieSetAccountStateResponse {
+  success: boolean;
+  status_code: number;
+  status_message: string;
+}
+
+export interface RequestTokenResponse extends MovieSetAccountStateResponse {
+  request_token: string;
+}
+
 export type FetchingMoviesFunction<T> = (pageNumber?: number) => Promise<AxiosResponse<T>>;
 
 export interface MoviesFetchingService<Type = unknown> {

@@ -16,7 +16,7 @@ export default defineComponent({
 
 <style lang="scss">
 .loader {
-  width: 100vw;
+  width: 100%;
   margin-top: 2rem;
   display: flex;
   justify-content: center;

@@ -1,10 +1,10 @@
 import { VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
-import axiosClient from '../utils/axiosClient';
+import { axiosClientApiV3 } from '../utils/axiosClient';
 
-const fetchMovie = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
+const fetchMovie = async (url: string): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClient.get(`/${type}/${movieId}`);
+    const response = await axiosClientApiV3.get(url);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -14,28 +14,13 @@ const fetchMovie = async (type: VideoType, movieId: number): Promise<AxiosRespon
   }
 };
 
-const movieCredits = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
-  try {
-    const response = await axiosClient.get(`/${type}/${movieId}/credits`);
-    return response;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.status_message);
-    }
-    throw new Error('Server is unavailable');
-  }
+const movieFetchingService = {
+  fetchMovie: (type: VideoType, movieId: number): Promise<AxiosResponse> =>
+    fetchMovie(`/${type}/${movieId}`),
+  movieCredits: (type: VideoType, movieId: number): Promise<AxiosResponse> =>
+    fetchMovie(`/${type}/${movieId}/credits`),
+  movieVideos: (type: VideoType, movieId: number): Promise<AxiosResponse> =>
+    fetchMovie(`/${type}/${movieId}/videos`),
 };
 
-const movieVideos = async (type: VideoType, movieId: number): Promise<AxiosResponse> => {
-  try {
-    const response = await axiosClient.get(`/${type}/${movieId}/videos`);
-    return response;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.status_message);
-    }
-    throw new Error('Server is unavailable');
-  }
-};
-
-export { fetchMovie, movieCredits, movieVideos };
+export default movieFetchingService;

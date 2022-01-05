@@ -1,42 +1,36 @@
 <template>
-  <div v-if="movieDetails" class="movie-page-header">
+  <div v-if="movie.details" class="movie-page-header">
     <div class="movie-page-header__foreground">
       <div>
-        <img :src="movieCoverSrc" />
+        <img :src="movie.coverURL" />
       </div>
       <div class="movie-description">
         <div>
           <h1 class="movie-description__title">
-            {{ movieDetails.title ? movieDetails.title : movieDetails.name }}
+            {{ movie.details.title ? movie.details.title : movie.details.name }}
           </h1>
-          <span v-if="movieDetails.release_date" class="movie-description__release-year"
-            >({{ movieDetails.release_date.slice(0, 4) }})</span
+          <span v-if="movie.details.release_date" class="movie-description__release-year"
+            >({{ movie.details.release_date.slice(0, 4) }})</span
           >
         </div>
-        <div v-if="movieDetails">
+        <div v-if="movie.details">
           <n-button
             round
             type="tertiary"
             class="movie-description__genre-button"
             size="tiny"
-            v-for="genre in movieDetails.genres"
+            v-for="genre in movie.details.genres"
             :key="genre.id"
             >{{ genre.name }}
           </n-button>
         </div>
         <div class="rating-block">
-          <div v-if="movieDetails.vote_count > 0" class="rating-block__infographic">
+          <div v-if="movie.details.vote_count > 0" class="rating-block__infographic">
             <n-progress
               type="circle"
               :indicator-text-color="'white'"
-              :percentage="movieDetails.vote_average * 10"
-              :color="
-                movieDetails.vote_average < 5
-                  ? 'red'
-                  : movieDetails.vote_average < 8
-                  ? 'orange'
-                  : 'green'
-              "
+              :percentage="movie.details.vote_average * 10"
+              :color="ratingColor"
             ></n-progress>
           </div>
           <div v-else>
@@ -48,55 +42,66 @@
               </template>
             </n-empty>
           </div>
-          <div class="rating-block__buttons">
-            <n-button strong size="large" circle type="info"
-              ><n-icon><list-ul /></n-icon
-            ></n-button>
-            <n-button strong size="large" circle type="info"
-              ><n-icon><heart /></n-icon
-            ></n-button>
-            <n-button strong size="large" circle type="info"
-              ><n-icon><bookmark /></n-icon
-            ></n-button>
-            <n-button strong size="large" circle type="info"
-              ><n-icon><star /></n-icon
-            ></n-button>
+          <div v-if="userInfo" class="rating-block__buttons">
+            <lists-button :movieId="movie.details.id" :type="type" />
+            <like-button
+              :movieId="movie.details.id"
+              :type="type"
+              :favorite="accountStates.movieAccountStates?.favorite"
+              @updated="updateMovieAccountStates"
+            />
+            <watchlist-button
+              :movieId="movie.details.id"
+              :type="type"
+              :watchlist="accountStates.movieAccountStates?.watchlist"
+              @updated="updateMovieAccountStates"
+            />
+            <rating-button
+              :movieId="movie.details.id"
+              :type="type"
+              :ratingValue="accountStates.movieAccountStates?.rated"
+              @updated="updateMovieAccountStates"
+            />
           </div>
+          <div v-else>You should log in to rate or add movie to lists</div>
         </div>
-        <div v-if="movieDetails" class="movie-description__overview">
+        <div v-if="movie.details" class="movie-description__overview">
           <h3>Overview</h3>
-          <p>{{ movieDetails.overview }}</p>
+          <p>{{ movie.details.overview }}</p>
         </div>
       </div>
     </div>
-    <div class="movie-page-header__background" :style="backgroundImageStyle"></div>
+    <div class="movie-page-header__background" :style="movie.backgroundImageStyle"></div>
   </div>
   <loader v-else />
-  <div v-if="movieDetails && movieDetails.credits" class="movie-page-content">
+  <div v-if="movie.credits" class="movie-page-content">
     <h1>Cast</h1>
-    <cards-list :loading="movieCreditsLoading" :error="movieDetailsError">
-      <actor-card
-        v-for="actor in movieDetails.credits.cast"
-        :key="actor.id"
-        :actor="actor"
-      ></actor-card>
+    <cards-list :loading="movie.creditsLoading" :error="movie.detailsError">
+      <actor-card v-for="actor in movie.credits.cast" :key="actor.id" :actor="actor"></actor-card>
     </cards-list>
     <h1>Trailer</h1>
-    <iframe :src="movieTrailerLink" width="700" height="500" frameborder="0">
-      {{ movieTrailerLink }}
+    <iframe :src="movie.trailerURL" width="700" height="500" frameborder="0">
+      {{ movie.trailerURL }}
     </iframe>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { defineComponent, onMounted, computed } from 'vue';
+import { computed, defineComponent, onMounted, reactive } from 'vue';
+import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
-import { Heart, Star, StarRegular, Bookmark, ListUl } from '@vicons/fa';
+import { StarRegular } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
 import CardsList from '../components/CardsList.vue';
+import { VideoType } from '@/types/movie';
+import useMovieAccountStates from '@/composables/useMovieAccountStates';
+import LikeButton from '../components/LikeButton.vue';
+import WatchlistButton from '../components/WatchlistButton.vue';
+import RatingButton from '../components/RatingButton.vue';
+import ListsButton from '../components/ListsButton.vue';
 
 export default defineComponent({
   name: 'MoviePage',
@@ -105,73 +110,56 @@ export default defineComponent({
     NProgress,
     NIcon,
     Loader,
-    Heart,
-    Star,
     StarRegular,
-    Bookmark,
-    ListUl,
     NEmpty,
     ActorCard,
     CardsList,
+    LikeButton,
+    WatchlistButton,
+    RatingButton,
+    ListsButton,
   },
   setup() {
     const route = useRoute();
-    const id = route.params.id;
-    const type = route.params.type;
-    const {
-      movieDetailsLoading,
-      movieCreditsLoading,
-      movieVideosLoading,
-      movie: movieDetails,
-      movieDetailsError,
-      movieCreditsError,
-      movieVideosError,
-      getMovie,
-      getMovieCredits,
-      getMovieVideo,
-    } = useMovie(type, id);
+    const store = useStore();
+    const id = parseInt(route.params.id as string);
+    const type = route.params.type as VideoType;
+    const userInfo = computed(() => store.state.user.userInfo);
 
-    const backgroundImageUrl = computed(
-      () => process.env.VUE_APP_BACKGROUND_IMG_URL + movieDetails.value?.backdrop_path
-    );
+    const movie = reactive(useMovie(type, id));
+    const accountStates = reactive(useMovieAccountStates());
 
-    const backgroundImageStyle = computed(() => ({
-      backgroundImage: `url(${backgroundImageUrl.value})`,
-    }));
-
-    const movieCoverSrc = computed(
-      () => process.env.VUE_APP_IMG_URL + movieDetails.value?.poster_path
-    );
-
-    const movieTrailerLink = computed(() => {
-      const officialTrailer = movieDetails.value?.videos?.results.find(
-        video => video.name === 'Official Trailer'
-      );
-
-      if (officialTrailer) {
-        return `https://www.youtube.com/embed/${officialTrailer.key}`;
+    const updateMovieAccountStates = () => {
+      if (movie.details && userInfo.value) {
+        accountStates.getMovieAccountStates(userInfo.value.session_id, movie.details.id, type);
       }
+    };
 
-      return `https://www.youtube.com/embed/${
-        movieDetails.value?.videos?.results.find(video => video.type === 'Trailer').key
-      }`;
+    const ratingColor = computed(() => {
+      return movie.details && movie.details.vote_average < 5
+        ? 'red'
+        : movie.details && movie.details.vote_average < 8
+        ? 'orange'
+        : 'green';
     });
 
     onMounted(() => {
-      getMovie().then(getMovieCredits).then(getMovieVideo);
+      movie
+        .getDetails()
+        .then(() => {
+          movie.getCredits();
+          movie.getVideo();
+        })
+        .then(updateMovieAccountStates);
     });
 
     return {
-      movieDetailsLoading,
-      movieCreditsLoading,
-      movieVideosLoading,
-      movieDetails,
-      movieDetailsError,
-      movieCreditsError,
-      movieVideosError,
-      movieCoverSrc,
-      movieTrailerLink,
-      backgroundImageStyle,
+      movie,
+      accountStates,
+      type,
+      userInfo,
+      ratingColor,
+      updateMovieAccountStates,
     };
   },
 });

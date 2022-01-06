@@ -29,11 +29,11 @@ export const moreShowsDropdownOptions = [
 ];
 
 export const profileDropdownOptions = [
-  { label: 'View profile', key: 'view profile' },
-  { label: 'Lists', key: 'lists' },
-  { label: 'Ratings', key: 'ratings' },
-  { label: 'Watchlist', key: 'watchlist' },
-  { label: 'Edit profile', key: 'edit profile' },
+  { label: 'View profile', key: 'view profile', url: '/profile' },
+  { label: 'Lists', key: 'lists', url: '/profile/lists' },
+  { label: 'Ratings', key: 'ratings', url: '/profile/rated' },
+  { label: 'Watchlist', key: 'watchlist', url: '/profile/watchlist' },
+  { label: 'Edit profile', key: 'edit profile', url: '/profile/edit' },
   {
     label: 'Logout',
     key: 'logout',

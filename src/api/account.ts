@@ -38,7 +38,7 @@ const favoriteMovies = async (
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClientApiV3.post(
+    const response = await axiosClientApiV3.get(
       `account/${accountId}/favorite/${type === 'movie' ? 'movies' : 'tv'}?session_id=${session_id}`
     );
     return response;
@@ -53,7 +53,7 @@ const favoriteMovies = async (
 const ratedMovies = async (
   accountId: number,
   session_id: string,
-  type: MovieType
+  type: VideoType
 ): Promise<AxiosResponse> => {
   try {
     const response = await axiosClientApiV3.get(
@@ -71,7 +71,7 @@ const ratedMovies = async (
 const watchlistMovies = async (
   accountId: number,
   session_id: string,
-  type: MovieType
+  type: VideoType
 ): Promise<AxiosResponse> => {
   try {
     const response = await axiosClientApiV3.get(

@@ -60,6 +60,7 @@ export default defineComponent({
   box-sizing: content-box;
   position: relative;
   min-width: $cardWidth;
+  max-width: $cardWidth + 150px;
 
   &__cover {
     cursor: pointer;

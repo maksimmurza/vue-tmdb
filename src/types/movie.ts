@@ -118,3 +118,5 @@ export interface MovieInfo {
   getCredits: () => Promise<void>;
   getVideo: () => Promise<void>;
 }
+
+export type ProfileMenuItem = 'favorite' | 'watchlist' | 'rated' | 'lists';

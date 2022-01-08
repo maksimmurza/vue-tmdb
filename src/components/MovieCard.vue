@@ -2,7 +2,8 @@
   <n-card hoverable class="movie-card">
     <template #cover>
       <router-link :to="'/' + type + '/' + movie.id">
-        <img :src="movieCoverSrc" class="movie-card__cover" />
+        <img v-if="movie.poster_path" :src="movieCoverSrc" class="movie-card__cover" />
+        <img v-else src="@/assets/images/movieCoverPlaceholder.png" class="movie-card__cover" />
       </router-link>
     </template>
     <div

@@ -2,7 +2,8 @@
   <div v-if="movie.details" class="movie-page-header">
     <div class="movie-page-header__foreground">
       <div>
-        <img :src="movie.coverURL" />
+        <img v-if="movie.details.poster_path" :src="movie.coverURL" />
+        <img v-else src="@/assets/images/movieCoverPlaceholder.png" />
       </div>
       <div class="movie-description">
         <div>
@@ -65,7 +66,7 @@
           </div>
           <div v-else>You should log in to rate or add movie to lists</div>
         </div>
-        <div v-if="movie.details" class="movie-description__overview">
+        <div v-if="movie.details && movie.details.overview" class="movie-description__overview">
           <h3>Overview</h3>
           <p>{{ movie.details.overview }}</p>
         </div>
@@ -75,14 +76,18 @@
   </div>
   <loader v-else />
   <div v-if="movie.credits" class="movie-page-content">
-    <h1>Cast</h1>
-    <cards-list :loading="movie.creditsLoading" :error="movie.detailsError">
-      <actor-card v-for="actor in movie.credits.cast" :key="actor.id" :actor="actor"></actor-card>
-    </cards-list>
-    <h1>Trailer</h1>
-    <iframe :src="movie.trailerURL" width="700" height="500" frameborder="0">
-      {{ movie.trailerURL }}
-    </iframe>
+    <section v-if="movie.credits && movie.credits.cast && movie.credits.cast.length > 0">
+      <h1>Cast</h1>
+      <cards-list :loading="movie.creditsLoading" :error="movie.detailsError">
+        <actor-card v-for="actor in movie.credits.cast" :key="actor.id" :actor="actor"></actor-card>
+      </cards-list>
+    </section>
+    <section v-if="movie.trailerURL">
+      <h1>Trailer</h1>
+      <iframe :src="movie.trailerURL" width="700" height="500" frameborder="0">
+        {{ movie.trailerURL }}
+      </iframe>
+    </section>
   </div>
 </template>
 

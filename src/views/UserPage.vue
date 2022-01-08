@@ -7,7 +7,7 @@
       class="user-header__avatar"
     />
     <h1>{{ user.userInfo.name }}</h1>
-    <n-button tertiary round size="tiny" :text-color="gray">Edit profile</n-button>
+    <!-- <n-button tertiary round size="tiny" :text-color="gray">Edit profile</n-button> -->
   </div>
   <div class="user-menu">
     <n-tabs
@@ -103,7 +103,7 @@ import CardsList from '../components/CardsList.vue';
 
 export default defineComponent({
   name: 'UserPage',
-  components: { NButton, NTabs, NTabPane, MovieCard, NCollapse, NCollapseItem, CardsList },
+  components: { /*NButton,*/ NTabs, NTabPane, MovieCard, NCollapse, NCollapseItem, CardsList },
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -237,7 +237,7 @@ export default defineComponent({
 .user-menu {
   background-color: white;
   box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.185);
-  margin: -150px 10vw 2rem 10vw;
+  margin: -170px 10vw 2rem 10vw;
   border-radius: 20px;
 
   min-height: 500px;

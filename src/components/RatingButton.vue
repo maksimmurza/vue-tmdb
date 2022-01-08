@@ -8,7 +8,7 @@
         circle
         type="info"
         :loading="rating.setRatingValueLoading || rating.deleteRatingValueLoading"
-        ><n-icon><star :color="movieRated ? 'gold' : 'white'" /></n-icon
+        ><n-icon><star :color="ratingButtonColor" /></n-icon
       ></n-button>
     </template>
 
@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, PropType, toRefs, ref } from 'vue';
+import { defineComponent, reactive, PropType, toRefs, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { NButton, NIcon, NPopover, NRate } from 'naive-ui';
 import { Trash, Star } from '@vicons/fa';
@@ -54,7 +54,7 @@ export default defineComponent({
     const { userInfo } = store.state.user;
     const { movieId, type, ratingValue } = toRefs(props);
     const rating = reactive(useRating());
-    let movieRated = ref<boolean>(ratingValue.value as unknown as boolean);
+    let movieRated = ref<boolean | null>(null);
 
     const updateMovieRating = (value: number) => {
       if (movieId.value && type.value && userInfo) {
@@ -78,10 +78,21 @@ export default defineComponent({
       }
     };
 
+    const ratingButtonColor = computed(() => {
+      return movieRated.value === null
+        ? ratingValue.value
+          ? 'gold'
+          : 'white'
+        : movieRated.value
+        ? 'gold'
+        : 'white';
+    });
+
     return {
       rating,
       movieRated,
       userInfo,
+      ratingButtonColor,
       updateMovieRating,
       deleteMovieRating,
     };

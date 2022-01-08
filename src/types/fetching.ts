@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { MovieFilters } from './movie';
+import { Movie, MovieFilters, TVShow } from './movie';
 
 export interface MoviesListResponse<T> {
   page: number;
@@ -7,6 +7,27 @@ export interface MoviesListResponse<T> {
   total_pages: number;
   total_results: number;
   dates?: { maximum: string; minimum: string };
+}
+
+export interface MovieListDetails {
+  poster_path: string;
+  id: number;
+  backdrop_path: string;
+  total_results: number;
+  public: boolean;
+  revenue: string;
+  page: number;
+  total_pages: number;
+  description: string;
+  average_rating: number;
+  runtime: number;
+  name: string;
+  created_by: {
+    gravatar_hash: string;
+    name: string;
+    username: string;
+  };
+  results: Array<Movie | TVShow>;
 }
 
 export interface MovieSetAccountStateResponse {

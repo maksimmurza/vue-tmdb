@@ -52,9 +52,25 @@
         </div>
       </n-tab-pane>
       <n-tab-pane name="lists" tab="Lists">
-        <div v-if="lists.movieListsLoading"></div>
-        <div v-else class="movies-container">
-          <h3 v-for="list in moviesLists" :key="list.id">{{ list.name }}</h3>
+        <div v-if="lists.movieListsLoading || lists.listDetailsLoading"></div>
+        <div v-else :class="{ 'movies-container': menuItem !== 'lists' }">
+          <n-collapse>
+            <n-collapse-item
+              v-for="list in moviesLists"
+              :key="list.id"
+              :title="list.name"
+              :name="list.id"
+            >
+              <cards-list>
+                <movie-card
+                  v-for="movie in list.results"
+                  :movie="movie"
+                  :type="movie.media_type"
+                  :key="movie.id"
+                />
+              </cards-list>
+            </n-collapse-item>
+          </n-collapse>
         </div>
       </n-tab-pane>
     </n-tabs>
@@ -65,14 +81,14 @@
 import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
 import {
   NButton,
-  NStatistic,
-  NThing,
+  NCollapse,
+  NCollapseItem,
   NTabs,
   NTabPane,
-  NBadge,
-  NModal,
-  NAvatar,
-  NMenu,
+  // NBadge,
+  // NModal,
+  // NAvatar,
+  // NMenu,
 } from 'naive-ui';
 import { useStore } from 'vuex';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
@@ -80,21 +96,24 @@ import useWatchlist from '../composables/useWatchlist';
 import useRating from '../composables/useRating';
 import useMovieLists from '../composables/useMovieLists';
 import MovieCard from '../components/MovieCard.vue';
-import { Movie, MovieList, ProfileMenuItem, TVShow } from '@/types/movie';
-import { useRoute } from 'vue-router';
+import { Movie, ProfileMenuItem, TVShow } from '@/types/movie';
+import { useRoute, useRouter } from 'vue-router';
+import { MovieListDetails } from '@/types/fetching';
+import CardsList from '../components/CardsList.vue';
 
 export default defineComponent({
   name: 'UserPage',
-  components: { NButton, NTabs, NTabPane, MovieCard },
+  components: { NButton, NTabs, NTabPane, MovieCard, NCollapse, NCollapseItem, CardsList },
   setup() {
     const store = useStore();
     const route = useRoute();
+    const router = useRouter();
     const menuItem = route.params.menuItem as ProfileMenuItem;
     const userAvatarBaseUrl = process.env.VUE_APP_IMG_URL;
     let favoriteMovies = ref<Array<Movie | TVShow>>([]);
     let watchlistMovies = ref<Array<Movie | TVShow>>([]);
     let ratedMovies = ref<Array<Movie | TVShow>>([]);
-    let moviesLists = ref<Array<MovieList>>([]);
+    let moviesLists = ref<Array<MovieListDetails>>([]);
 
     const user = computed(() => store.state.user);
 
@@ -106,15 +125,19 @@ export default defineComponent({
     const handleBeforeLeave = (tabName: string): boolean => {
       switch (tabName) {
         case 'favorite':
+          router.push('/profile/favorite');
           profileMoviesService.favorite();
           return true;
         case 'watchlist':
+          router.push('/profile/watchlist');
           profileMoviesService.watchlist();
           return true;
         case 'rated':
+          router.push('/profile/rated');
           profileMoviesService.rated();
           return true;
         case 'lists':
+          router.push('/profile/lists');
           profileMoviesService.lists();
           return true;
         default:
@@ -148,7 +171,14 @@ export default defineComponent({
           .getMovieLists(user.value.userInfo.account_id, user.value.userInfo.session_id)
           .then(() => {
             if (lists.movieListsResult && lists.movieListsResult.results) {
-              moviesLists.value = lists.movieListsResult.results;
+              moviesLists.value = [];
+              lists.movieListsResult.results.forEach(list => {
+                lists.getListDetails(list.id, user.value.userInfo.access_token).then(() => {
+                  if (lists.listDetailsResult) {
+                    moviesLists.value.push(lists.listDetailsResult);
+                  }
+                });
+              });
             }
           });
       },

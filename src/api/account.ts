@@ -1,4 +1,4 @@
-import { MovieType, VideoType } from '@/types/movie';
+import { VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
 import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
 
@@ -250,6 +250,27 @@ const deleteRating = async (
   }
 };
 
+const listDetails = async (
+  listId: number,
+  access_token: string,
+  page: number
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClientApiV4.get(`/list/${listId}?page=${page}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.data.status_code === 34) {
+        return error.response;
+      }
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
 export {
   accountDetails,
   fetchMovieAccountStates,
@@ -264,4 +285,5 @@ export {
   checkMovieListState,
   addToList,
   removeFromList,
+  listDetails,
 };

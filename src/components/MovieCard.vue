@@ -58,7 +58,6 @@ export default defineComponent({
 .movie-card {
   $cardWidth: 200px;
 
-  box-sizing: content-box;
   position: relative;
   min-width: $cardWidth;
   max-width: $cardWidth + 150px;
@@ -82,12 +81,17 @@ export default defineComponent({
     width: fit-content;
     align-items: center;
     padding: 3px 10px;
+
+    &:hover {
+      z-index: 3;
+    }
   }
 
   &__rating-text {
     color: black;
     font-weight: 700;
     margin-left: 5px;
+    white-space: nowrap;
   }
 
   &__text {

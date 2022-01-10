@@ -33,7 +33,6 @@ export const profileDropdownOptions = [
   { label: 'Lists', key: 'lists', url: '/profile/lists' },
   { label: 'Ratings', key: 'ratings', url: '/profile/rated' },
   { label: 'Watchlist', key: 'watchlist', url: '/profile/watchlist' },
-  { label: 'Edit profile', key: 'edit profile', url: '/profile/edit' },
   {
     label: 'Logout',
     key: 'logout',

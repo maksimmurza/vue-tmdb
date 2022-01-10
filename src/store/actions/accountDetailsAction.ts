@@ -15,8 +15,9 @@ async function accountDetailsAction(
       avatar: {
         tmdb: { avatar_path },
       },
+      iso_639_1,
     } = response.data;
-    commit('accountDetailsSuccess', { id, name, username, avatar: avatar_path });
+    commit('accountDetailsSuccess', { id, name, username, avatar: avatar_path, iso_639_1 });
   } catch (error) {
     throw new Error((error as Error).message);
   }

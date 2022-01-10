@@ -7,7 +7,6 @@
       class="user-header__avatar"
     />
     <h1>{{ user.userInfo.name }}</h1>
-    <!-- <n-button tertiary round size="tiny" :text-color="gray">Edit profile</n-button> -->
   </div>
   <div class="user-menu">
     <n-tabs
@@ -79,22 +78,12 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
-import {
-  NButton,
-  NCollapse,
-  NCollapseItem,
-  NTabs,
-  NTabPane,
-  // NBadge,
-  // NModal,
-  // NAvatar,
-  // NMenu,
-} from 'naive-ui';
+import { NCollapse, NCollapseItem, NTabs, NTabPane } from 'naive-ui';
 import { useStore } from 'vuex';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
 import useWatchlist from '../composables/useWatchlist';
 import useRating from '../composables/useRating';
-import useMovieLists from '../composables/useMovieLists';
+import useListsInfo from '../composables/useListsInfo';
 import MovieCard from '../components/MovieCard.vue';
 import { Movie, ProfileMenuItem, TVShow } from '@/types/movie';
 import { useRoute, useRouter } from 'vue-router';
@@ -120,7 +109,7 @@ export default defineComponent({
     const favorite = reactive(useFavoriteMovies());
     const watchlist = reactive(useWatchlist());
     const rated = reactive(useRating());
-    const lists = reactive(useMovieLists());
+    const listsInfo = reactive(useListsInfo());
 
     const handleBeforeLeave = (tabName: string): boolean => {
       switch (tabName) {
@@ -167,15 +156,15 @@ export default defineComponent({
       },
 
       lists: () => {
-        lists
+        listsInfo
           .getMovieLists(user.value.userInfo.account_id, user.value.userInfo.session_id)
           .then(() => {
-            if (lists.movieListsResult && lists.movieListsResult.results) {
+            if (listsInfo.movieListsResult && listsInfo.movieListsResult.results) {
               moviesLists.value = [];
-              lists.movieListsResult.results.forEach(list => {
-                lists.getListDetails(list.id, user.value.userInfo.access_token).then(() => {
-                  if (lists.listDetailsResult) {
-                    moviesLists.value.push(lists.listDetailsResult);
+              listsInfo.movieListsResult.results.forEach(list => {
+                listsInfo.getListDetails(list.id, user.value.userInfo.access_token).then(() => {
+                  if (listsInfo.listDetailsResult) {
+                    moviesLists.value.push(listsInfo.listDetailsResult);
                   }
                 });
               });
@@ -198,7 +187,7 @@ export default defineComponent({
       favorite,
       watchlist,
       rated,
-      lists,
+      listsInfo,
       favoriteMovies,
       watchlistMovies,
       ratedMovies,

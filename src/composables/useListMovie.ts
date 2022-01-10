@@ -1,33 +1,16 @@
-import {
-  createdLists,
-  checkMovieListState,
-  addToList,
-  removeFromList,
-  listDetails,
-} from '../api/account';
+import { checkMovieListState, addToList, removeFromList } from '../api/account';
 import { ref, Ref } from 'vue';
-import { MovieList, VideoType } from '@/types/movie';
-import {
-  MovieListDetails,
-  MovieSetAccountStateResponse,
-  MoviesListResponse,
-} from '@/types/fetching';
+import { VideoType } from '@/types/movie';
+import { MoviePresenceResponse, MovieSetAccountStateResponse } from '@/types/fetching';
 
-const useMovieLists = (): {
-  movieListsLoading: Ref<boolean>;
-  movieListsResult: Ref<MoviesListResponse<MovieList> | null>;
-  movieListsError: Ref<Error | null>;
+const useListMovie = (): {
   addMovieToListResponse: Ref<MovieSetAccountStateResponse | null>;
   addMovieToListError: Ref<Error | null>;
   addMovieToListLoading: Ref<boolean>;
   removeMovieFromListResponse: Ref<MovieSetAccountStateResponse | null>;
   removeMovieFromListError: Ref<Error | null>;
   removeMovieFromListLoading: Ref<boolean>;
-  listDetailsResult: Ref<MovieListDetails | null>;
-  listDetailsError: Ref<Error | null>;
-  listDetailsLoading: Ref<boolean>;
-  getMovieLists: (accountId: number, session_id: string) => Promise<void>;
-  isMoviePersistInList: (
+  isMoviePresentInList: (
     movieId: number,
     type: VideoType,
     listId: number,
@@ -45,48 +28,27 @@ const useMovieLists = (): {
     listId: number,
     session_id: string
   ) => Promise<void>;
-  getListDetails: (listId: number, access_token: string, page?: number) => Promise<void>;
 } => {
-  const movieListsResult = ref<MoviesListResponse<MovieList> | null>(null);
-  const movieListsError = ref<Error | null>(null);
-  const movieListsLoading = ref<boolean>(false);
+  const moviePresence = ref<MoviePresenceResponse | null>(null);
+  const moviePresenceLoading = ref<boolean>(false);
+  const moviePresenceError = ref<Error | null>(null);
 
-  const getMovieLists = async (accountId: number, session_id: string) => {
-    movieListsLoading.value = true;
-    try {
-      const response = await createdLists(accountId, session_id);
-      movieListsResult.value = response.data as MoviesListResponse<MovieList>;
-      movieListsError.value = null;
-    } catch (err) {
-      movieListsError.value = err as Error;
-    } finally {
-      movieListsLoading.value = false;
-    }
-  };
-
-  const isMoviePersistInList = async (
+  const isMoviePresentInList = async (
     movieId: number,
     type: VideoType,
     listId: number,
     access_token: string
   ): Promise<boolean | void> => {
-    movieListsLoading.value = true;
+    moviePresenceLoading.value = true;
     try {
       const response = await checkMovieListState(movieId, type, listId, access_token);
-      const isMovieInList = response.data as {
-        id: string | null;
-        media_id?: number;
-        media_type?: string;
-        status_code: number;
-        status_message: string;
-        success: boolean;
-      };
-      movieListsError.value = null;
-      return isMovieInList.success;
+      moviePresence.value = response.data as MoviePresenceResponse;
+      moviePresenceError.value = null;
+      return moviePresence.value.success;
     } catch (err) {
-      movieListsError.value = err as Error;
+      moviePresenceError.value = err as Error;
     } finally {
-      movieListsLoading.value = false;
+      moviePresenceLoading.value = false;
     }
   };
 
@@ -134,42 +96,17 @@ const useMovieLists = (): {
     }
   };
 
-  const listDetailsResult = ref<MovieListDetails | null>(null);
-  const listDetailsError = ref<Error | null>(null);
-  const listDetailsLoading = ref<boolean>(false);
-
-  const getListDetails = async (listId: number, access_token: string, page = 1) => {
-    listDetailsLoading.value = true;
-    try {
-      const response = await listDetails(listId, access_token, page);
-      listDetailsResult.value = response.data as MovieListDetails;
-      listDetailsError.value = null;
-    } catch (err) {
-      listDetailsError.value = err as Error;
-    } finally {
-      listDetailsLoading.value = false;
-    }
-  };
-
   return {
-    movieListsLoading,
-    movieListsResult,
-    movieListsError,
     addMovieToListResponse,
     addMovieToListError,
     addMovieToListLoading,
     removeMovieFromListResponse,
     removeMovieFromListError,
     removeMovieFromListLoading,
-    listDetailsResult,
-    listDetailsError,
-    listDetailsLoading,
-    getMovieLists,
     addMovieToList,
     deleteMovieFromList,
-    isMoviePersistInList,
-    getListDetails,
+    isMoviePresentInList,
   };
 };
 
-export default useMovieLists;
+export default useListMovie;

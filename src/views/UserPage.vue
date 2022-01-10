@@ -51,7 +51,8 @@
         </div>
       </n-tab-pane>
       <n-tab-pane name="lists" tab="Lists">
-        <div v-if="lists.movieListsLoading || lists.listDetailsLoading"></div>
+        <create-list-button />
+        <div v-if="listsInfo.movieListsLoading || listsInfo.listDetailsLoading"></div>
         <div v-else :class="{ 'movies-container': menuItem !== 'lists' }">
           <n-collapse>
             <n-collapse-item
@@ -89,10 +90,19 @@ import { Movie, ProfileMenuItem, TVShow } from '@/types/movie';
 import { useRoute, useRouter } from 'vue-router';
 import { MovieListDetails } from '@/types/fetching';
 import CardsList from '../components/CardsList.vue';
+import CreateListButton from '../components/CreateListButton.vue';
 
 export default defineComponent({
   name: 'UserPage',
-  components: { /*NButton,*/ NTabs, NTabPane, MovieCard, NCollapse, NCollapseItem, CardsList },
+  components: {
+    NTabs,
+    NTabPane,
+    MovieCard,
+    NCollapse,
+    NCollapseItem,
+    CardsList,
+    CreateListButton,
+  },
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -238,6 +248,10 @@ export default defineComponent({
   &__tabs {
     box-sizing: border-box;
     padding: 1rem 2rem;
+  }
+
+  &__pane > .createList {
+    margin: 0 0 1em 0;
   }
 
   &__pane > .movies-container {

@@ -73,7 +73,8 @@ export default defineComponent({
     NRadio,
     NSpace,
   },
-  setup() {
+  emits: ['created'],
+  setup(props, context) {
     const store = useStore();
 
     const user = computed(() => store.state.user);
@@ -85,12 +86,14 @@ export default defineComponent({
     const newListFormRules = { name: { required: true, message: 'Please input your name' } };
 
     const createNewList = () => {
-      listActions.createMovieList(user.value.userInfo.access_token, {
-        ...newListFormValue.value,
-        public: newListFormValue.value.public === 'public',
-        iso_639_1: user.value.userInfo.iso_639_1,
-      });
-      cleanFormFields();
+      listActions
+        .createMovieList(user.value.userInfo.access_token, {
+          ...newListFormValue.value,
+          public: newListFormValue.value.public === 'public',
+          iso_639_1: user.value.userInfo.iso_639_1,
+        })
+        .then(cleanFormFields)
+        .then(() => context.emit('created'));
     };
 
     const cleanFormFields = () => {

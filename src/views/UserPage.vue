@@ -51,7 +51,7 @@
         </div>
       </n-tab-pane>
       <n-tab-pane name="lists" tab="Lists">
-        <create-list-button />
+        <create-list-button @created="profileMoviesService.lists" />
         <div v-if="listsInfo.movieListsLoading || listsInfo.listDetailsLoading"></div>
         <div v-else :class="{ 'movies-container': menuItem !== 'lists' }">
           <n-collapse>
@@ -61,6 +61,20 @@
               :title="list.name"
               :name="list.id"
             >
+              <template #header-extra>
+                <n-button
+                  quaternary
+                  circle
+                  type="error"
+                  size="small"
+                  @click.stop="() => deleteMovieList(list.id)"
+                  ><template #icon>
+                    <n-icon>
+                      <trash />
+                    </n-icon>
+                  </template>
+                </n-button>
+              </template>
               <cards-list>
                 <movie-card
                   v-for="movie in list.results"
@@ -79,7 +93,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
-import { NCollapse, NCollapseItem, NTabs, NTabPane } from 'naive-ui';
+import { NCollapse, NCollapseItem, NTabs, NTabPane, NButton, NIcon } from 'naive-ui';
 import { useStore } from 'vuex';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
 import useWatchlist from '../composables/useWatchlist';
@@ -91,11 +105,16 @@ import { useRoute, useRouter } from 'vue-router';
 import { MovieListDetails } from '@/types/fetching';
 import CardsList from '../components/CardsList.vue';
 import CreateListButton from '../components/CreateListButton.vue';
+import useListActions from '@/composables/useListActions';
+import { Trash } from '@vicons/ionicons5';
 
 export default defineComponent({
   name: 'UserPage',
   components: {
     NTabs,
+    Trash,
+    NIcon,
+    NButton,
     NTabPane,
     MovieCard,
     NCollapse,
@@ -120,6 +139,7 @@ export default defineComponent({
     const watchlist = reactive(useWatchlist());
     const rated = reactive(useRating());
     const listsInfo = reactive(useListsInfo());
+    const listActions = reactive(useListActions());
 
     const handleBeforeLeave = (tabName: string): boolean => {
       switch (tabName) {
@@ -183,6 +203,12 @@ export default defineComponent({
       },
     };
 
+    const deleteMovieList = (listId: number) => {
+      listActions
+        .deleteMovieList(user.value.userInfo.access_token, listId)
+        .then(profileMoviesService.lists);
+    };
+
     onMounted(() => {
       if (menuItem) {
         profileMoviesService[menuItem]();
@@ -198,11 +224,14 @@ export default defineComponent({
       watchlist,
       rated,
       listsInfo,
+      listActions,
       favoriteMovies,
       watchlistMovies,
       ratedMovies,
       moviesLists,
       menuItem,
+      profileMoviesService,
+      deleteMovieList,
       handleBeforeLeave,
     };
   },

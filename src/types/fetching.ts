@@ -63,6 +63,8 @@ export interface MovieSetAccountStateResponse {
   status_message: string;
 }
 
+export type DeleteMovieListResponse = MovieSetAccountStateResponse;
+
 export interface RequestTokenResponse extends MovieSetAccountStateResponse {
   request_token: string;
 }

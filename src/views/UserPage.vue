@@ -62,19 +62,7 @@
               :name="list.id"
             >
               <template #header-extra>
-                <n-button
-                  title="Edit list"
-                  quaternary
-                  circle
-                  type="tertiary"
-                  size="small"
-                  @click.stop="() => editMovieList(list.id)"
-                  ><template #icon>
-                    <n-icon>
-                      <edit />
-                    </n-icon>
-                  </template>
-                </n-button>
+                <edit-list-button @updated="profileMoviesService.lists" :list="list" />
                 <n-button
                   title="Clear list"
                   quaternary
@@ -140,7 +128,7 @@ import CardsList from '../components/CardsList.vue';
 import CreateListButton from '../components/CreateListButton.vue';
 import useListActions from '@/composables/useListActions';
 import { Trash } from '@vicons/ionicons5';
-import { Edit } from '@vicons/fa';
+import EditListButton from '../components/EditListButton.vue';
 
 export default defineComponent({
   name: 'UserPage',
@@ -148,12 +136,12 @@ export default defineComponent({
     NTabs,
     Trash,
     NIcon,
-    Edit,
     NButton,
     NTabPane,
     MovieCard,
     NCollapse,
     NCollapseItem,
+    EditListButton,
     CardsList,
     CreateListButton,
   },

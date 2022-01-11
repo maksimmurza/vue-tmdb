@@ -75,6 +75,41 @@ export const sortOptions = [
   },
 ] as Array<{ label: string; value: SortValue }>;
 
+export const listMoviesSortOptions = [
+  {
+    label: 'Original order ascending',
+    value: 'original_order.asc',
+  },
+  {
+    label: 'Original order descending',
+    value: 'original_order.desc',
+  },
+  {
+    label: 'Vote average ascending',
+    value: 'vote_average.asc',
+  },
+  {
+    label: 'Vote average descending',
+    value: 'vote_average.desc',
+  },
+  {
+    label: 'Primary release date ascending',
+    value: 'primary_release_date.asc',
+  },
+  {
+    label: 'Primary release date descending',
+    value: 'primary_release_date.desc',
+  },
+  {
+    label: 'Title ascending',
+    value: 'title.asc',
+  },
+  {
+    label: 'Title descending',
+    value: 'title.desc',
+  },
+];
+
 export const scoreMarks = {
   0: '0',
   10: '1',

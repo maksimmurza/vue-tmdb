@@ -31,7 +31,7 @@
         <n-input v-model:value="newListFormValue.description" placeholder="Input Description" />
       </n-form-item>
       <n-form-item label="Access">
-        <n-radio-group v-model:value="newListFormValue.public" name="radiogroup1">
+        <n-radio-group v-model:value="newListFormValue.public">
           <n-space>
             <n-radio value="public">Public</n-radio>
             <n-radio value="private">Private</n-radio>

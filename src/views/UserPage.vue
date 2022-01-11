@@ -51,7 +51,9 @@
         </div>
       </n-tab-pane>
       <n-tab-pane name="lists" tab="Lists">
-        <create-list-button @created="profileMoviesService.lists" />
+        <div class="create-list-button">
+          <create-list-button @created="profileMoviesService.lists" />
+        </div>
         <div v-if="listsInfo.movieListsLoading || listsInfo.listDetailsLoading"></div>
         <div v-else :class="{ 'movies-container': menuItem !== 'lists' }">
           <n-collapse>
@@ -82,21 +84,26 @@
                       ></path></svg
                   ></template>
                 </n-button>
-                <n-button
-                  title="Delete list"
-                  quaternary
-                  circle
-                  type="error"
-                  size="small"
-                  @click.stop="() => deleteMovieList(list.id)"
-                  ><template #icon>
-                    <n-icon>
-                      <trash />
-                    </n-icon>
+                <n-popconfirm @positive-click="() => deleteMovieList(list.id)">
+                  <template #trigger>
+                    <n-button
+                      title="Delete list"
+                      quaternary
+                      circle
+                      type="error"
+                      size="small"
+                      @click.stop
+                      ><template #icon>
+                        <n-icon>
+                          <trash />
+                        </n-icon>
+                      </template>
+                    </n-button>
                   </template>
-                </n-button>
+                  Are you sure?
+                </n-popconfirm>
               </template>
-              <cards-list>
+              <cards-list v-if="list.results.length > 0">
                 <movie-card
                   v-for="movie in list.results"
                   :movie="movie"
@@ -104,6 +111,7 @@
                   :key="movie.id"
                 />
               </cards-list>
+              <span v-else>Empty list</span>
             </n-collapse-item>
           </n-collapse>
         </div>
@@ -114,7 +122,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
-import { NCollapse, NCollapseItem, NTabs, NTabPane, NButton, NIcon } from 'naive-ui';
+import { NCollapse, NCollapseItem, NTabs, NTabPane, NButton, NIcon, NPopconfirm } from 'naive-ui';
 import { useStore } from 'vuex';
 import useFavoriteMovies from '../composables/useFavoriteMovies';
 import useWatchlist from '../composables/useWatchlist';
@@ -143,6 +151,7 @@ export default defineComponent({
     NCollapseItem,
     EditListButton,
     CardsList,
+    NPopconfirm,
     CreateListButton,
   },
   setup() {
@@ -309,8 +318,10 @@ export default defineComponent({
     padding: 1rem 2rem;
   }
 
-  &__pane > .createList {
-    margin: 0 0 1em 0;
+  &__pane > .create-list-button {
+    margin: 0 auto 1em auto;
+    display: flex;
+    justify-content: center;
   }
 
   &__pane > .movies-container {

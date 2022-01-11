@@ -63,6 +63,39 @@
             >
               <template #header-extra>
                 <n-button
+                  title="Edit list"
+                  quaternary
+                  circle
+                  type="tertiary"
+                  size="small"
+                  @click.stop="() => editMovieList(list.id)"
+                  ><template #icon>
+                    <n-icon>
+                      <edit />
+                    </n-icon>
+                  </template>
+                </n-button>
+                <n-button
+                  title="Clear list"
+                  quaternary
+                  circle
+                  type="tertiary"
+                  size="small"
+                  @click.stop="() => clearMovieList(list.id)"
+                  ><template #icon
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M5 13h14v-2H5v2zm-2 4h14v-2H3v2zM7 7v2h14V7H7z"
+                        fill="currentColor"
+                      ></path></svg
+                  ></template>
+                </n-button>
+                <n-button
+                  title="Delete list"
                   quaternary
                   circle
                   type="error"
@@ -107,6 +140,7 @@ import CardsList from '../components/CardsList.vue';
 import CreateListButton from '../components/CreateListButton.vue';
 import useListActions from '@/composables/useListActions';
 import { Trash } from '@vicons/ionicons5';
+import { Edit } from '@vicons/fa';
 
 export default defineComponent({
   name: 'UserPage',
@@ -114,6 +148,7 @@ export default defineComponent({
     NTabs,
     Trash,
     NIcon,
+    Edit,
     NButton,
     NTabPane,
     MovieCard,
@@ -209,6 +244,12 @@ export default defineComponent({
         .then(profileMoviesService.lists);
     };
 
+    const clearMovieList = (listId: number) => {
+      listActions
+        .clearMovieList(user.value.userInfo.access_token, listId)
+        .then(profileMoviesService.lists);
+    };
+
     onMounted(() => {
       if (menuItem) {
         profileMoviesService[menuItem]();
@@ -232,6 +273,7 @@ export default defineComponent({
       menuItem,
       profileMoviesService,
       deleteMovieList,
+      clearMovieList,
       handleBeforeLeave,
     };
   },

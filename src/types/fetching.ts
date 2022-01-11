@@ -65,6 +65,13 @@ export interface MovieSetAccountStateResponse {
 
 export type DeleteMovieListResponse = MovieSetAccountStateResponse;
 
+export interface ClearMovieListResponse extends MovieSetAccountStateResponse {
+  items_deleted: number;
+  id: number;
+}
+
+export type UpdateMovieListResponse = MovieSetAccountStateResponse;
+
 export interface RequestTokenResponse extends MovieSetAccountStateResponse {
   request_token: string;
 }

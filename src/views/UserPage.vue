@@ -76,6 +76,7 @@
                     :movie="movie"
                     :type="movie.media_type"
                     :key="movie.id"
+                    :style="{ maxWidth: '150px' }"
                   />
                 </cards-list>
                 <span v-else>Empty list</span>

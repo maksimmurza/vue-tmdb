@@ -18,7 +18,7 @@
       :default-value="menuItem || 'favorite'"
     >
       <n-tab-pane name="favorite" tab="Favorite">
-        <div v-if="favorite.favoriteMoviesLoading"></div>
+        <loader v-if="favorite.favoriteMoviesLoading"></loader>
         <div v-else class="movies-container">
           <movie-card
             v-for="movie in favorite.favoriteMovies?.results"
@@ -29,7 +29,7 @@
         </div>
       </n-tab-pane>
       <n-tab-pane name="watchlist" tab="Watchlist">
-        <div v-if="watchlist.watchlistMoviesLoading"></div>
+        <loader v-if="watchlist.watchlistMoviesLoading"></loader>
         <div v-else class="movies-container">
           <movie-card
             v-for="movie in watchlist.watchlistMoviesResults?.results"
@@ -40,7 +40,7 @@
         </div>
       </n-tab-pane>
       <n-tab-pane name="rated" tab="Rated">
-        <div v-if="rated.ratedMoviesLoading"></div>
+        <loader v-if="rated.ratedMoviesLoading"></loader>
         <div v-else class="movies-container">
           <movie-card
             v-for="movie in rated.ratedMoviesResults?.results"
@@ -51,69 +51,37 @@
         </div>
       </n-tab-pane>
       <n-tab-pane name="lists" tab="Lists">
-        <div class="create-list-button">
-          <create-list-button @created="profileMoviesService.lists" />
-        </div>
-        <div v-if="listsInfo.movieListsLoading || listsInfo.listDetailsLoading"></div>
-        <div v-else :class="{ 'movies-container': menuItem !== 'lists' }">
-          <n-collapse>
-            <n-collapse-item
-              v-for="list in moviesLists"
-              :key="list.id"
-              :title="list.name"
-              :name="list.id"
-            >
-              <template #header-extra>
-                <edit-list-button @updated="profileMoviesService.lists" :list="list" />
-                <n-button
-                  title="Clear list"
-                  quaternary
-                  circle
-                  type="tertiary"
-                  size="small"
-                  @click.stop="() => clearMovieList(list.id)"
-                  ><template #icon
-                    ><svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlns:xlink="http://www.w3.org/1999/xlink"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M5 13h14v-2H5v2zm-2 4h14v-2H3v2zM7 7v2h14V7H7z"
-                        fill="currentColor"
-                      ></path></svg
-                  ></template>
-                </n-button>
-                <n-popconfirm @positive-click="() => deleteMovieList(list.id)">
-                  <template #trigger>
-                    <n-button
-                      title="Delete list"
-                      quaternary
-                      circle
-                      type="error"
-                      size="small"
-                      @click.stop
-                      ><template #icon>
-                        <n-icon>
-                          <trash />
-                        </n-icon>
-                      </template>
-                    </n-button>
-                  </template>
-                  Are you sure?
-                </n-popconfirm>
-              </template>
-              <cards-list v-if="list.results.length > 0">
-                <movie-card
-                  v-for="movie in list.results"
-                  :movie="movie"
-                  :type="movie.media_type"
-                  :key="movie.id"
-                />
-              </cards-list>
-              <span v-else>Empty list</span>
-            </n-collapse-item>
-          </n-collapse>
+        <loader v-if="listsInfo.movieListsLoading"></loader>
+        <div v-else class="lists-pane-content">
+          <div class="create-list-button">
+            <create-list-button @created="profileMoviesService.getListsMovies" />
+          </div>
+          <div v-if="listsInfo.movieListsLoading || listsInfo.listDetailsLoading"></div>
+          <div v-else :class="{ 'movies-container': menuItem !== 'lists' }">
+            <n-collapse>
+              <n-collapse-item
+                v-for="list in moviesLists"
+                :key="list.id"
+                :title="list.name"
+                :name="list.id"
+              >
+                <template #header-extra>
+                  <edit-list-button @updated="profileMoviesService.getListsMovies" :list="list" />
+                  <clear-list-button @cleared="profileMoviesService.getListsMovies" :list="list" />
+                  <delete-list-button @deleted="profileMoviesService.getListsMovies" :list="list" />
+                </template>
+                <cards-list v-if="list.results.length > 0">
+                  <movie-card
+                    v-for="movie in list.results"
+                    :movie="movie"
+                    :type="movie.media_type"
+                    :key="movie.id"
+                  />
+                </cards-list>
+                <span v-else>Empty list</span>
+              </n-collapse-item>
+            </n-collapse>
+          </div>
         </div>
       </n-tab-pane>
     </n-tabs>
@@ -121,38 +89,34 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
-import { NCollapse, NCollapseItem, NTabs, NTabPane, NButton, NIcon, NPopconfirm } from 'naive-ui';
+import { computed, defineComponent, onMounted } from 'vue';
+import { NCollapse, NCollapseItem, NTabs, NTabPane } from 'naive-ui';
 import { useStore } from 'vuex';
-import useFavoriteMovies from '../composables/useFavoriteMovies';
-import useWatchlist from '../composables/useWatchlist';
-import useRating from '../composables/useRating';
-import useListsInfo from '../composables/useListsInfo';
 import MovieCard from '../components/MovieCard.vue';
-import { Movie, ProfileMenuItem, TVShow } from '@/types/movie';
+import { ProfileMenuItem } from '@/types/movie';
 import { useRoute, useRouter } from 'vue-router';
-import { MovieListDetails } from '@/types/fetching';
 import CardsList from '../components/CardsList.vue';
 import CreateListButton from '../components/CreateListButton.vue';
-import useListActions from '@/composables/useListActions';
-import { Trash } from '@vicons/ionicons5';
 import EditListButton from '../components/EditListButton.vue';
+import DeleteListButton from '../components/DeleteListButton.vue';
+import ClearListButton from '../components/ClearListButton.vue';
+import Loader from '@/components/Loader.vue';
+import useProfileMovies from '../composables/useProfileMovies';
 
 export default defineComponent({
   name: 'UserPage',
   components: {
     NTabs,
-    Trash,
-    NIcon,
-    NButton,
     NTabPane,
     MovieCard,
     NCollapse,
     NCollapseItem,
     EditListButton,
     CardsList,
-    NPopconfirm,
     CreateListButton,
+    DeleteListButton,
+    ClearListButton,
+    Loader,
   },
   setup() {
     const store = useStore();
@@ -160,117 +124,65 @@ export default defineComponent({
     const router = useRouter();
     const menuItem = route.params.menuItem as ProfileMenuItem;
     const userAvatarBaseUrl = process.env.VUE_APP_IMG_URL;
-    let favoriteMovies = ref<Array<Movie | TVShow>>([]);
-    let watchlistMovies = ref<Array<Movie | TVShow>>([]);
-    let ratedMovies = ref<Array<Movie | TVShow>>([]);
-    let moviesLists = ref<Array<MovieListDetails>>([]);
 
     const user = computed(() => store.state.user);
-
-    const favorite = reactive(useFavoriteMovies());
-    const watchlist = reactive(useWatchlist());
-    const rated = reactive(useRating());
-    const listsInfo = reactive(useListsInfo());
-    const listActions = reactive(useListActions());
+    const profileMoviesService = useProfileMovies();
+    const { favorite, watchlist, rated, listsInfo, moviesLists } = profileMoviesService;
 
     const handleBeforeLeave = (tabName: string): boolean => {
       switch (tabName) {
         case 'favorite':
           router.push('/profile/favorite');
-          profileMoviesService.favorite();
+          profileMoviesService.getFavoriteMovies();
           return true;
         case 'watchlist':
           router.push('/profile/watchlist');
-          profileMoviesService.watchlist();
+          profileMoviesService.getWatchlistMovies();
           return true;
         case 'rated':
           router.push('/profile/rated');
-          profileMoviesService.rated();
+          profileMoviesService.getRatedMovies();
           return true;
         case 'lists':
           router.push('/profile/lists');
-          profileMoviesService.lists();
+          profileMoviesService.getListsMovies();
           return true;
         default:
           return true;
       }
     };
 
-    const profileMoviesService = {
-      favorite: () => {
-        favorite.getFavoriteMovies(
-          user.value.userInfo.account_id,
-          user.value.userInfo.session_id,
-          'all'
-        );
-      },
-
-      watchlist: () => {
-        watchlist.getWatchlistMovies(
-          user.value.userInfo.account_id,
-          user.value.userInfo.session_id,
-          'all'
-        );
-      },
-
-      rated: () => {
-        rated.getRatedMovies(user.value.userInfo.account_id, user.value.userInfo.session_id, 'all');
-      },
-
-      lists: () => {
-        listsInfo
-          .getMovieLists(user.value.userInfo.account_id, user.value.userInfo.session_id)
-          .then(() => {
-            if (listsInfo.movieListsResult && listsInfo.movieListsResult.results) {
-              moviesLists.value = [];
-              listsInfo.movieListsResult.results.forEach(list => {
-                listsInfo.getListDetails(list.id, user.value.userInfo.access_token).then(() => {
-                  if (listsInfo.listDetailsResult) {
-                    moviesLists.value.push(listsInfo.listDetailsResult);
-                  }
-                });
-              });
-            }
-          });
-      },
-    };
-
-    const deleteMovieList = (listId: number) => {
-      listActions
-        .deleteMovieList(user.value.userInfo.access_token, listId)
-        .then(profileMoviesService.lists);
-    };
-
-    const clearMovieList = (listId: number) => {
-      listActions
-        .clearMovieList(user.value.userInfo.access_token, listId)
-        .then(profileMoviesService.lists);
-    };
-
     onMounted(() => {
       if (menuItem) {
-        profileMoviesService[menuItem]();
+        switch (menuItem) {
+          case 'favorite':
+            profileMoviesService.getFavoriteMovies();
+            break;
+          case 'watchlist':
+            profileMoviesService.getWatchlistMovies();
+            break;
+          case 'rated':
+            profileMoviesService.getRatedMovies();
+            break;
+          case 'lists':
+            profileMoviesService.getListsMovies();
+            break;
+        }
       } else {
-        profileMoviesService.favorite();
+        profileMoviesService.getFavoriteMovies();
       }
     });
 
     return {
       user,
       userAvatarBaseUrl,
+      menuItem,
+      profileMoviesService,
       favorite,
       watchlist,
       rated,
       listsInfo,
-      listActions,
-      favoriteMovies,
-      watchlistMovies,
-      ratedMovies,
       moviesLists,
-      menuItem,
-      profileMoviesService,
-      deleteMovieList,
-      clearMovieList,
       handleBeforeLeave,
     };
   },
@@ -318,7 +230,7 @@ export default defineComponent({
     padding: 1rem 2rem;
   }
 
-  &__pane > .create-list-button {
+  &__pane > .lists-pane-content > .create-list-button {
     margin: 0 auto 1em auto;
     display: flex;
     justify-content: center;

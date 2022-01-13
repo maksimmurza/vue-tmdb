@@ -1,11 +1,12 @@
 <template>
   <n-button
     title="Clear list"
+    :loading="clearMovieListAction.loading"
     quaternary
     circle
     type="tertiary"
     size="small"
-    @click.stop="() => clearMovieList(list.id)"
+    @click.stop="() => clearList(list.id)"
     ><template #icon
       ><svg
         xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +21,7 @@
 <script lang="ts">
 import useListActions from '@/composables/useListActions';
 import { defineComponent } from '@vue/runtime-core';
-import { computed, PropType, reactive } from 'vue';
+import { computed, PropType } from 'vue';
 import { useStore } from 'vuex';
 import { NButton } from 'naive-ui';
 import { MovieListDetails } from '@/types/fetching';
@@ -34,19 +35,18 @@ export default defineComponent({
     list: Object as PropType<MovieListDetails>,
   },
   emits: ['cleared'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const store = useStore();
     const user = computed(() => store.state.user);
-    const listActions = reactive(useListActions());
+    const { clearMovieListAction, clearMovieList } = useListActions();
 
-    const clearMovieList = (listId: number) => {
-      listActions
-        .clearMovieList(user.value.userInfo.access_token, listId)
-        .then(() => context.emit('cleared'));
+    const clearList = (listId: number) => {
+      clearMovieList(user.value.userInfo.access_token, listId).then(() => emit('cleared'));
     };
 
     return {
-      clearMovieList,
+      clearList,
+      clearMovieListAction,
     };
   },
 });

@@ -1,6 +1,6 @@
 <template>
   <div class="movies-page">
-    <h1>{{ getMoviesPageHeader() }}</h1>
+    <h1>{{ moviesPageHeader }}</h1>
     <div class="movies-page__content">
       <div class="movies-query">
         <n-collapse :default-expanded-names="['0']">
@@ -76,7 +76,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import MovieCard from '../components/MovieCard.vue';
 import { useRoute } from 'vue-router';
 import {
@@ -127,9 +127,9 @@ export default defineComponent({
     const typeRef = ref(type);
     const key = route.params.key as keyof Omit<MoviesFetchingService<Movie | TVShow>, 'discover'>;
 
-    const getMoviesPageHeader = () => {
+    const moviesPageHeader = computed(() => {
       return toRegularCase(key) + ` ${key !== 'on-tv' ? type : ''}${type === 'movie' ? 's' : ''}`;
-    };
+    });
 
     const moviesData = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
     const { moviesLoading, movies, moviesError, getMovies } = moviesData;
@@ -153,7 +153,7 @@ export default defineComponent({
       page,
       typeRef,
       scoreMarks,
-      getMoviesPageHeader,
+      moviesPageHeader,
       getMovies,
     };
   },

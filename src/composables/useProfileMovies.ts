@@ -1,5 +1,5 @@
 import { MovieListDetails } from '@/types/fetching';
-import { computed, reactive, Ref, ref, UnwrapNestedRefs } from '@vue/runtime-dom';
+import { computed, reactive, Ref, ref, UnwrapNestedRefs } from 'vue';
 import { useStore } from 'vuex';
 import useFavoriteMovies from './useFavoriteMovies';
 import useListsInfo from './useListsInfo';

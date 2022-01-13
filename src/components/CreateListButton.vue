@@ -1,5 +1,6 @@
 <template>
   <n-button
+    :loading="createMovieListAction.loading"
     strong
     secondary
     round
@@ -74,26 +75,25 @@ export default defineComponent({
     NSpace,
   },
   emits: ['created'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const store = useStore();
 
     const user = computed(() => store.state.user);
 
-    const listActions = reactive(useListActions());
+    const { createMovieListAction, createMovieList } = reactive(useListActions());
 
     const showModal = ref(false);
     const newListFormValue = ref({ name: '', description: '', public: '' });
     const newListFormRules = { name: { required: true, message: 'Please input your name' } };
 
     const createNewList = () => {
-      listActions
-        .createMovieList(user.value.userInfo.access_token, {
-          ...newListFormValue.value,
-          public: newListFormValue.value.public === 'public',
-          iso_639_1: user.value.userInfo.iso_639_1,
-        })
+      createMovieList(user.value.userInfo.access_token, {
+        ...newListFormValue.value,
+        public: newListFormValue.value.public === 'public',
+        iso_639_1: user.value.userInfo.iso_639_1,
+      })
         .then(cleanFormFields)
-        .then(() => context.emit('created'));
+        .then(() => emit('created'));
     };
 
     const cleanFormFields = () => {
@@ -104,6 +104,7 @@ export default defineComponent({
       showModal,
       newListFormValue,
       newListFormRules,
+      createMovieListAction,
       createNewList,
       cleanFormFields,
     };

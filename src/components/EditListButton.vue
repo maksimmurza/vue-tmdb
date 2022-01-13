@@ -6,6 +6,7 @@
     type="tertiary"
     size="small"
     @click.stop="showModal = true"
+    :loading="updateMovieListAction.loading"
     ><template #icon>
       <n-icon>
         <edit />
@@ -46,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive, ref } from 'vue';
+import { computed, defineComponent, PropType, ref } from 'vue';
 import {
   NButton,
   NModal,
@@ -84,12 +85,12 @@ export default defineComponent({
     list: Object as PropType<MovieListDetails>,
   },
   emits: ['updated'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const store = useStore();
 
     const user = computed(() => store.state.user);
 
-    const listActions = reactive(useListActions());
+    const { updateMovieListAction, updateMovieList } = useListActions();
 
     const showModal = ref(false);
     const listFormValue = ref({
@@ -102,13 +103,12 @@ export default defineComponent({
 
     const editList = () => {
       props.list &&
-        listActions
-          .updateMovieList(user.value.userInfo.access_token, props.list.id, {
-            ...listFormValue.value,
-            public: listFormValue.value.public === 'public',
-          })
+        updateMovieList(user.value.userInfo.access_token, props.list.id, {
+          ...listFormValue.value,
+          public: listFormValue.value.public === 'public',
+        })
           .then(cleanFormFields)
-          .then(() => context.emit('updated'));
+          .then(() => emit('updated'));
     };
 
     const cleanFormFields = () => {
@@ -125,6 +125,7 @@ export default defineComponent({
       listFormValue,
       listFormRules,
       listMoviesSortOptions,
+      updateMovieListAction,
       editList,
       cleanFormFields,
     };

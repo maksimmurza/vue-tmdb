@@ -49,7 +49,7 @@ export default defineComponent({
     ratingValue: (Object as PropType<{ value: number }>) || (Boolean as PropType<false>),
   },
   emits: ['updated'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const store = useStore();
     const { userInfo } = store.state.user;
     const { movieId, type, ratingValue } = toRefs(props);
@@ -62,7 +62,7 @@ export default defineComponent({
           .setRatingValue(userInfo.session_id, type.value, movieId.value, value * 2)
           .then(() => (movieRated.value = true))
           .then(() => {
-            setTimeout(() => context.emit('updated'), 3000);
+            setTimeout(() => emit('updated'), 3000);
           });
       }
     };
@@ -73,19 +73,19 @@ export default defineComponent({
           .deleteRatingValue(userInfo.session_id, type.value, movieId.value)
           .then(() => (movieRated.value = false))
           .then(() => {
-            setTimeout(() => context.emit('updated'), 3000);
+            setTimeout(() => emit('updated'), 3000);
           });
       }
     };
 
     const ratingButtonColor = computed(() => {
-      return movieRated.value === null
-        ? ratingValue.value
-          ? 'gold'
-          : 'white'
-        : movieRated.value
-        ? 'gold'
-        : 'white';
+      let color;
+      if (movieRated.value === null) {
+        color = ratingValue.value ? 'gold' : 'white';
+      } else {
+        color = movieRated.value ? 'gold' : 'white';
+      }
+      return color;
     });
 
     return {

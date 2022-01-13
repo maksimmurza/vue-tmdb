@@ -141,11 +141,14 @@ export default defineComponent({
     };
 
     const ratingColor = computed(() => {
-      return movie.details && movie.details.vote_average < 5
-        ? 'red'
-        : movie.details && movie.details.vote_average < 8
-        ? 'orange'
-        : 'green';
+      let rating, color;
+      if (!movie.details) {
+        return;
+      } else {
+        rating = movie.details.vote_average;
+        color = rating < 5 ? 'red' : rating < 8 ? 'orange' : 'green';
+      }
+      return color;
     });
 
     onMounted(() => {

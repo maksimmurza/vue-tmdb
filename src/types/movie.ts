@@ -1,4 +1,4 @@
-import { ComputedRef, Ref } from '@vue/runtime-dom';
+import { ComputedRef, Ref } from 'vue';
 import { MovieCredits } from './credits';
 import { MoviesFetchingService } from './fetching';
 

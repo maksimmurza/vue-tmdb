@@ -48,6 +48,17 @@ export type UpdateMovieListParams = Partial<
   Pick<MovieListDetails, 'description' | 'name' | 'public' | 'sort_by'>
 >;
 
+export interface ListAction<T> {
+  result: T | null;
+  loading: boolean;
+  error: Error | null;
+}
+
+export type CreateMovieListAction = ListAction<MovieListDetails>;
+export type UpdateMovieListAction = ListAction<UpdateMovieListResponse>;
+export type ClearMovieListAction = ListAction<ClearMovieListResponse>;
+export type DeleteMovieListAction = ListAction<DeleteMovieListResponse>;
+
 export interface MoviePresenceResponse {
   id: string | null;
   media_id?: number;

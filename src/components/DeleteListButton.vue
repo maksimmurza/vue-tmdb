@@ -1,7 +1,14 @@
 <template>
-  <n-popconfirm @positive-click="() => deleteMovieList(list.id)">
+  <n-popconfirm @positive-click="() => deleteList(list.id)">
     <template #trigger>
-      <n-button title="Delete list" quaternary circle type="error" size="small" @click.stop
+      <n-button
+        title="Delete list"
+        quaternary
+        circle
+        type="error"
+        size="small"
+        @click.stop
+        :loading="deleteMovieListAction.loading"
         ><template #icon>
           <n-icon>
             <trash />
@@ -16,7 +23,7 @@
 <script lang="ts">
 import useListActions from '@/composables/useListActions';
 import { defineComponent } from '@vue/runtime-core';
-import { computed, PropType, reactive } from 'vue';
+import { computed, PropType } from 'vue';
 import { useStore } from 'vuex';
 import { NIcon, NPopconfirm, NButton } from 'naive-ui';
 import { Trash } from '@vicons/ionicons5';
@@ -34,19 +41,18 @@ export default defineComponent({
     list: Object as PropType<MovieListDetails>,
   },
   emits: ['deleted'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const store = useStore();
     const user = computed(() => store.state.user);
-    const listActions = reactive(useListActions());
+    const { deleteMovieListAction, deleteMovieList } = useListActions();
 
-    const deleteMovieList = (listId: number) => {
-      listActions
-        .deleteMovieList(user.value.userInfo.access_token, listId)
-        .then(() => context.emit('deleted'));
+    const deleteList = (listId: number) => {
+      deleteMovieList(user.value.userInfo.access_token, listId).then(() => emit('deleted'));
     };
 
     return {
-      deleteMovieList,
+      deleteMovieListAction,
+      deleteList,
     };
   },
 });

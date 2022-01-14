@@ -1,6 +1,6 @@
 <template>
   <div class="movies-page">
-    <h1>{{ $route.name }}</h1>
+    <h1>{{ moviesPageHeader }}</h1>
     <div class="movies-page__content">
       <div class="movies-query">
         <n-collapse :default-expanded-names="['0']">
@@ -36,7 +36,7 @@
             <n-divider></n-divider>
             <div class="filter">
               <div>Minimum User Votes</div>
-              <n-slider v-model:value="filters.votesValue" max="500" />
+              <n-slider v-model:value="filters.votesValue" max="5000" />
             </div>
             <n-divider></n-divider>
           </n-collapse-item>
@@ -57,17 +57,15 @@
       <div class="movies-block">
         <loader v-if="moviesLoading" style="flex-grow: 1" />
         <div v-else-if="movies.results.length > 0" class="movies-results">
-          <movie-card
-            v-for="movie in movies.results"
-            :key="movie.id"
-            :movie="movie"
-            :type="typeRef"
-          ></movie-card>
+          <div v-for="movie in movies.results" :key="movie.id" class="movie-card-wrapper">
+            <movie-card :movie="movie" :type="typeRef"></movie-card>
+          </div>
         </div>
         <n-alert v-else-if="movies.results.length === 0" type="warning"
           >There are no movies with such parameters</n-alert
         >
         <n-pagination
+          v-if="movies.total_pages > 1"
           v-model:page="page"
           :page-count="movies.total_pages"
           class="pagination"
@@ -78,7 +76,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import MovieCard from '../components/MovieCard.vue';
 import { useRoute } from 'vue-router';
 import {
@@ -100,6 +98,7 @@ import { Movie, MovieType, TVShow, VideoType } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
 import { scoreMarks } from '@/constants';
 import Loader from '../components/Loader.vue';
+import toRegularCase from '../utils/toRegularCase';
 
 export default defineComponent({
   name: 'MoviesPage',
@@ -128,6 +127,10 @@ export default defineComponent({
     const typeRef = ref(type);
     const key = route.params.key as keyof Omit<MoviesFetchingService<Movie | TVShow>, 'discover'>;
 
+    const moviesPageHeader = computed(() => {
+      return toRegularCase(key) + ` ${key !== 'on-tv' ? type : ''}${type === 'movie' ? 's' : ''}`;
+    });
+
     const moviesData = useMovies<typeof type extends MovieType ? Movie : TVShow>(type, key);
     const { moviesLoading, movies, moviesError, getMovies } = moviesData;
 
@@ -150,6 +153,7 @@ export default defineComponent({
       page,
       typeRef,
       scoreMarks,
+      moviesPageHeader,
       getMovies,
     };
   },
@@ -182,12 +186,17 @@ export default defineComponent({
   flex-grow: 1;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
 
   & > * {
-    max-width: 200px;
-    margin: 0 1rem 1rem 0;
+    min-width: 180px;
+    max-width: 300px;
   }
+}
+
+.movie-card-wrapper {
+  flex: 1 16%;
+  padding: 0 2% 2% 2%;
+  display: flex;
 }
 
 .pagination {

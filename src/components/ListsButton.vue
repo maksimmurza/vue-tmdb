@@ -2,11 +2,11 @@
   <n-popover placement="bottom" trigger="click">
     <template #trigger>
       <n-button
-        :disabled="!movieId"
+        :disabled="!listsInfo || !listMovie"
         :loading="
-          movieLists.movieListsLoading ||
-          movieLists.addMovieToListLoading ||
-          movieLists.removeMovieFromListLoading
+          listsInfo.movieListsLoading ||
+          listMovie.addMovieToListLoading ||
+          listMovie.removeMovieFromListLoading
         "
         strong
         size="large"
@@ -16,10 +16,10 @@
         ><n-icon><list-ul /></n-icon
       ></n-button>
     </template>
-    <n-checkbox-group v-if="movieLists.movieListsResult" v-model:value="movieListsValue">
+    <n-checkbox-group v-if="listsInfo.movieListsResult" v-model:value="movieListsValue">
       <n-space vertical>
         <n-checkbox
-          v-for="list in movieLists.movieListsResult.results"
+          v-for="list in listsInfo.movieListsResult.results"
           :list="list"
           :key="list.id"
           :value="list.id"
@@ -37,7 +37,8 @@ import { useStore } from 'vuex';
 import { NPopover, NButton, NIcon, NCheckbox, NCheckboxGroup, NSpace } from 'naive-ui';
 import { ListUl } from '@vicons/fa';
 import { VideoType } from '@/types/movie';
-import useMovieLists from '@/composables/useMovieLists';
+import useListsInfo from '@/composables/useListsInfo';
+import useListMovie from '@/composables/useListMovie';
 
 export default defineComponent({
   name: 'ListsButton',
@@ -58,19 +59,20 @@ export default defineComponent({
     const store = useStore();
     const { userInfo } = store.state.user;
     const { movieId, type } = toRefs(props);
-    const movieLists = reactive(useMovieLists());
+    const listsInfo = reactive(useListsInfo());
+    const listMovie = reactive(useListMovie());
     let movieListsValue = ref<Array<number>>([]);
 
     const fetchMovieLists = () => {
       movieListsValue.value = [];
-      movieLists.getMovieLists(userInfo.id, userInfo.session_id).then(checkMoviePersistence);
+      listsInfo.getMovieLists(userInfo.id, userInfo.session_id).then(checkMoviePersistence);
     };
 
     const checkMoviePersistence = () => {
-      if (movieLists.movieListsResult && movieLists.movieListsResult.results.length > 0) {
-        movieLists.movieListsResult.results.forEach(async list => {
+      if (listsInfo.movieListsResult && listsInfo.movieListsResult.results.length > 0) {
+        listsInfo.movieListsResult.results.forEach(async list => {
           if (movieId.value && type.value) {
-            const inList = await movieLists.isMoviePersistInList(
+            const inList = await listMovie.isMoviePresentInList(
               movieId.value,
               type.value,
               list.id,
@@ -87,14 +89,15 @@ export default defineComponent({
 
     const updateMovieListsValues = (listId: number, checked: boolean): void => {
       if (movieId.value && type.value && checked) {
-        movieLists.addMovieToList(movieId.value, type.value, listId, userInfo.access_token);
+        listMovie.addMovieToList(movieId.value, type.value, listId, userInfo.access_token);
       } else if (movieId.value && type.value) {
-        movieLists.deleteMovieFromList(movieId.value, type.value, listId, userInfo.access_token);
+        listMovie.deleteMovieFromList(movieId.value, type.value, listId, userInfo.access_token);
       }
     };
 
     return {
-      movieLists,
+      listsInfo,
+      listMovie,
       movieListsValue,
       fetchMovieLists,
       updateMovieListsValues,

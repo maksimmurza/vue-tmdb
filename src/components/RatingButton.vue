@@ -8,7 +8,7 @@
         circle
         type="info"
         :loading="rating.setRatingValueLoading || rating.deleteRatingValueLoading"
-        ><n-icon><star :color="movieRated ? 'gold' : 'white'" /></n-icon
+        ><n-icon><star :color="ratingButtonColor" /></n-icon
       ></n-button>
     </template>
 
@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, PropType, toRefs, ref } from 'vue';
+import { defineComponent, reactive, PropType, toRefs, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { NButton, NIcon, NPopover, NRate } from 'naive-ui';
 import { Trash, Star } from '@vicons/fa';
@@ -49,12 +49,12 @@ export default defineComponent({
     ratingValue: (Object as PropType<{ value: number }>) || (Boolean as PropType<false>),
   },
   emits: ['updated'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const store = useStore();
     const { userInfo } = store.state.user;
     const { movieId, type, ratingValue } = toRefs(props);
     const rating = reactive(useRating());
-    let movieRated = ref<boolean>(ratingValue.value as unknown as boolean);
+    let movieRated = ref<boolean | null>(null);
 
     const updateMovieRating = (value: number) => {
       if (movieId.value && type.value && userInfo) {
@@ -62,7 +62,7 @@ export default defineComponent({
           .setRatingValue(userInfo.session_id, type.value, movieId.value, value * 2)
           .then(() => (movieRated.value = true))
           .then(() => {
-            setTimeout(() => context.emit('updated'), 3000);
+            setTimeout(() => emit('updated'), 3000);
           });
       }
     };
@@ -73,15 +73,26 @@ export default defineComponent({
           .deleteRatingValue(userInfo.session_id, type.value, movieId.value)
           .then(() => (movieRated.value = false))
           .then(() => {
-            setTimeout(() => context.emit('updated'), 3000);
+            setTimeout(() => emit('updated'), 3000);
           });
       }
     };
+
+    const ratingButtonColor = computed(() => {
+      let color;
+      if (movieRated.value === null) {
+        color = ratingValue.value ? 'gold' : 'white';
+      } else {
+        color = movieRated.value ? 'gold' : 'white';
+      }
+      return color;
+    });
 
     return {
       rating,
       movieRated,
       userInfo,
+      ratingButtonColor,
       updateMovieRating,
       deleteMovieRating,
     };

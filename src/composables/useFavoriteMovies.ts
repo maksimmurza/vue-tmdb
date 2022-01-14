@@ -10,7 +10,11 @@ const useFavoriteMovies = (): {
   setFavoriteValueResult: Ref<MovieSetAccountStateResponse | null>;
   setFavoriteValueLoading: Ref<boolean>;
   setFavoriteValueError: Ref<Error | null>;
-  getFavoriteMovies: (accountId: number, session_id: string, type: VideoType) => Promise<void>;
+  getFavoriteMovies: (
+    accountId: number,
+    session_id: string,
+    type: VideoType | 'all'
+  ) => Promise<void>;
   setFavoriteValue: (
     accountId: number,
     session_id: string,
@@ -23,12 +27,29 @@ const useFavoriteMovies = (): {
   const favoriteMovies = ref<MoviesListResponse<Movie | TVShow> | null>(null);
   const favoriteMoviesError = ref<Error | null>(null);
 
-  const getFavoriteMovies = async (accountId: number, session_id: string, type: VideoType) => {
+  const getFavoriteMovies = async (
+    accountId: number,
+    session_id: string,
+    type: VideoType | 'all'
+  ) => {
     favoriteMoviesLoading.value = true;
     try {
-      const response = await fetchFavoriteMovies(accountId, session_id, type);
-      favoriteMovies.value = response.data as MoviesListResponse<Movie | TVShow>;
-      favoriteMoviesError.value = null;
+      if (type === 'all') {
+        let response = await fetchFavoriteMovies(accountId, session_id, 'movie');
+        favoriteMovies.value = response.data as MoviesListResponse<Movie | TVShow>;
+        favoriteMovies.value.results = favoriteMovies.value.results.map(movie => ({
+          ...movie,
+          type: 'movie',
+        }));
+        response = await fetchFavoriteMovies(accountId, session_id, 'tv');
+        favoriteMovies.value.results = favoriteMovies.value.results.concat(
+          (response.data.results as Array<Movie | TVShow>).map(movie => ({ ...movie, type: 'tv' }))
+        );
+      } else {
+        const response = await fetchFavoriteMovies(accountId, session_id, type);
+        favoriteMovies.value = response.data as MoviesListResponse<Movie | TVShow>;
+        favoriteMoviesError.value = null;
+      }
     } catch (err) {
       favoriteMoviesError.value = err as Error;
     } finally {

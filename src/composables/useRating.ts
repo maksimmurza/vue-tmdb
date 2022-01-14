@@ -1,9 +1,12 @@
-import { setRating, deleteRating } from '../api/account';
-import { VideoType } from '@/types/movie';
+import { setRating, deleteRating, ratedMovies } from '../api/account';
+import { Movie, TVShow, VideoType } from '@/types/movie';
 import { ref, Ref } from 'vue';
-import { MovieSetAccountStateResponse } from '@/types/fetching';
+import { MovieSetAccountStateResponse, MoviesListResponse } from '@/types/fetching';
 
 const useRating = (): {
+  ratedMoviesResults: Ref<MoviesListResponse<Movie | TVShow> | null>;
+  ratedMoviesLoading: Ref<boolean>;
+  ratedMoviesError: Ref<Error | null>;
   setRatingValueLoading: Ref<boolean>;
   setRatingValueResult: Ref<MovieSetAccountStateResponse | null>;
   setRatingValueError: Ref<Error | null>;
@@ -17,7 +20,15 @@ const useRating = (): {
     ratingValue: number
   ) => Promise<void>;
   deleteRatingValue: (session_id: string, type: VideoType, movieId: number) => Promise<void>;
+  getRatedMovies: (
+    account_id: number,
+    session_id: string,
+    type: VideoType | 'all'
+  ) => Promise<void>;
 } => {
+  const ratedMoviesResults = ref<MoviesListResponse<Movie | TVShow> | null>(null);
+  const ratedMoviesLoading = ref<boolean>(false);
+  const ratedMoviesError = ref<Error | null>(null);
   const setRatingValueLoading = ref<boolean>(false);
   const setRatingValueResult = ref<MovieSetAccountStateResponse | null>(null);
   const setRatingValueError = ref<Error | null>(null);
@@ -56,7 +67,40 @@ const useRating = (): {
     }
   };
 
+  const getRatedMovies = async (
+    account_id: number,
+    session_id: string,
+    type: VideoType | 'all'
+  ) => {
+    ratedMoviesLoading.value = true;
+    try {
+      if (type === 'all') {
+        let response = await ratedMovies(account_id, session_id, 'movie');
+        ratedMoviesResults.value = response.data as MoviesListResponse<Movie | TVShow>;
+        ratedMoviesResults.value.results = ratedMoviesResults.value.results.map(movie => ({
+          ...movie,
+          type: 'movie',
+        }));
+        response = await ratedMovies(account_id, session_id, 'tv');
+        ratedMoviesResults.value.results = ratedMoviesResults.value.results.concat(
+          (response.data.results as Array<Movie | TVShow>).map(movie => ({ ...movie, type: 'tv' }))
+        );
+      } else {
+        const response = await ratedMovies(account_id, session_id, type);
+        ratedMoviesResults.value = response.data;
+        ratedMoviesError.value = null;
+      }
+    } catch (err) {
+      ratedMoviesError.value = err as Error;
+    } finally {
+      ratedMoviesLoading.value = false;
+    }
+  };
+
   return {
+    ratedMoviesResults,
+    ratedMoviesLoading,
+    ratedMoviesError,
     setRatingValueLoading,
     setRatingValueResult,
     setRatingValueError,
@@ -65,6 +109,7 @@ const useRating = (): {
     deleteRatingValueError,
     setRatingValue,
     deleteRatingValue,
+    getRatedMovies,
   };
 };
 

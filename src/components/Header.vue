@@ -102,18 +102,19 @@ export default defineComponent({
     );
 
     const profileDropdownOptionsClickable = computed(() =>
-      profileDropdownOptions.map(option =>
-        option.key === 'logout'
-          ? {
-              ...option,
-              props: {
-                onClick: () => {
-                  store.dispatch('logout', store.state.user.userInfo?.session_id);
-                },
-              },
+      profileDropdownOptions.map(option => ({
+        ...option,
+        props: {
+          onClick: () => {
+            if (option.key === 'logout') {
+              store.dispatch('logout', store.state.user.userInfo?.session_id);
+            } else {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              router.push(option.url!);
             }
-          : option
-      )
+          },
+        },
+      }))
     );
 
     return {

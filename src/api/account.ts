@@ -1,4 +1,5 @@
-import { MovieType, VideoType } from '@/types/movie';
+import { CreateMovieListParams, UpdateMovieListParams } from '@/types/fetching';
+import { VideoType } from '@/types/movie';
 import axios, { AxiosResponse } from 'axios';
 import { axiosClientApiV3, axiosClientApiV4 } from '../utils/axiosClient';
 
@@ -38,7 +39,7 @@ const favoriteMovies = async (
   type: VideoType
 ): Promise<AxiosResponse> => {
   try {
-    const response = await axiosClientApiV3.post(
+    const response = await axiosClientApiV3.get(
       `account/${accountId}/favorite/${type === 'movie' ? 'movies' : 'tv'}?session_id=${session_id}`
     );
     return response;
@@ -53,7 +54,7 @@ const favoriteMovies = async (
 const ratedMovies = async (
   accountId: number,
   session_id: string,
-  type: MovieType
+  type: VideoType
 ): Promise<AxiosResponse> => {
   try {
     const response = await axiosClientApiV3.get(
@@ -71,7 +72,7 @@ const ratedMovies = async (
 const watchlistMovies = async (
   accountId: number,
   session_id: string,
-  type: MovieType
+  type: VideoType
 ): Promise<AxiosResponse> => {
   try {
     const response = await axiosClientApiV3.get(
@@ -250,6 +251,102 @@ const deleteRating = async (
   }
 };
 
+const listDetails = async (
+  listId: number,
+  access_token: string,
+  page: number
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClientApiV4.get(`/list/${listId}?page=${page}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.data.status_code === 34) {
+        return error.response;
+      }
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+const createList = async (
+  access_token: string,
+  payload: CreateMovieListParams
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClientApiV4.post('/list', payload, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.data.status_code === 34) {
+        return error.response;
+      }
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+const updateList = async (
+  access_token: string,
+  listId: number,
+  payload: UpdateMovieListParams
+): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClientApiV4.put(`/list/${listId}`, payload, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.data.status_code === 34) {
+        return error.response;
+      }
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+const deleteList = async (access_token: string, listId: number): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClientApiV4.delete(`/list/${listId}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.data.status_code === 34) {
+        return error.response;
+      }
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
+const clearList = async (access_token: string, listId: number): Promise<AxiosResponse> => {
+  try {
+    const response = await axiosClientApiV4.get(`/list/${listId}/clear`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.data.status_code === 34) {
+        return error.response;
+      }
+      throw new Error(error.response.data.status_message);
+    }
+    throw new Error('Server is unavailable');
+  }
+};
+
 export {
   accountDetails,
   fetchMovieAccountStates,
@@ -264,4 +361,9 @@ export {
   checkMovieListState,
   addToList,
   removeFromList,
+  listDetails,
+  createList,
+  updateList,
+  deleteList,
+  clearList,
 };

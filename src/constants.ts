@@ -29,11 +29,10 @@ export const moreShowsDropdownOptions = [
 ];
 
 export const profileDropdownOptions = [
-  { label: 'View profile', key: 'view profile' },
-  { label: 'Lists', key: 'lists' },
-  { label: 'Ratings', key: 'ratings' },
-  { label: 'Watchlist', key: 'watchlist' },
-  { label: 'Edit profile', key: 'edit profile' },
+  { label: 'View profile', key: 'view profile', url: '/profile' },
+  { label: 'Lists', key: 'lists', url: '/profile/lists' },
+  { label: 'Ratings', key: 'ratings', url: '/profile/rated' },
+  { label: 'Watchlist', key: 'watchlist', url: '/profile/watchlist' },
   {
     label: 'Logout',
     key: 'logout',
@@ -75,6 +74,41 @@ export const sortOptions = [
     value: 'original_title.desc',
   },
 ] as Array<{ label: string; value: SortValue }>;
+
+export const listMoviesSortOptions = [
+  {
+    label: 'Original order ascending',
+    value: 'original_order.asc',
+  },
+  {
+    label: 'Original order descending',
+    value: 'original_order.desc',
+  },
+  {
+    label: 'Vote average ascending',
+    value: 'vote_average.asc',
+  },
+  {
+    label: 'Vote average descending',
+    value: 'vote_average.desc',
+  },
+  {
+    label: 'Primary release date ascending',
+    value: 'primary_release_date.asc',
+  },
+  {
+    label: 'Primary release date descending',
+    value: 'primary_release_date.desc',
+  },
+  {
+    label: 'Title ascending',
+    value: 'title.asc',
+  },
+  {
+    label: 'Title descending',
+    value: 'title.desc',
+  },
+];
 
 export const scoreMarks = {
   0: '0',

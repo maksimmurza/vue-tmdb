@@ -1,4 +1,4 @@
-import { ComputedRef, Ref } from '@vue/runtime-dom';
+import { ComputedRef, Ref } from 'vue';
 import { MovieCredits } from './credits';
 import { MoviesFetchingService } from './fetching';
 
@@ -118,3 +118,5 @@ export interface MovieInfo {
   getCredits: () => Promise<void>;
   getVideo: () => Promise<void>;
 }
+
+export type ProfileMenuItem = 'favorite' | 'watchlist' | 'rated' | 'lists';

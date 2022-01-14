@@ -32,7 +32,7 @@ export default defineComponent({
     watchlist: Boolean,
   },
   emits: ['updated'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const store = useStore();
     const { userInfo } = store.state.user;
     const { movieId, type, watchlist } = toRefs(props);
@@ -48,7 +48,7 @@ export default defineComponent({
             movieId.value,
             !watchlist.value
           )
-          .then(() => context.emit('updated'));
+          .then(() => emit('updated'));
       }
     };
 

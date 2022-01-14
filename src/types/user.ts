@@ -6,4 +6,5 @@ export interface UserInfo {
   access_token: string;
   session_id: string;
   avatar: string | null;
+  iso_639_1: string;
 }

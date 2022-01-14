@@ -4,6 +4,7 @@ import MoviePage from '../views/MoviePage.vue';
 import MoviesPage from '../views/MoviesPage.vue';
 import LoginPage from '../views/LoginPage.vue';
 import LoginApprovedPage from '../views/LoginApprovedPage.vue';
+import UserPage from '../views/UserPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -30,6 +31,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/approved',
     name: 'Approved',
     component: LoginApprovedPage,
+  },
+  {
+    path: '/profile/:menuItem(favorite|watchlist|rated|lists)?',
+    name: 'User Page',
+    component: UserPage,
   },
 ];
 

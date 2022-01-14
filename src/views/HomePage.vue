@@ -2,22 +2,24 @@
   <div class="home-page-content">
     <search class="search" />
     <h1>What's popular</h1>
-    <cards-list :loading="popularLoading" :error="popularError">
+    <cards-list :loading="popularLoading" :error="popularError" background="#e2e8dd">
       <movie-card
         v-for="movie in popularMovies.results"
         :key="movie.id"
         :movie="movie"
         :type="'movie'"
+        :minWidth="200"
       ></movie-card>
     </cards-list>
     <n-divider />
     <h1>Top rated movies</h1>
-    <cards-list :loading="topRatedLoading" :error="topRatedError">
+    <cards-list :loading="topRatedLoading" :error="topRatedError" background="#e2e8dd">
       <movie-card
         v-for="movie in topRatedMovies.results"
         :key="movie.id"
         :movie="movie"
         :type="'movie'"
+        :minWidth="200"
       ></movie-card>
     </cards-list>
     <h3 v-if="error">

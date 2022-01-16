@@ -1,14 +1,20 @@
 <template>
   <div>
     <n-input-group>
-      <n-input size="large" round placeholder="Search movie" />
-      <n-button round size="large" type="info">Search</n-button>
+      <n-input
+        size="large"
+        round
+        v-model:value="query"
+        @keyup.enter="search"
+        placeholder="Search movie"
+      />
+      <n-button round size="large" type="info" @click="search">Search</n-button>
     </n-input-group>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { NInput, NButton, NInputGroup } from 'naive-ui';
 export default defineComponent({
   name: 'Search',
@@ -16,6 +22,19 @@ export default defineComponent({
     NInput,
     NButton,
     NInputGroup,
+  },
+  emits: ['clicked'],
+  setup(props, { emit }) {
+    const query = ref('');
+
+    const search = () => {
+      emit('clicked', query.value);
+    };
+
+    return {
+      query,
+      search,
+    };
   },
 });
 </script>

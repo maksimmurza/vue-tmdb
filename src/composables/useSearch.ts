@@ -1,31 +1,34 @@
 import { searchMovies } from '../api/movies';
 import { MoviesListResponse } from '@/types/fetching';
-import { ref, Ref } from 'vue';
-import { VideoType } from '@/types/movie';
+import { reactive, ref, Ref, UnwrapNestedRefs } from 'vue';
+import { Movie, TVShow, VideoType } from '@/types/movie';
 
 const useSearch = (): {
   searchLoading: Ref<boolean>;
-  searchResults: Ref<MoviesListResponse<VideoType>>;
+  searchResults: Ref<MoviesListResponse<Movie | TVShow>>;
   searchError: Ref<Error | null>;
   getMoviesByQuery: (query: string, page?: number) => Promise<void>;
 } => {
   const searchLoading = ref<boolean>(false);
-  const searchResults = ref<MoviesListResponse<VideoType>>({
+  const searchResults = ref<MoviesListResponse<Movie | TVShow>>({
     page: 0,
     total_pages: 0,
     total_results: 0,
     results: [],
-  }) as Ref<MoviesListResponse<VideoType>>;
+  });
   const searchError = ref<Error | null>(null);
 
   const getMoviesByQuery = async (query: string, page?: number) => {
     searchLoading.value = true;
     try {
+      let response;
       if (page) {
-        searchResults.value = searchMovies(query, page) as unknown as MoviesListResponse<VideoType>;
+        response = await searchMovies(query, page);
       } else {
-        searchResults.value = searchMovies(query) as unknown as MoviesListResponse<VideoType>;
+        response = await searchMovies(query);
       }
+      searchResults.value = response.data;
+      searchError.value = null;
     } catch (err) {
       searchError.value = err as Error;
     } finally {

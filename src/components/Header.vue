@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from 'vue';
+import { defineComponent, computed, ref, watch, inject, Ref } from 'vue';
 import { useStore } from 'vuex';
 import { NDropdown, NButton, NIcon, NAvatar, NSpin } from 'naive-ui';
 import { UserAstronaut } from '@vicons/fa';
@@ -93,9 +93,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const { width } = useWidth();
+    const width = inject<Ref<number>>('width');
 
-    watch(width, (newValue, oldValue) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    watch(width!, (newValue, oldValue) => {
       if (newValue < 768 && oldValue >= 768) {
         menuOpened.value = false;
       }

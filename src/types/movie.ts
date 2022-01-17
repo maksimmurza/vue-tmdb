@@ -48,6 +48,10 @@ export interface TVShow extends MotionPicture {
   original_name: string;
 }
 
+export type MoviesSearchResults =
+  | (Movie & { media_type: string })
+  | (TVShow & { media_type: string });
+
 export interface Genre {
   id: number;
   name: string;

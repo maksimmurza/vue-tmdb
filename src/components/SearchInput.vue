@@ -16,6 +16,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { NInput, NButton, NInputGroup } from 'naive-ui';
+import { useRoute } from 'vue-router';
 export default defineComponent({
   name: 'SearchInput',
   components: {
@@ -25,7 +26,8 @@ export default defineComponent({
   },
   emits: ['clicked'],
   setup(props, { emit }) {
-    const query = ref('');
+    const route = useRoute();
+    const query = ref(route.query.query);
 
     const search = () => {
       emit('clicked', query.value);

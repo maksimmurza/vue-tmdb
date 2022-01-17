@@ -3,8 +3,13 @@
     <template #cover>
       <router-link :to="'/' + type + '/' + movie.id">
         <img
-          v-if="!movie.poster_path"
+          v-if="!movie.poster_path && (type === 'movie' || type === 'tv')"
           src="@/assets/images/movieCoverPlaceholder.png"
+          class="movie-card__cover"
+        />
+        <img
+          v-else-if="!movie.poster_path"
+          src="@/assets/images/personAvatarPlaceholder.jpg"
           class="movie-card__cover"
         />
         <img
@@ -22,6 +27,7 @@
       </router-link>
     </template>
     <div
+      v-if="type === 'movie' || type === 'tv'"
       class="movie-card__rating"
       @mouseover="ratingLabelIsHover = true"
       @mouseleave="ratingLabelIsHover = false"

@@ -1,16 +1,16 @@
 import { searchMovies } from '../api/movies';
 import { MoviesListResponse } from '@/types/fetching';
 import { ref, Ref } from 'vue';
-import { Movie, TVShow } from '@/types/movie';
+import { Movie, MoviesSearchResults, TVShow } from '@/types/movie';
 
 const useSearch = (): {
   searchLoading: Ref<boolean>;
-  searchResults: Ref<MoviesListResponse<Movie | TVShow>>;
+  searchResults: Ref<MoviesListResponse<MoviesSearchResults>>;
   searchError: Ref<Error | null>;
   getMoviesByQuery: (query: string, page?: number) => Promise<void>;
 } => {
   const searchLoading = ref<boolean>(false);
-  const searchResults = ref<MoviesListResponse<Movie | TVShow>>({
+  const searchResults = ref<MoviesListResponse<MoviesSearchResults>>({
     page: 0,
     total_pages: 0,
     total_results: 0,

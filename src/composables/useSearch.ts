@@ -1,7 +1,7 @@
 import { searchMovies } from '../api/movies';
 import { MoviesListResponse } from '@/types/fetching';
-import { reactive, ref, Ref, UnwrapNestedRefs } from 'vue';
-import { Movie, TVShow, VideoType } from '@/types/movie';
+import { ref, Ref } from 'vue';
+import { Movie, TVShow } from '@/types/movie';
 
 const useSearch = (): {
   searchLoading: Ref<boolean>;

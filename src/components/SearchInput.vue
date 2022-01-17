@@ -17,7 +17,7 @@
 import { defineComponent, ref } from 'vue';
 import { NInput, NButton, NInputGroup } from 'naive-ui';
 export default defineComponent({
-  name: 'Search',
+  name: 'SearchInput',
   components: {
     NInput,
     NButton,

@@ -108,6 +108,7 @@ export default defineComponent({
           onClick: () => {
             if (option.key === 'logout') {
               store.dispatch('logout', store.state.user.userInfo?.session_id);
+              router.push('/');
             } else {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               router.push(option.url!);

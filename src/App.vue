@@ -1,6 +1,10 @@
 <template>
   <Header></Header>
-  <router-view :key="$route.path" />
+  <router-view v-slot="{ Component }">
+    <transition name="fade">
+      <component :is="Component" :key="$route.path"></component>
+    </transition>
+  </router-view>
   <Footer></Footer>
 </template>
 
@@ -22,5 +26,15 @@ export default defineComponent({
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

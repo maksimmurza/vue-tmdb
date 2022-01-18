@@ -2,10 +2,12 @@ import { createRouter, RouteRecordRaw, createWebHistory } from 'vue-router';
 import HomePage from '../views/HomePage.vue';
 import MoviePage from '../views/MoviePage.vue';
 import MoviesPage from '../views/MoviesPage.vue';
-import LoginPage from '../views/LoginPage.vue';
-import LoginApprovedPage from '../views/LoginApprovedPage.vue';
-import UserPage from '../views/UserPage.vue';
-import SearchResults from '../views/SearchResults.vue';
+import store from '../store/index';
+
+const SearchResults = () => import('../views/SearchResults.vue');
+const LoginPage = () => import('../views/LoginPage.vue');
+const LoginApprovedPage = () => import('../views/LoginApprovedPage.vue');
+const UserPage = () => import('../views/UserPage.vue');
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -43,12 +45,20 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profile/:menuItem(favorite|watchlist|rated|lists)?',
     name: 'User Page',
     component: UserPage,
+    meta: { requireAuth: true },
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach(to => {
+  const userInfo = store.state.user.userInfo;
+  if (to.meta.requireAuth && !userInfo) {
+    return { path: '/' };
+  }
 });
 
 export default router;

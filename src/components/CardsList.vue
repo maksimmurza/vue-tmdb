@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, Ref, ref } from 'vue';
+import { defineComponent, onMounted, onUnmounted, Ref, ref } from 'vue';
 import { debounce } from 'lodash';
 
 export default defineComponent({
@@ -15,9 +15,21 @@ export default defineComponent({
     const containerWidth = ref();
 
     onMounted(() => {
-      window.onresize = debounce(() => {
-        containerWidth.value = container?.value?.clientWidth;
-      }, 50);
+      window.addEventListener(
+        'resize',
+        debounce(() => {
+          containerWidth.value = container?.value?.clientWidth;
+        }, 50)
+      );
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener(
+        'resize',
+        debounce(() => {
+          containerWidth.value = container?.value?.clientWidth;
+        }, 50)
+      );
     });
 
     return {

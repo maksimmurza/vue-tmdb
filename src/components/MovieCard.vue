@@ -14,16 +14,12 @@
         />
         <img
           v-else
-          v-show="imageIsLoaded === true"
+          v-show="imageIsLoaded"
           @load="imageIsLoaded = true"
           :src="movieCoverSrc"
           class="movie-card__cover"
         />
-        <n-skeleton
-          v-if="imageIsLoaded === false && movie.poster_path"
-          width="100%"
-          height="300px"
-        />
+        <n-skeleton v-if="!imageIsLoaded && movie.poster_path" width="100%" height="300px" />
       </router-link>
     </template>
     <div

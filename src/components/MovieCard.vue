@@ -88,7 +88,6 @@ export default defineComponent({
 <style lang="scss">
 .movie-card {
   position: relative;
-  min-width: 150px;
 
   &__cover {
     cursor: pointer;

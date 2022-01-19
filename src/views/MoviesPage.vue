@@ -56,11 +56,14 @@
       </div>
       <div class="movies-block">
         <loader v-if="moviesLoading" style="flex-grow: 1" />
-        <div v-else-if="movies.results.length > 0" class="movies-results">
-          <div v-for="movie in movies.results" :key="movie.id" class="movie-card-wrapper">
-            <movie-card :movie="movie" :type="typeRef" :maxWidth="200"></movie-card>
-          </div>
-        </div>
+        <cards-list v-else-if="movies.results.length > 0">
+          <movie-card
+            v-for="movie in movies.results"
+            :key="movie.id"
+            :movie="movie"
+            :type="typeRef"
+          ></movie-card>
+        </cards-list>
         <n-alert v-else-if="movies.results.length === 0" type="warning"
           >There are no movies with such parameters</n-alert
         >
@@ -99,6 +102,7 @@ import { MoviesFetchingService } from '@/types/fetching';
 import { scoreMarks } from '@/constants';
 import Loader from '../components/Loader.vue';
 import toRegularCase from '../utils/toRegularCase';
+import CardsList from '../components/CardsList.vue';
 
 export default defineComponent({
   name: 'MoviesPage',
@@ -116,6 +120,7 @@ export default defineComponent({
     NSlider,
     Loader,
     NAlert,
+    CardsList,
   },
   props: {
     title: String,
@@ -201,7 +206,7 @@ export default defineComponent({
 
 .pagination {
   justify-content: center;
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 }
 
 .genre {

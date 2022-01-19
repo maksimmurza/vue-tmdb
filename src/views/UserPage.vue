@@ -19,7 +19,7 @@
     >
       <n-tab-pane name="favorite" tab="Favorite">
         <loader v-if="favorite.favoriteMoviesLoading"></loader>
-        <div v-else class="movies-container">
+        <cards-list v-else>
           <movie-card
             v-for="movie in favorite.favoriteMovies?.results"
             :movie="movie"
@@ -27,11 +27,11 @@
             :key="movie.id"
             :maxWidth="200"
           />
-        </div>
+        </cards-list>
       </n-tab-pane>
       <n-tab-pane name="watchlist" tab="Watchlist">
         <loader v-if="watchlist.watchlistMoviesLoading"></loader>
-        <div v-else class="movies-container">
+        <cards-list v-else>
           <movie-card
             v-for="movie in watchlist.watchlistMoviesResults?.results"
             :movie="movie"
@@ -39,11 +39,11 @@
             :key="movie.id"
             :maxWidth="200"
           />
-        </div>
+        </cards-list>
       </n-tab-pane>
       <n-tab-pane name="rated" tab="Rated">
         <loader v-if="rated.ratedMoviesLoading"></loader>
-        <div v-else class="movies-container">
+        <cards-list v-else>
           <movie-card
             v-for="movie in rated.ratedMoviesResults?.results"
             :movie="movie"
@@ -51,7 +51,7 @@
             :key="movie.id"
             :maxWidth="200"
           />
-        </div>
+        </cards-list>
       </n-tab-pane>
       <n-tab-pane name="lists" tab="Lists">
         <loader v-if="listsInfo.movieListsLoading"></loader>
@@ -73,7 +73,7 @@
                   <clear-list-button @cleared="profileMoviesService.getListsMovies" :list="list" />
                   <delete-list-button @deleted="profileMoviesService.getListsMovies" :list="list" />
                 </template>
-                <cards-list v-if="list.results.length > 0">
+                <cards-list-horizontal v-if="list.results.length > 0">
                   <movie-card
                     v-for="movie in list.results"
                     :movie="movie"
@@ -81,7 +81,7 @@
                     :key="movie.id"
                     :maxWidth="200"
                   />
-                </cards-list>
+                </cards-list-horizontal>
                 <span v-else>Empty list</span>
               </n-collapse-item>
             </n-collapse>
@@ -99,13 +99,14 @@ import { useStore } from 'vuex';
 import MovieCard from '../components/MovieCard.vue';
 import { ProfileMenuItem } from '@/types/movie';
 import { useRoute, useRouter } from 'vue-router';
-import CardsList from '../components/CardsList.vue';
+import CardsListHorizontal from '../components/CardsListHorizontal.vue';
 import CreateListButton from '../components/CreateListButton.vue';
 import EditListButton from '../components/EditListButton.vue';
 import DeleteListButton from '../components/DeleteListButton.vue';
 import ClearListButton from '../components/ClearListButton.vue';
 import Loader from '@/components/Loader.vue';
 import useProfileMovies from '../composables/useProfileMovies';
+import CardsList from '@/components/CardsList.vue';
 
 export default defineComponent({
   name: 'UserPage',
@@ -116,11 +117,12 @@ export default defineComponent({
     NCollapse,
     NCollapseItem,
     EditListButton,
-    CardsList,
+    CardsListHorizontal,
     CreateListButton,
     DeleteListButton,
     ClearListButton,
     Loader,
+    CardsList,
   },
   setup() {
     const store = useStore();
@@ -238,16 +240,6 @@ export default defineComponent({
     margin: 0 auto 1em auto;
     display: flex;
     justify-content: center;
-  }
-
-  &__pane > .movies-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-
-    & > * {
-      margin: 0 1rem 1rem 0;
-    }
   }
 }
 </style>

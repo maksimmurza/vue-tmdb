@@ -1,57 +1,53 @@
 <template>
-  <n-spin :show="loading">
-    <n-scrollbar x-scrollable>
-      <div class="cards-list" :style="cardsListStyle">
-        <n-alert v-if="error" title="Error occurs" type="warning" class="card-list__error">
-          {{ error.message }}
-        </n-alert>
-        <slot else />
-      </div>
-    </n-scrollbar>
-  </n-spin>
+  <div class="container" ref="container" :class="{ singleColumn: containerWidth < 450 }">
+    <slot></slot>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { NSpin, NScrollbar, NAlert } from 'naive-ui';
+import { defineComponent, onMounted, Ref, ref } from 'vue';
+import { debounce } from 'lodash';
 
 export default defineComponent({
   name: 'CardsList',
-  components: {
-    NSpin,
-    NScrollbar,
-    NAlert,
-  },
-  props: {
-    loading: Boolean,
-    error: Error || null,
-    background: String,
-  },
-  setup(props) {
+  setup() {
+    const container = ref<Ref | null>(null);
+    const containerWidth = ref();
+
+    onMounted(() => {
+      window.onresize = debounce(() => {
+        containerWidth.value = container?.value?.clientWidth;
+      }, 50);
+    });
+
     return {
-      cardsListStyle: { backgroundColor: props.background },
+      container,
+      containerWidth,
     };
   },
 });
 </script>
 
 <style lang="scss">
-.cards-list {
-  position: relative;
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  flex-wrap: nowrap;
-  min-height: 300px;
+.container {
+  contain: layout inline-size;
+  width: 100%;
+  display: grid;
+
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 
   & > * {
-    margin-right: 1rem;
+    max-width: 250px;
+    justify-self: center;
   }
+}
 
-  &__error {
-    width: 100%;
-    height: 100%;
-    margin: 1rem;
+.singleColumn {
+  grid-template-columns: 1fr;
+
+  & > * {
+    max-width: 350px;
   }
 }
 </style>

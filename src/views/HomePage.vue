@@ -4,7 +4,7 @@
     <router-view :key="$route.fullPath"></router-view>
     <div v-if="!$route.path.includes('search')">
       <h1>What's popular</h1>
-      <cards-list :loading="popularLoading" :error="popularError" background="#e2e8dd">
+      <cards-list-horizontal :loading="popularLoading" :error="popularError" background="#e2e8dd">
         <movie-card
           v-for="movie in popularMovies.results"
           :key="movie.id"
@@ -12,10 +12,10 @@
           :type="'movie'"
           :minWidth="200"
         ></movie-card>
-      </cards-list>
+      </cards-list-horizontal>
       <n-divider />
       <h1>Top rated movies</h1>
-      <cards-list :loading="topRatedLoading" :error="topRatedError" background="#e2e8dd">
+      <cards-list-horizontal :loading="topRatedLoading" :error="topRatedError" background="#e2e8dd">
         <movie-card
           v-for="movie in topRatedMovies.results"
           :key="movie.id"
@@ -23,7 +23,7 @@
           :type="'movie'"
           :minWidth="200"
         ></movie-card>
-      </cards-list>
+      </cards-list-horizontal>
       <h3 v-if="error">
         {{ error }}
       </h3>
@@ -36,7 +36,7 @@ import { defineComponent, onMounted } from 'vue';
 import { NDivider } from 'naive-ui';
 import MovieCard from '../components/MovieCard.vue';
 import SearchInput from '../components/SearchInput.vue';
-import CardsList from '../components/CardsList.vue';
+import CardsListHorizontal from '../components/CardsListHorizontal.vue';
 import useMovies from '../composables/useMovies';
 import { useRouter } from 'vue-router';
 
@@ -45,7 +45,7 @@ export default defineComponent({
   components: {
     MovieCard,
     SearchInput,
-    CardsList,
+    CardsListHorizontal,
     NDivider,
   },
   setup() {

@@ -1,14 +1,14 @@
 <template>
-  <div class="search-results">
+  <div class="search-results" style="margin-top: 2rem">
     <loader v-if="searchLoading" />
-    <div class="search-results__movies">
+    <cards-list>
       <movie-card
         v-for="movie in searchResults.results"
         :key="movie.id"
         :movie="movie"
         :type="movie.media_type"
       ></movie-card>
-    </div>
+    </cards-list>
     <div class="search-results__pagination">
       <n-pagination
         v-if="searchResults.total_pages > 1"
@@ -26,6 +26,7 @@ import MovieCard from '../components/MovieCard.vue';
 import Loader from '../components/Loader.vue';
 import { NPagination } from 'naive-ui';
 import useSearch from '@/composables/useSearch';
+import CardsList from '@/components/CardsList.vue';
 
 export default defineComponent({
   name: 'SearchResults',
@@ -33,6 +34,7 @@ export default defineComponent({
     MovieCard,
     Loader,
     NPagination,
+    CardsList,
   },
   setup() {
     let query = useRoute().query.query as string;
@@ -65,20 +67,9 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  &__movies {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 1rem 0;
-
-    & > * {
-      max-width: 200px;
-      margin-bottom: 1rem;
-    }
-  }
 
   &__pagination {
-    margin-bottom: 2rem;
+    margin: 2rem 0;
   }
 }
 </style>

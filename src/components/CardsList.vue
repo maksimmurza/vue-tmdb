@@ -13,23 +13,16 @@ export default defineComponent({
   setup() {
     const container = ref<Ref | null>(null);
     const containerWidth = ref();
+    const getNewContainerWidth = debounce(() => {
+      containerWidth.value = container?.value?.clientWidth;
+    }, 50);
 
     onMounted(() => {
-      window.addEventListener(
-        'resize',
-        debounce(() => {
-          containerWidth.value = container?.value?.clientWidth;
-        }, 50)
-      );
+      window.addEventListener('resize', getNewContainerWidth);
     });
 
     onUnmounted(() => {
-      window.removeEventListener(
-        'resize',
-        debounce(() => {
-          containerWidth.value = container?.value?.clientWidth;
-        }, 50)
-      );
+      window.removeEventListener('resize', getNewContainerWidth);
     });
 
     return {
@@ -42,7 +35,6 @@ export default defineComponent({
 
 <style lang="scss">
 .container {
-  contain: layout inline-size;
   width: 100%;
   display: grid;
 

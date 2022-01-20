@@ -129,9 +129,12 @@
             :type="typeRef"
           ></movie-card>
         </cards-list>
-        <n-alert v-else-if="movies.results.length === 0" type="warning"
-          >There are no movies with such parameters</n-alert
-        >
+        <n-result
+          status="warning"
+          title="No results"
+          v-else-if="movies.results.length === 0"
+          type="warning"
+        />
         <n-pagination
           v-if="movies.total_pages > 1"
           v-model:page="page"
@@ -158,9 +161,9 @@ import {
   NPagination,
   NSlider,
   NCheckboxGroup,
-  NAlert,
   NDrawer,
   NIcon,
+  NResult,
   NDrawerContent,
 } from 'naive-ui';
 import useMovies from '../composables/useMovies';
@@ -188,12 +191,12 @@ export default defineComponent({
     NDatePicker,
     NSlider,
     Loader,
-    NAlert,
     CardsList,
     NIcon,
     NDrawer,
     NDrawerContent,
     FilterIcon: Filter,
+    NResult,
   },
   props: {
     title: String,

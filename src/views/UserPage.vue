@@ -30,25 +30,25 @@
       </n-tab-pane>
       <n-tab-pane name="watchlist" tab="Watchlist">
         <loader v-if="watchlist.watchlistMoviesLoading"></loader>
-        <cards v-else>
+        <cards-list v-else>
           <movie-card
             v-for="movie in watchlist.watchlistMoviesResults?.results"
             :movie="movie"
             :type="movie.type"
             :key="movie.id"
           />
-        </cards>
+        </cards-list>
       </n-tab-pane>
       <n-tab-pane name="rated" tab="Rated">
         <loader v-if="rated.ratedMoviesLoading"></loader>
-        <cards v-else>
+        <cards-list v-else>
           <movie-card
             v-for="movie in rated.ratedMoviesResults?.results"
             :movie="movie"
             :type="movie.type"
             :key="movie.id"
           />
-        </cards>
+        </cards-list>
       </n-tab-pane>
       <n-tab-pane name="lists" tab="Lists">
         <loader v-if="listsInfo.movieListsLoading"></loader>

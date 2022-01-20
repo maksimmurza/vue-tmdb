@@ -2,6 +2,7 @@ import { createRouter, RouteRecordRaw, createWebHistory } from 'vue-router';
 import HomePage from '../views/HomePage.vue';
 import MoviePage from '../views/MoviePage.vue';
 import MoviesPage from '../views/MoviesPage.vue';
+import PageNotFound from '../views/PageNotFound.vue';
 import store from '../store/index';
 
 const SearchResults = () => import('../views/SearchResults.vue');
@@ -27,7 +28,7 @@ const routes: Array<RouteRecordRaw> = [
     component: MoviePage,
   },
   {
-    path: '/:type(movie|tv)/:key',
+    path: '/:type(movie|tv)/:key(popular|now-playing|upcoming|top-rated|airing-today|on-tv)',
     name: 'Movies Page',
     component: MoviesPage,
   },
@@ -46,6 +47,10 @@ const routes: Array<RouteRecordRaw> = [
     name: 'User Page',
     component: UserPage,
     meta: { requireAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: PageNotFound,
   },
 ];
 

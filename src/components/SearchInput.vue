@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { NInput, NButton, NInputGroup } from 'naive-ui';
+import { NInput, NButton, NInputGroup, useMessage } from 'naive-ui';
 import { useRoute } from 'vue-router';
 export default defineComponent({
   name: 'SearchInput',
@@ -27,10 +27,15 @@ export default defineComponent({
   emits: ['clicked'],
   setup(props, { emit }) {
     const route = useRoute();
+    const message = useMessage();
     const query = ref(route.query.query);
 
     const search = () => {
-      emit('clicked', query.value);
+      if (!query.value) {
+        message.warning('Search input require text');
+      } else {
+        emit('clicked', query.value);
+      }
     };
 
     return {

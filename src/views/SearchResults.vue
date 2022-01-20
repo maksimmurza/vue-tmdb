@@ -1,7 +1,7 @@
 <template>
   <div class="search-results" style="margin-top: 2rem">
     <loader v-if="searchLoading" />
-    <cards-list>
+    <cards-list v-else-if="searchResults.results.length">
       <movie-card
         v-for="movie in searchResults.results"
         :key="movie.id"
@@ -9,6 +9,13 @@
         :type="movie.media_type"
       ></movie-card>
     </cards-list>
+    <n-result
+      v-else
+      status="404"
+      title="Oops..."
+      style="margin-top: 2rem"
+      :description="`Search with query '${query}' didn't get any results`"
+    ></n-result>
     <div class="search-results__pagination">
       <n-pagination
         v-if="searchResults.total_pages > 1"
@@ -24,7 +31,7 @@ import { defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import MovieCard from '../components/MovieCard.vue';
 import Loader from '../components/Loader.vue';
-import { NPagination } from 'naive-ui';
+import { NPagination, NResult } from 'naive-ui';
 import useSearch from '@/composables/useSearch';
 import CardsList from '@/components/CardsList.vue';
 
@@ -35,6 +42,7 @@ export default defineComponent({
     Loader,
     NPagination,
     CardsList,
+    NResult,
   },
   setup() {
     let query = useRoute().query.query as string;

@@ -1,12 +1,29 @@
 <template>
-  <n-card hoverable class="movie-card">
+  <n-card hoverable class="movie-card" :style="cardStyle">
     <template #cover>
       <router-link :to="'/' + type + '/' + movie.id">
-        <img v-if="movie.poster_path" :src="movieCoverSrc" class="movie-card__cover" />
-        <img v-else src="@/assets/images/movieCoverPlaceholder.png" class="movie-card__cover" />
+        <img
+          v-if="!movie.poster_path && (type === 'movie' || type === 'tv')"
+          src="@/assets/images/movieCoverPlaceholder.png"
+          class="movie-card__cover"
+        />
+        <img
+          v-else-if="!movie.poster_path"
+          src="@/assets/images/personAvatarPlaceholder.jpg"
+          class="movie-card__cover"
+        />
+        <img
+          v-else
+          v-show="imageIsLoaded"
+          @load="imageIsLoaded = true"
+          :src="movieCoverSrc"
+          class="movie-card__cover"
+        />
+        <n-skeleton v-if="!imageIsLoaded && movie.poster_path" width="100%" height="300px" />
       </router-link>
     </template>
     <div
+      v-if="type === 'movie' || type === 'tv'"
       class="movie-card__rating"
       @mouseover="ratingLabelIsHover = true"
       @mouseleave="ratingLabelIsHover = false"
@@ -29,26 +46,36 @@
 
 <script>
 import { defineComponent, ref, computed } from 'vue';
-import { NCard, NIcon } from 'naive-ui';
+import { NCard, NIcon, NSkeleton } from 'naive-ui';
 import { Star } from '@vicons/fa';
 
 export default defineComponent({
   name: 'MovieCard',
-  components: { NCard, NIcon, Star },
+  components: { NCard, NIcon, Star, NSkeleton },
   props: {
     movie: Object,
     type: String,
+    minWidth: Number,
+    maxWidth: Number,
   },
   setup(props) {
     const movieCoverSrc = process.env.VUE_APP_IMG_URL + props.movie.poster_path;
     const ratingLabelIsHover = ref(false);
+    const imageIsLoaded = ref(false);
 
     const titleProperty = computed(() => (props.type === 'movie' ? 'title' : 'name'));
 
+    const cardStyle = computed(() => ({
+      minWidth: `${props.minWidth}px`,
+      maxWidth: `${props.maxWidth}px`,
+    }));
+
     return {
+      cardStyle,
       movieCoverSrc,
       titleProperty,
       ratingLabelIsHover,
+      imageIsLoaded,
     };
   },
 });
@@ -56,11 +83,8 @@ export default defineComponent({
 
 <style lang="scss">
 .movie-card {
-  $cardWidth: 200px;
-
   position: relative;
-  min-width: $cardWidth;
-  max-width: $cardWidth + 150px;
+  min-width: 150px;
 
   &__cover {
     cursor: pointer;

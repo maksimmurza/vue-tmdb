@@ -58,7 +58,7 @@
         <loader v-if="moviesLoading" style="flex-grow: 1" />
         <div v-else-if="movies.results.length > 0" class="movies-results">
           <div v-for="movie in movies.results" :key="movie.id" class="movie-card-wrapper">
-            <movie-card :movie="movie" :type="typeRef"></movie-card>
+            <movie-card :movie="movie" :type="typeRef" :maxWidth="200"></movie-card>
           </div>
         </div>
         <n-alert v-else-if="movies.results.length === 0" type="warning"

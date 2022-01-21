@@ -25,6 +25,7 @@
             :movie="movie"
             :type="movie.type"
             :key="movie.id"
+            :maxWidth="200"
           />
         </div>
       </n-tab-pane>
@@ -36,6 +37,7 @@
             :movie="movie"
             :type="movie.type"
             :key="movie.id"
+            :maxWidth="200"
           />
         </div>
       </n-tab-pane>
@@ -47,6 +49,7 @@
             :movie="movie"
             :type="movie.type"
             :key="movie.id"
+            :maxWidth="200"
           />
         </div>
       </n-tab-pane>
@@ -76,7 +79,7 @@
                     :movie="movie"
                     :type="movie.media_type"
                     :key="movie.id"
-                    :style="{ maxWidth: '150px' }"
+                    :maxWidth="200"
                   />
                 </cards-list>
                 <span v-else>Empty list</span>
@@ -243,7 +246,6 @@ export default defineComponent({
     justify-content: space-evenly;
 
     & > * {
-      max-width: 150px;
       margin: 0 1rem 1rem 0;
     }
   }

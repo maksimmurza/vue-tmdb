@@ -1,7 +1,7 @@
 <template>
   <n-spin :show="loading">
     <n-scrollbar x-scrollable>
-      <div class="cards-list">
+      <div class="cards-list" :style="cardsListStyle">
         <n-alert v-if="error" title="Error occurs" type="warning" class="card-list__error">
           {{ error.message }}
         </n-alert>
@@ -25,6 +25,12 @@ export default defineComponent({
   props: {
     loading: Boolean,
     error: Error || null,
+    background: String,
+  },
+  setup(props) {
+    return {
+      cardsListStyle: { backgroundColor: props.background },
+    };
   },
 });
 </script>
@@ -36,7 +42,6 @@ export default defineComponent({
   border-radius: 10px;
   display: flex;
   flex-wrap: nowrap;
-  background-color: #e2e8dd;
   min-height: 300px;
 
   & > * {

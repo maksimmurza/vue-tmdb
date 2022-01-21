@@ -78,7 +78,7 @@
   <div v-if="movie.credits" class="movie-page-content">
     <section v-if="movie.credits && movie.credits.cast && movie.credits.cast.length > 0">
       <h1>Cast</h1>
-      <cards-list :loading="movie.creditsLoading" :error="movie.detailsError">
+      <cards-list :loading="movie.creditsLoading" :error="movie.detailsError" background="#e2e8dd">
         <actor-card v-for="actor in movie.credits.cast" :key="actor.id" :actor="actor"></actor-card>
       </cards-list>
     </section>

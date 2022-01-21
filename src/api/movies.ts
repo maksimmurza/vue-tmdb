@@ -1,7 +1,7 @@
 import { MoviesFetchingService } from '@/types/fetching';
 import { Movie, MovieFilters, TVShow } from '@/types/movie';
 import getQuery from '@/utils/getQuery';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { axiosClientApiV3 } from '../utils/axiosClient';
 
 const fetchMovies = async (link: string) => {
@@ -15,6 +15,9 @@ const fetchMovies = async (link: string) => {
     throw new Error('Server is unavailable');
   }
 };
+
+const searchMovies = (query: string, pageNumber = 1): Promise<AxiosResponse> =>
+  fetchMovies(`/search/multi?query=${query}&page=${pageNumber}`);
 
 const moviesFetchingService: {
   movie: MoviesFetchingService<Movie>;
@@ -38,4 +41,4 @@ const moviesFetchingService: {
   },
 };
 
-export { moviesFetchingService };
+export { moviesFetchingService, searchMovies };

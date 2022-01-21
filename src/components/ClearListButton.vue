@@ -32,7 +32,10 @@ export default defineComponent({
     NButton,
   },
   props: {
-    list: Object as PropType<MovieListDetails>,
+    list: {
+      type: Object as PropType<MovieListDetails>,
+      required: true,
+    },
   },
   emits: ['cleared'],
   setup(props, { emit }) {

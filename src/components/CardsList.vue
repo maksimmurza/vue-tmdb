@@ -12,7 +12,7 @@ export default defineComponent({
   name: 'CardsList',
   setup() {
     const container = ref<Ref | null>(null);
-    const containerWidth = ref();
+    const containerWidth = ref<number>();
     const getNewContainerWidth = debounce(() => {
       containerWidth.value = container?.value?.clientWidth;
     }, 50);

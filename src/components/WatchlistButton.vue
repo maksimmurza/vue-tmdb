@@ -7,8 +7,8 @@
     type="info"
     @click="updateMovieWatchlistValue"
     :loading="watchlistMovies.setWatchlistValueLoading"
-    ><n-icon><bookmark :color="watchlist ? '#db5ece' : 'white'" /></n-icon
-  ></n-button>
+    ><template #icon><n-icon><bookmark :color="watchlist ? '#db5ece' : 'white'" /></n-icon
+  ></template></n-button>
 </template>
 
 <script lang="ts">

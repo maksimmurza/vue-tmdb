@@ -5,7 +5,6 @@ export const moviesDropdownOptions = ['Popular', 'Now playing', 'Upcoming', 'Top
     label,
     key: label.toLowerCase(),
     url: `/movie/${label.toLowerCase().replaceAll(' ', '-')}`,
-    props: {},
   })
 );
 
@@ -14,17 +13,15 @@ export const tvShowsDropdownOptions = ['Popular', 'Airing Today', 'On TV', 'Top 
     label,
     key: label.toLowerCase(),
     url: `/tv/${label.toLowerCase().replaceAll(' ', '-')}`,
-    props: {},
   })
 );
 
-export const moreShowsDropdownOptions = [
+export const moreDropdownOptions = [
   { label: 'About', key: 'about', url: 'https://www.themoviedb.org/about' },
   {
     label: 'API',
     key: 'api',
     url: 'https://developers.themoviedb.org/3/getting-started/introduction',
-    props: {},
   },
 ];
 
@@ -36,7 +33,7 @@ export const profileDropdownOptions = [
   {
     label: 'Logout',
     key: 'logout',
-    props: {},
+    url: '',
   },
 ];
 

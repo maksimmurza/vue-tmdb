@@ -104,6 +104,7 @@ export default defineComponent({
     width: fit-content;
     align-items: center;
     padding: 3px 10px;
+    cursor: default;
 
     &:hover {
       z-index: 3;

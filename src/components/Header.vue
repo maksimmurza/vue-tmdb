@@ -25,7 +25,7 @@
         v-for="item in [
           { id: 0, title: 'Movies', options: moviesDropdownOptions },
           { id: 1, title: 'TV Shows', options: tvShowsDropdownOptions },
-          { id: 2, title: 'More', options: moreShowsDropdownOptionsClickable },
+          { id: 2, title: 'More', options: moreDropdownOptions },
         ]"
       >
         <n-button text color="white">
@@ -37,7 +37,7 @@
           <n-dropdown
             trigger="click"
             @select="handleSelect"
-            :options="profileDropdownOptionsClickable"
+            :options="profileDropdownOptions"
             placement="bottom-end"
           >
             <div class="user-button">
@@ -71,11 +71,10 @@ import { UserAstronaut } from '@vicons/fa';
 import {
   moviesDropdownOptions,
   tvShowsDropdownOptions,
-  moreShowsDropdownOptions,
+  moreDropdownOptions,
   profileDropdownOptions,
 } from '../constants';
 import { useRouter } from 'vue-router';
-import useWidth from '../composables/useWidth';
 import { MenuOutline, CloseOutline } from '@vicons/ionicons5';
 
 export default defineComponent({
@@ -102,6 +101,23 @@ export default defineComponent({
       }
     });
 
+    const handleSelect = (key: string, option: { label: string; key: string; url: string }) => {
+      switch (key) {
+        case 'api':
+          window.open(option.url, '_blank');
+          break;
+        case 'about':
+          window.open(option.url, '_blank');
+          break;
+        case 'logout':
+          store.dispatch('logout', store.state.user.userInfo?.session_id);
+          router.push('/');
+          break;
+        default:
+          router.push(option.url);
+      }
+    };
+
     const userAvatarBaseUrl = process.env.VUE_APP_IMG_URL;
 
     const user = computed(() => store.state.user);
@@ -112,55 +128,17 @@ export default defineComponent({
       store.dispatch('login', { redirect_to: router.currentRoute.value.fullPath });
     };
 
-    [moviesDropdownOptions, tvShowsDropdownOptions].forEach(options =>
-      options.map(
-        option =>
-          (option.props = {
-            onClick: () => {
-              router.push(option.url);
-            },
-          })
-      )
-    );
-
-    const moreShowsDropdownOptionsClickable = computed(() =>
-      moreShowsDropdownOptions.map(option => ({
-        ...option,
-        props: {
-          onClick: () => {
-            window.open(option.url, '_blank');
-          },
-        },
-      }))
-    );
-
-    const profileDropdownOptionsClickable = computed(() =>
-      profileDropdownOptions.map(option => ({
-        ...option,
-        props: {
-          onClick: () => {
-            if (option.key === 'logout') {
-              store.dispatch('logout', store.state.user.userInfo?.session_id);
-              router.push('/');
-            } else {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              router.push(option.url!);
-            }
-          },
-        },
-      }))
-    );
-
     return {
-      moviesDropdownOptions,
-      tvShowsDropdownOptions,
-      userAvatarBaseUrl,
-      moreShowsDropdownOptionsClickable,
-      profileDropdownOptionsClickable,
       user,
       width,
       menuOpened,
+      moviesDropdownOptions,
+      tvShowsDropdownOptions,
+      moreDropdownOptions,
+      profileDropdownOptions,
+      userAvatarBaseUrl,
       login,
+      handleSelect,
     };
   },
 });
@@ -177,6 +155,8 @@ export default defineComponent({
   grid-template-columns: min-content 1fr;
   grid-gap: 1rem;
   align-items: center;
+
+  transition: all ease 0.4s;
 
   &__home-link {
     background: -webkit-linear-gradient(rgb(153, 219, 208), rgb(206, 193, 228));
@@ -199,6 +179,8 @@ export default defineComponent({
     grid-template-columns: repeat(3, min-content) 1fr;
     grid-gap: inherit;
     align-items: center;
+
+    transition: inherit;
 
     & > *:last-child {
       justify-self: right;

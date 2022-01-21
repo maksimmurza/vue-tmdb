@@ -8,6 +8,7 @@
         type="error"
         size="small"
         @click.stop
+        :disabled="!user.userInfo"
         :loading="deleteMovieListAction.loading"
         ><template #icon>
           <n-icon>
@@ -38,7 +39,10 @@ export default defineComponent({
     NButton,
   },
   props: {
-    list: Object as PropType<MovieListDetails>,
+    list: {
+      type: Object as PropType<MovieListDetails>,
+      required: true,
+    },
   },
   emits: ['deleted'],
   setup(props, { emit }) {
@@ -51,6 +55,7 @@ export default defineComponent({
     };
 
     return {
+      user,
       deleteMovieListAction,
       deleteList,
     };

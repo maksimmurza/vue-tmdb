@@ -8,7 +8,8 @@
         circle
         type="info"
         :loading="rating.setRatingValueLoading || rating.deleteRatingValueLoading"
-        ><n-icon><star :color="ratingButtonColor" /></n-icon
+        ><template #icon
+          ><n-icon><star :color="ratingButtonColor" /></n-icon></template
       ></n-button>
     </template>
 
@@ -44,9 +45,18 @@ export default defineComponent({
     Trash,
   },
   props: {
-    movieId: Number,
-    type: String as PropType<VideoType>,
-    ratingValue: (Object as PropType<{ value: number }>) || (Boolean as PropType<false>),
+    movieId: {
+      type: Number,
+      required: true,
+    },
+    type: {
+      type: String as PropType<VideoType>,
+      required: true,
+    },
+    ratingValue: {
+      type: (Object as PropType<{ value: number }>) || (Boolean as PropType<false>),
+      required: true,
+    },
   },
   emits: ['updated'],
   setup(props, { emit }) {

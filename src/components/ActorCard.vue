@@ -2,26 +2,24 @@
   <n-card :title="actor.name" class="actor-card">
     <template #cover>
       <img v-if="actor.profile_path" :src="actorPhotoSrc" />
-      <div v-else class="actor-card__avatar-icon">
-        <n-icon size="120">
-          <user />
-        </n-icon>
-      </div>
+      <img v-else src="@/assets/images/personAvatarPlaceholder.jpg" />
     </template>
   </n-card>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { NCard, NIcon } from 'naive-ui';
-import { User } from '@vicons/fa';
+import { NCard } from 'naive-ui';
 import { Actor } from '../types/credits';
 
 export default defineComponent({
   name: 'ActorCard',
-  components: { NCard, NIcon, User },
+  components: { NCard },
   props: {
-    actor: Object as PropType<Actor>,
+    actor: {
+      type: Object as PropType<Actor>,
+      required: true,
+    },
   },
   setup(props) {
     const actorPhotoSrc = process.env.VUE_APP_IMG_URL + props.actor?.profile_path;
@@ -33,15 +31,6 @@ export default defineComponent({
 
 <style lang="scss">
 .actor-card {
-  min-width: 150px;
-  max-width: 150px;
-  position: relative;
-
-  &__avatar-icon {
-    display: flex;
-    justify-content: center;
-    padding: 3rem 1rem;
-    color: gray;
-  }
+  width: 150px;
 }
 </style>

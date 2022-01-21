@@ -2,9 +2,9 @@
   <n-message-provider>
     <Header></Header>
     <router-view v-slot="{ Component }">
-      <transition name="fade">
-        <component :is="Component" :key="$route.path"></component>
-      </transition>
+      <!-- <transition name="fade"> -->
+      <component :is="Component" :key="$route.path"></component>
+      <!-- </transition> -->
     </router-view>
     <Footer></Footer>
   </n-message-provider>
@@ -37,7 +37,7 @@ export default defineComponent({
   flex-direction: column;
 }
 
-.fade-enter-active,
+/* .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s;
 }
@@ -45,5 +45,5 @@ export default defineComponent({
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
-}
+} */
 </style>

@@ -41,7 +41,7 @@
             <n-divider></n-divider>
             <div class="filter">
               <div>Minimum User Votes</div>
-              <n-slider v-model:value="filters.votesValue" max="5000" />
+              <n-slider v-model:value="filters.votesValue" :max="5000" />
             </div>
             <n-divider></n-divider>
           </n-collapse-item>
@@ -288,12 +288,6 @@ export default defineComponent({
     min-width: 180px;
     max-width: 300px;
   }
-}
-
-.movie-card-wrapper {
-  flex: 1 16%;
-  padding: 0 2% 2% 2%;
-  display: flex;
 }
 
 .pagination {

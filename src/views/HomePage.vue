@@ -24,9 +24,6 @@
           :minWidth="200"
         ></movie-card>
       </cards-list-horizontal>
-      <h3 v-if="error">
-        {{ error }}
-      </h3>
     </div>
   </div>
 </template>

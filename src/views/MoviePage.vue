@@ -182,7 +182,7 @@ export default defineComponent({
   position: relative;
 
   &__background {
-    z-index: 1;
+    z-index: -1;
     position: absolute;
     inset: 0;
     filter: blur(2px);

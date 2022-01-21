@@ -1,6 +1,7 @@
 <template>
   <n-button
     :loading="createMovieListAction.loading"
+    :disabled="!user.userInfo"
     strong
     secondary
     round
@@ -29,7 +30,11 @@
         <n-input v-model:value="newListFormValue.name" placeholder="Input Name" />
       </n-form-item>
       <n-form-item label="Description">
-        <n-input v-model:value="newListFormValue.description" placeholder="Input Description" />
+        <n-input
+          v-model:value="newListFormValue.description"
+          type="textarea"
+          placeholder="Input Description"
+        />
       </n-form-item>
       <n-form-item label="Access">
         <n-radio-group v-model:value="newListFormValue.public">
@@ -101,6 +106,7 @@ export default defineComponent({
     };
 
     return {
+      user,
       showModal,
       newListFormValue,
       newListFormRules,

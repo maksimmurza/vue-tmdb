@@ -1,7 +1,7 @@
 <template>
   <n-spin :show="loading">
     <n-scrollbar x-scrollable>
-      <div class="cards-list-horizontal" :style="cardsListStyle">
+      <div class="cards-list">
         <n-alert v-if="error" title="Error occurs" type="warning" class="card-list__error">
           {{ error.message }}
         </n-alert>
@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { NSpin, NScrollbar, NAlert } from 'naive-ui';
 
 export default defineComponent({
@@ -28,21 +28,24 @@ export default defineComponent({
     background: String,
   },
   setup(props) {
+    const backgroundColor = computed(() => props.background || 'white');
+
     return {
-      cardsListStyle: { backgroundColor: props.background },
+      backgroundColor,
     };
   },
 });
 </script>
 
 <style lang="scss">
-.cards-list-horizontal {
+.cards-list {
   position: relative;
   padding: 20px;
   border-radius: 10px;
   display: flex;
   flex-wrap: nowrap;
   min-height: 300px;
+  background-color: v-bind(backgroundColor);
 
   & > * {
     margin-right: 1rem;

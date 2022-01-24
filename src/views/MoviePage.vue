@@ -97,7 +97,7 @@
 
 <script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { computed, defineComponent, onMounted, reactive } from 'vue';
+import { computed, defineComponent, onMounted, reactive, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
@@ -154,6 +154,8 @@ export default defineComponent({
       }
       return color;
     });
+
+    watch(userInfo, updateMovieAccountStates);
 
     onMounted(() => {
       movie

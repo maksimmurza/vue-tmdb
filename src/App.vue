@@ -11,11 +11,13 @@
 </template>
 
 <script>
-import { defineComponent, provide } from 'vue';
+import { defineComponent, onMounted, provide } from 'vue';
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import useWidth from './composables/useWidth';
 import { NMessageProvider } from 'naive-ui';
+import { getCookie } from './utils/cookie';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   components: {
@@ -24,8 +26,19 @@ export default defineComponent({
     NMessageProvider,
   },
   setup() {
+    const store = useStore();
     const { width } = useWidth();
     provide('width', width);
+
+    const getAuthCookie = () => {
+      const session_id = getCookie('session_id');
+      const access_token = getCookie('access_token');
+      if (session_id && access_token) {
+        store.dispatch('accountDetails', { session_id, access_token });
+      }
+    };
+
+    onMounted(getAuthCookie);
   },
 });
 </script>

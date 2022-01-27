@@ -71,8 +71,8 @@ export interface Filters {
   sortOptions: Array<{ label: string; value: SortValue }> | null;
   sortValue: SortValue | null;
   genresValue: Array<number> | null;
-  scoreValue: [0, 100];
-  votesValue: 0;
+  scoreValue: [number, number];
+  votesValue: number;
   releaseDateGteValue: number | null;
   releaseDateLteValue: number | null;
 }

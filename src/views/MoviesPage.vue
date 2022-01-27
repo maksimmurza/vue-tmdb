@@ -60,7 +60,7 @@ import MovieCard from '../components/MovieCard.vue';
 import { useRoute } from 'vue-router';
 import { NButton, NPagination, NDrawer, NIcon, NResult, NDrawerContent } from 'naive-ui';
 import useMovies from '../composables/useMovies';
-import { Movie, MovieFilters, MovieType, TVShow, VideoType } from '@/types/movie';
+import { Movie, MovieType, TVShow, VideoType } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
 
 import Loader from '../components/Loader.vue';
@@ -106,17 +106,31 @@ export default defineComponent({
 
     const { filters, getFilters } = useFilters(type, key);
 
-    const updateFilters = (newFilters: MovieFilters) => {
-      filters.value = newFilters;
-    };
+    watch(filters, newFilters => {
+      console.log(route);
+      const sort = newFilters.sortValue;
+      const genres = newFilters.genresValue?.toString();
+      const rating = newFilters.scoreValue?.toString();
+      const votes = newFilters.votesValue;
+      const releaseGte = `${newFilters.releaseDateGteValue ? newFilters.releaseDateGteValue : ''}`;
+      const releaseLte = `${newFilters.releaseDateGteValue ? newFilters.releaseDateGteValue : ''}`;
+      window.history.replaceState(
+        null,
+        '',
+        `${route.fullPath}?sort=${sort}&genres=${genres}&rating=${rating}&votes=${votes}&releaseGte=${releaseGte}&releaseLte=${releaseLte}&page=${page.value}`
+      );
+    });
 
     watch(page, newPage => {
       getMovies(newPage, filters.value);
     });
 
     onMounted(() => {
-      getMovies();
       getFilters();
+      if (route.query.page) {
+        page.value = Number(route.query.page);
+      }
+      getMovies(page.value, filters.value);
     });
 
     return {
@@ -132,7 +146,6 @@ export default defineComponent({
       width,
       sidebarActive,
       getMovies,
-      updateFilters,
     };
   },
 });

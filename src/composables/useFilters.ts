@@ -1,5 +1,5 @@
 import { MovieFilters, MovieFiltersWithRefGenres, MovieKey, VideoType } from '@/types/movie';
-import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
+import { computed, ComputedRef, reactive, Ref, ref, UnwrapNestedRefs } from 'vue';
 import getAirDates from '../utils/getAirDates';
 import useGenres from './useGenres';
 import { sortOptions } from '../constants';
@@ -8,7 +8,7 @@ const useFilters = (
   type: VideoType,
   key: MovieKey
 ): {
-  filters: UnwrapNestedRefs<MovieFilters>;
+  filters: Ref<MovieFilters>;
   getFilters: () => void;
   filtersLoading: ComputedRef<boolean>;
   filtersError: ComputedRef<Error | null>;
@@ -16,7 +16,7 @@ const useFilters = (
   const { begin: releaseDateGteValue, end: releaseDateLteValue } = getAirDates(key);
   const { loading: genresLoading, genresOptions, error: genresError, getGenres } = useGenres(type);
 
-  const filters = reactive<MovieFiltersWithRefGenres>({
+  const filters = ref<MovieFiltersWithRefGenres>({
     sortOptions,
     sortValue: key === 'top-rated' ? 'vote_average.desc' : 'popularity.desc',
     genresOptions,

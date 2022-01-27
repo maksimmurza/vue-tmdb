@@ -8,56 +8,10 @@
     </h1>
     <div class="movies-page__content">
       <div v-if="width > 690" class="movies-query">
-        <n-collapse :default-expanded-names="['0']">
-          <n-collapse-item title="Sort" name="0">
-            <div>Sort results By</div>
-            <n-select v-model:value="filters.sortValue" :options="filters.sortOptions" />
-          </n-collapse-item>
-          <n-collapse-item title="Filters" name="1">
-            <div class="filter">
-              <div>Release Dates</div>
-              <n-date-picker v-model:value="filters.releaseDateGteValue" type="date" />
-              <n-date-picker v-model:value="filters.releaseDateLteValue" type="date" />
-            </div>
-            <n-divider></n-divider>
-            <div class="filter">
-              <div>Genres</div>
-              <n-checkbox-group v-if="filters.genresOptions" v-model:value="filters.genresValue">
-                <n-checkbox
-                  v-for="genre in filters.genresOptions"
-                  :genre="genre"
-                  :key="genre.id"
-                  :value="genre.id"
-                  :label="genre.name"
-                  class="genre"
-                />
-              </n-checkbox-group>
-            </div>
-            <n-divider></n-divider>
-            <div class="filter">
-              <div>User Score</div>
-              <n-slider v-model:value="filters.scoreValue" range :marks="scoreMarks" />
-            </div>
-            <n-divider></n-divider>
-            <div class="filter">
-              <div>Minimum User Votes</div>
-              <n-slider v-model:value="filters.votesValue" :max="5000" />
-            </div>
-            <n-divider></n-divider>
-          </n-collapse-item>
-        </n-collapse>
-        <n-button
-          @click="getMovies(page, filters)"
-          strong
-          round
-          type="info"
-          size="large"
-          block
-          :style="{
-            marginTop: '1rem',
-          }"
-          >Search</n-button
-        >
+        <form-movie-filters
+          v-model:filters="filters"
+          @search="() => getMovies(page, filters)"
+        ></form-movie-filters>
       </div>
       <n-drawer
         v-else
@@ -67,56 +21,10 @@
         placement="left"
       >
         <n-drawer-content title="Filters">
-          <n-collapse :default-expanded-names="['0']">
-            <n-collapse-item title="Sort" name="0">
-              <div>Sort results By</div>
-              <n-select v-model:value="filters.sortValue" :options="filters.sortOptions" />
-            </n-collapse-item>
-            <n-collapse-item title="Filters" name="1">
-              <div class="filter">
-                <div>Release Dates</div>
-                <n-date-picker v-model:value="filters.releaseDateGteValue" type="date" />
-                <n-date-picker v-model:value="filters.releaseDateLteValue" type="date" />
-              </div>
-              <n-divider></n-divider>
-              <div class="filter">
-                <div>Genres</div>
-                <n-checkbox-group v-if="filters.genresOptions" v-model:value="filters.genresValue">
-                  <n-checkbox
-                    v-for="genre in filters.genresOptions"
-                    :genre="genre"
-                    :key="genre.id"
-                    :value="genre.id"
-                    :label="genre.name"
-                    class="genre"
-                  />
-                </n-checkbox-group>
-              </div>
-              <n-divider></n-divider>
-              <div class="filter">
-                <div>User Score</div>
-                <n-slider v-model:value="filters.scoreValue" range :marks="scoreMarks" />
-              </div>
-              <n-divider></n-divider>
-              <div class="filter">
-                <div>Minimum User Votes</div>
-                <n-slider v-model:value="filters.votesValue" max="5000" />
-              </div>
-              <n-divider></n-divider>
-            </n-collapse-item>
-          </n-collapse>
-          <n-button
-            @click="getMovies(page, filters)"
-            strong
-            round
-            type="info"
-            size="large"
-            block
-            :style="{
-              marginTop: '1rem',
-            }"
-            >Search</n-button
-          >
+          <form-movie-filters
+            v-model:filters="filters"
+            @search="() => getMovies(page, filters)"
+          ></form-movie-filters>
         </n-drawer-content>
       </n-drawer>
       <div class="movies-block">
@@ -150,46 +58,24 @@
 import { computed, defineComponent, inject, onMounted, ref, watch } from 'vue';
 import MovieCard from '../components/MovieCard.vue';
 import { useRoute } from 'vue-router';
-import {
-  NButton,
-  NCollapse,
-  NCollapseItem,
-  NDivider,
-  NSelect,
-  NCheckbox,
-  NDatePicker,
-  NPagination,
-  NSlider,
-  NCheckboxGroup,
-  NDrawer,
-  NIcon,
-  NResult,
-  NDrawerContent,
-} from 'naive-ui';
+import { NButton, NPagination, NDrawer, NIcon, NResult, NDrawerContent } from 'naive-ui';
 import useMovies from '../composables/useMovies';
-import useFilters from '../composables/useFilters';
-import { Movie, MovieType, TVShow, VideoType } from '@/types/movie';
+import { Movie, MovieFilters, MovieType, TVShow, VideoType } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
-import { scoreMarks } from '@/constants';
+
 import Loader from '../components/Loader.vue';
 import toRegularCase from '../utils/toRegularCase';
 import CardsList from '../components/CardsList.vue';
 import { Filter } from '@vicons/fa';
+import FormMovieFilters from '../components/FormMovieFilters.vue';
+import useFilters from '@/composables/useFilters';
 
 export default defineComponent({
   name: 'MoviesPage',
   components: {
     MovieCard,
     NButton,
-    NCollapse,
-    NCollapseItem,
-    NCheckbox,
-    NCheckboxGroup,
-    NDivider,
-    NSelect,
     NPagination,
-    NDatePicker,
-    NSlider,
     Loader,
     CardsList,
     NIcon,
@@ -197,6 +83,7 @@ export default defineComponent({
     NDrawerContent,
     FilterIcon: Filter,
     NResult,
+    FormMovieFilters,
   },
   props: {
     title: String,
@@ -219,8 +106,12 @@ export default defineComponent({
 
     const { filters, getFilters } = useFilters(type, key);
 
+    const updateFilters = (newFilters: MovieFilters) => {
+      filters.value = newFilters;
+    };
+
     watch(page, newPage => {
-      getMovies(newPage, filters);
+      getMovies(newPage, filters.value);
     });
 
     onMounted(() => {
@@ -229,17 +120,19 @@ export default defineComponent({
     });
 
     return {
-      moviesLoading,
-      movies,
-      moviesError,
-      filters,
+      key,
+      type,
       page,
+      movies,
+      filters,
+      moviesError,
+      moviesLoading,
       typeRef,
-      scoreMarks,
       moviesPageHeader,
       width,
       sidebarActive,
       getMovies,
+      updateFilters,
     };
   },
 });
@@ -297,11 +190,5 @@ export default defineComponent({
 
 .genre {
   margin: 0 10px 10px 0;
-}
-
-.filter {
-  & > *:not(:last-child) {
-    margin-bottom: 5px;
-  }
 }
 </style>

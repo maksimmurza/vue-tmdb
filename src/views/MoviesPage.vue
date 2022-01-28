@@ -62,7 +62,7 @@ import { NButton, NPagination, NDrawer, NIcon, NResult, NDrawerContent } from 'n
 import useMovies from '../composables/useMovies';
 import { Movie, MovieType, TVShow, VideoType } from '@/types/movie';
 import { MoviesFetchingService } from '@/types/fetching';
-
+import useUrlQueries from '../composables/useUrlQueries';
 import Loader from '../components/Loader.vue';
 import toRegularCase from '../utils/toRegularCase';
 import CardsList from '../components/CardsList.vue';
@@ -105,21 +105,7 @@ export default defineComponent({
     const sidebarActive = ref(false);
 
     const { filters, getFilters } = useFilters(type, key);
-
-    watch(filters, newFilters => {
-      console.log(route);
-      const sort = newFilters.sortValue;
-      const genres = newFilters.genresValue?.toString();
-      const rating = newFilters.scoreValue?.toString();
-      const votes = newFilters.votesValue;
-      const releaseGte = `${newFilters.releaseDateGteValue ? newFilters.releaseDateGteValue : ''}`;
-      const releaseLte = `${newFilters.releaseDateGteValue ? newFilters.releaseDateGteValue : ''}`;
-      window.history.replaceState(
-        null,
-        '',
-        `${route.fullPath}?sort=${sort}&genres=${genres}&rating=${rating}&votes=${votes}&releaseGte=${releaseGte}&releaseLte=${releaseLte}&page=${page.value}`
-      );
-    });
+    const { getFiltersFromUrl, getPageFromUrl } = useUrlQueries(filters, page);
 
     watch(page, newPage => {
       getMovies(newPage, filters.value);
@@ -127,9 +113,8 @@ export default defineComponent({
 
     onMounted(() => {
       getFilters();
-      if (route.query.page) {
-        page.value = Number(route.query.page);
-      }
+      getFiltersFromUrl();
+      getPageFromUrl();
       getMovies(page.value, filters.value);
     });
 

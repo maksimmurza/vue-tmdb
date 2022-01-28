@@ -1,5 +1,5 @@
 <template>
-  <n-collapse :default-expanded-names="['0']">
+  <n-collapse :default-expanded-names="['0', '1']">
     <n-collapse-item title="Sort" name="0">
       <div>Sort results By</div>
       <n-select

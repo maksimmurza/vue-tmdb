@@ -8,10 +8,7 @@
     </h1>
     <div class="movies-page__content">
       <div v-if="width > 690" class="movies-query">
-        <form-movie-filters
-          v-model:filters="filters"
-          @search="() => getMovies(page, filters)"
-        ></form-movie-filters>
+        <form-movie-filters v-model:filters="filters" @search="search"></form-movie-filters>
       </div>
       <n-drawer
         v-else
@@ -21,10 +18,7 @@
         placement="left"
       >
         <n-drawer-content title="Filters">
-          <form-movie-filters
-            v-model:filters="filters"
-            @search="() => getMovies(page, filters)"
-          ></form-movie-filters>
+          <form-movie-filters v-model:filters="filters" @search="search"></form-movie-filters>
         </n-drawer-content>
       </n-drawer>
       <div class="movies-block">
@@ -107,6 +101,11 @@ export default defineComponent({
     const { filters, getFilters } = useFilters(type, key);
     const { getFiltersFromUrl, getPageFromUrl } = useUrlQueries(filters, page);
 
+    const search = () => {
+      page.value = 1;
+      getMovies(page.value, filters.value);
+    };
+
     watch(page, newPage => {
       getMovies(newPage, filters.value);
     });
@@ -120,17 +119,17 @@ export default defineComponent({
 
     return {
       key,
-      type,
       page,
-      movies,
+      width,
+      type,
+      typeRef,
       filters,
+      movies,
       moviesError,
       moviesLoading,
-      typeRef,
-      moviesPageHeader,
-      width,
       sidebarActive,
-      getMovies,
+      moviesPageHeader,
+      search,
     };
   },
 });

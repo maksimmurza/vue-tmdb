@@ -35,6 +35,7 @@
       <div v-if="user.userInfo">
         <n-spin :show="user.loading">
           <n-dropdown
+            v-if="$route.name !== 'User Page'"
             trigger="click"
             @select="handleSelect"
             :options="profileDropdownOptions"
@@ -54,6 +55,9 @@
               <h3 class="user-button__user-name">{{ user.userInfo.name }}</h3>
             </div>
           </n-dropdown>
+          <div style="cursor: pointer" v-else>
+            <h3 @click="() => handleSelect('logout', profileDropdownOptions.at(-1))">Logout</h3>
+          </div>
         </n-spin>
       </div>
       <a v-else @click="login" class style="text-decoration: none; color: inherit; cursor: pointer">

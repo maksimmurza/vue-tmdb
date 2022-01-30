@@ -18,6 +18,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'search',
+        name: 'Search Results',
         component: SearchResults,
       },
     ],

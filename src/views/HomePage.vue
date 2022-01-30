@@ -2,7 +2,7 @@
   <div class="home-page-content">
     <search-input @clicked="searchMovies" class="search-input" />
     <router-view :key="$route.fullPath"></router-view>
-    <div v-if="!$route.path.includes('search')">
+    <div v-if="$route.name !== 'Search Results'">
       <h1>What's popular</h1>
       <cards-list-horizontal :loading="popularLoading" :error="popularError" background="#e2e8dd">
         <movie-card

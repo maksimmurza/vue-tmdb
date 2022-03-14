@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, inject, onMounted, Ref, ref, watch } from 'vue';
 import MovieCard from '../components/MovieCard.vue';
 import { useRoute } from 'vue-router';
 import { NButton, NPagination, NDrawer, NIcon, NResult, NDrawerContent } from 'naive-ui';
@@ -88,7 +88,7 @@ export default defineComponent({
     const type = route.params.type as VideoType;
     const typeRef = ref(type);
     const key = route.params.key as keyof Omit<MoviesFetchingService<Movie | TVShow>, 'discover'>;
-    const width = inject('width');
+    const width = inject('width') as Ref<number>;
 
     const moviesPageHeader = computed(() => {
       return toRegularCase(key) + ` ${key !== 'on-tv' ? type : ''}${type === 'movie' ? 's' : ''}`;
@@ -108,6 +108,12 @@ export default defineComponent({
 
     watch(page, newPage => {
       getMovies(newPage, filters.value);
+    });
+
+    watch(width, newWidth => {
+      if (newWidth > 690) {
+        sidebarActive.value = false;
+      }
     });
 
     onMounted(() => {
@@ -149,6 +155,7 @@ export default defineComponent({
 
       & > * {
         margin-bottom: 1rem;
+        width: 100%;
         & > * {
           justify-content: center;
         }
@@ -160,7 +167,7 @@ export default defineComponent({
 .movies-query {
   width: 200px;
   min-width: 250px;
-  margin-right: 2rem;
+  margin: 0 2rem 2rem 0;
 }
 
 .movies-block {

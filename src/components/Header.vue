@@ -96,10 +96,9 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const width = inject<Ref<number>>('width');
+    const width = inject('width') as Ref<number>;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    watch(width!, (newValue, oldValue) => {
+    watch(width, (newValue, oldValue) => {
       if (newValue < 768 && oldValue >= 768) {
         menuOpened.value = false;
       }

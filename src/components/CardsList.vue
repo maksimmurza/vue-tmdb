@@ -1,11 +1,18 @@
 <template>
-  <div class="container" ref="container" :class="{ singleColumn: containerWidth < 450 }">
+  <div
+    class="container"
+    ref="container"
+    :class="{
+      singleRow: listLength < 4 && listLength * 250 < containerWidth,
+      singleColumn: containerWidth < 450,
+    }"
+  >
     <slot></slot>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, Ref, ref } from 'vue';
+import { computed, defineComponent, onMounted, onUnmounted, Ref, ref } from 'vue';
 import { debounce } from 'lodash';
 
 export default defineComponent({
@@ -18,6 +25,7 @@ export default defineComponent({
     }, 50);
 
     onMounted(() => {
+      getNewContainerWidth();
       window.addEventListener('resize', getNewContainerWidth);
     });
 
@@ -25,9 +33,12 @@ export default defineComponent({
       window.removeEventListener('resize', getNewContainerWidth);
     });
 
+    const listLength = computed(() => (container.value ? container?.value.childElementCount : 0));
+
     return {
       container,
       containerWidth,
+      listLength,
     };
   },
 });
@@ -44,6 +55,16 @@ export default defineComponent({
   & > * {
     max-width: 250px;
     justify-self: center;
+  }
+}
+
+.singleRow {
+  width: 100%;
+  display: flex;
+
+  & > * {
+    max-width: 250px;
+    min-width: 180px;
   }
 }
 

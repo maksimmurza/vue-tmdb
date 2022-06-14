@@ -13,8 +13,11 @@
         circle
         type="info"
         @click="fetchMovieLists"
-        ><n-icon><list-ul /></n-icon
-      ></n-button>
+      >
+        <template #icon>
+          <n-icon><list-ul /></n-icon>
+        </template>
+      </n-button>
     </template>
     <n-checkbox-group v-if="listsInfo.movieListsResult" v-model:value="movieListsValue">
       <n-space vertical>
@@ -52,8 +55,14 @@ export default defineComponent({
     ListUl,
   },
   props: {
-    movieId: Number,
-    type: String as PropType<VideoType>,
+    movieId: {
+      type: Number,
+      required: true,
+    },
+    type: {
+      type: String as PropType<VideoType>,
+      required: true,
+    },
   },
   setup(props) {
     const store = useStore();

@@ -6,6 +6,7 @@
     type="tertiary"
     size="small"
     @click.stop="showModal = true"
+    :disabled="!user.userInfo"
     :loading="updateMovieListAction.loading"
     ><template #icon>
       <n-icon>
@@ -29,7 +30,11 @@
         <n-input v-model:value="listFormValue.name" placeholder="Input Name" />
       </n-form-item>
       <n-form-item label="Description">
-        <n-input v-model:value="listFormValue.description" placeholder="Input Description" />
+        <n-input
+          v-model:value="listFormValue.description"
+          type="textarea"
+          placeholder="Input Description"
+        />
       </n-form-item>
       <n-form-item label="Access">
         <n-radio-group v-model:value="listFormValue.public">
@@ -82,14 +87,15 @@ export default defineComponent({
     Edit,
   },
   props: {
-    list: Object as PropType<MovieListDetails>,
+    list: {
+      type: Object as PropType<MovieListDetails>,
+      required: true,
+    },
   },
   emits: ['updated'],
   setup(props, { emit }) {
     const store = useStore();
-
     const user = computed(() => store.state.user);
-
     const { updateMovieListAction, updateMovieList } = useListActions();
 
     const showModal = ref(false);
@@ -121,6 +127,7 @@ export default defineComponent({
     };
 
     return {
+      user,
       showModal,
       listFormValue,
       listFormRules,

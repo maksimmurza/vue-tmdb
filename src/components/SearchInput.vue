@@ -1,16 +1,15 @@
 <template>
-  <div>
-    <n-input-group>
-      <n-input
-        size="large"
-        round
-        v-model:value="query"
-        @keyup.enter="search"
-        placeholder="Search movie"
-      />
-      <n-button round size="large" type="info" @click="search">Search</n-button>
-    </n-input-group>
-  </div>
+  <n-input-group>
+    <n-input
+      :autofocus="$route.name === 'Search Results'"
+      size="large"
+      round
+      v-model:value="query"
+      @keyup.enter="search"
+      placeholder="Search movie"
+    />
+    <n-button round size="large" type="info" @click="search">Search</n-button>
+  </n-input-group>
 </template>
 
 <script lang="ts">

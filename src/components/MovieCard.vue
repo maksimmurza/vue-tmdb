@@ -84,7 +84,6 @@ export default defineComponent({
 <style lang="scss">
 .movie-card {
   position: relative;
-  min-width: 150px;
 
   &__cover {
     cursor: pointer;
@@ -105,6 +104,7 @@ export default defineComponent({
     width: fit-content;
     align-items: center;
     padding: 3px 10px;
+    cursor: default;
 
     &:hover {
       z-index: 3;

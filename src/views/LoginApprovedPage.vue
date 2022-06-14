@@ -21,7 +21,7 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('approveLogin').then(() => {
         const redirect_to = window.localStorage.getItem('redirect_to');
-        router.push(redirect_to as string);
+        router.replace(redirect_to as string);
         window.localStorage.removeItem('redirect_to');
       });
     });

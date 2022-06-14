@@ -1,57 +1,21 @@
 <template>
-  <n-spin :show="loading">
-    <n-scrollbar x-scrollable>
-      <div class="cards-list" :style="cardsListStyle">
-        <n-alert v-if="error" title="Error occurs" type="warning" class="card-list__error">
-          {{ error.message }}
-        </n-alert>
-        <slot else />
-      </div>
-    </n-scrollbar>
-  </n-spin>
+  <div class="cards-container">
+    <slot></slot>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { NSpin, NScrollbar, NAlert } from 'naive-ui';
 
 export default defineComponent({
   name: 'CardsList',
-  components: {
-    NSpin,
-    NScrollbar,
-    NAlert,
-  },
-  props: {
-    loading: Boolean,
-    error: Error || null,
-    background: String,
-  },
-  setup(props) {
-    return {
-      cardsListStyle: { backgroundColor: props.background },
-    };
-  },
 });
 </script>
 
 <style lang="scss">
-.cards-list {
-  position: relative;
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  flex-wrap: nowrap;
-  min-height: 300px;
-
-  & > * {
-    margin-right: 1rem;
-  }
-
-  &__error {
-    width: 100%;
-    height: 100%;
-    margin: 1rem;
-  }
+.cards-container {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 }
 </style>

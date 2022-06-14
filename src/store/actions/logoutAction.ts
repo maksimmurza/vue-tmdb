@@ -1,4 +1,5 @@
 import { logoutV3 } from '@/api/auth';
+import { deleteCookie } from '@/utils/cookie';
 import { ActionContext } from 'vuex';
 import { AppState } from '..';
 
@@ -13,6 +14,8 @@ async function logoutAction(
     if (success) {
       commit('logoutSuccess');
     }
+    deleteCookie('session_id');
+    deleteCookie('access_token');
   } catch (error) {
     commit('logoutFail', (error as Error).message);
   }

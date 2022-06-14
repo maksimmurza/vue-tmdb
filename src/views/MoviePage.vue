@@ -78,9 +78,13 @@
   <div v-if="movie.credits" class="movie-page-content">
     <section v-if="movie.credits && movie.credits.cast && movie.credits.cast.length > 0">
       <h1>Cast</h1>
-      <cards-list :loading="movie.creditsLoading" :error="movie.detailsError" background="#e2e8dd">
+      <cards-list-horizontal
+        :loading="movie.creditsLoading"
+        :error="movie.detailsError"
+        background="#e2e8dd"
+      >
         <actor-card v-for="actor in movie.credits.cast" :key="actor.id" :actor="actor"></actor-card>
-      </cards-list>
+      </cards-list-horizontal>
     </section>
     <section v-if="movie.trailerURL">
       <h1>Trailer</h1>
@@ -93,14 +97,14 @@
 
 <script lang="ts">
 import useMovie from '@/composables/useMovie';
-import { computed, defineComponent, onMounted, reactive } from 'vue';
+import { computed, defineComponent, onMounted, reactive, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import { NButton, NProgress, NIcon, NEmpty } from 'naive-ui';
 import { StarRegular } from '@vicons/fa';
 import ActorCard from '../components/ActorCard.vue';
 import Loader from '../components/Loader.vue';
-import CardsList from '../components/CardsList.vue';
+import CardsListHorizontal from '../components/CardsListHorizontal.vue';
 import { VideoType } from '@/types/movie';
 import useMovieAccountStates from '@/composables/useMovieAccountStates';
 import LikeButton from '../components/LikeButton.vue';
@@ -118,7 +122,7 @@ export default defineComponent({
     StarRegular,
     NEmpty,
     ActorCard,
-    CardsList,
+    CardsListHorizontal,
     LikeButton,
     WatchlistButton,
     RatingButton,
@@ -151,6 +155,8 @@ export default defineComponent({
       return color;
     });
 
+    watch(userInfo, updateMovieAccountStates);
+
     onMounted(() => {
       movie
         .getDetails()
@@ -178,7 +184,7 @@ export default defineComponent({
   position: relative;
 
   &__background {
-    z-index: 1;
+    z-index: -1;
     position: absolute;
     inset: 0;
     filter: blur(2px);

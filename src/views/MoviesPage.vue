@@ -42,6 +42,7 @@
           v-model:page="page"
           :page-count="movies.total_pages"
           class="pagination"
+          :page-slot="6"
         ></n-pagination>
       </div>
     </div>
